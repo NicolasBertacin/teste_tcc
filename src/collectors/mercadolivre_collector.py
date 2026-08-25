@@ -97,6 +97,11 @@ class MercadoLivreCollector(BaseCollector):
             logger.error(f"Erro na coleta Mercado Livre: {e}")
             return self._create_error_result(str(e))
 
+    DEFAULT_HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json"
+    }
+
     def _collect_search(self, query: str = "", **kwargs) -> CollectorResult:
         """Busca produtos no Mercado Livre."""
         if not query:
@@ -109,7 +114,11 @@ class MercadoLivreCollector(BaseCollector):
             "offset": kwargs.get("offset", 0),
         }
         
-        response = requests.get(url, params=params, timeout=30)
+        headers = self.DEFAULT_HEADERS.copy()
+        if self.access_token:
+            headers["Authorization"] = f"Bearer {self.access_token}"
+            
+        response = requests.get(url, params=params, headers=headers, timeout=30)
         
         if not self.validate_response(response):
             return self._create_error_result(f"Erro na busca: {response.status_code}")
@@ -141,7 +150,11 @@ class MercadoLivreCollector(BaseCollector):
             return self._create_error_result("Parâmetro 'item_id' é obrigatório")
         
         url = f"{self.BASE_URL}/items/{item_id}"
-        response = requests.get(url, timeout=30)
+        headers = self.DEFAULT_HEADERS.copy()
+        if self.access_token:
+            headers["Authorization"] = f"Bearer {self.access_token}"
+            
+        response = requests.get(url, headers=headers, timeout=30)
         
         if not self.validate_response(response):
             return self._create_error_result(f"Erro ao buscar item: {response.status_code}")

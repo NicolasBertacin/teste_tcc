@@ -39,7 +39,8 @@ class Product(Base):
     is_active = Column(Boolean, default=True)
 
     # Relacionamentos
-    sales_history = relationship("SalesHistory", back_populates="product")
+    sales_history = relationship("SalesHistory", back_populates="product", cascade="all, delete-orphan")
+    prediction_logs = relationship("PredictionLog", back_populates="product", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("idx_products_platform", "platform"),
@@ -126,3 +127,38 @@ class CollectionLog(Base):
 
     def __repr__(self):
         return f"<CollectionLog(collector='{self.collector_name}', records={self.records_collected})>"
+
+
+class PredictionLog(Base):
+    """Tabela de logs e auditoria de previsões vs realidade.
+    
+    Registra cada previsão feita pelo XGBoost e o valor real observado,
+    permitindo auditar a assertividade, erro absoluto e percentual de acerto.
+    """
+    __tablename__ = "prediction_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    prediction_date = Column(DateTime, default=datetime.utcnow, comment="Data em que a previsão foi gerada")
+    target_date = Column(DateTime, nullable=False, comment="Data alvo para a qual a demanda foi prevista")
+    predicted_demand = Column(Float, nullable=False, comment="Demanda prevista pelo XGBoost")
+    actual_demand = Column(Float, nullable=True, comment="Demanda real observada no dia")
+    error = Column(Float, nullable=True, comment="Erro absoluto (Real - Previsto)")
+    error_pct = Column(Float, nullable=True, comment="Percentual de erro relativo")
+    accuracy_pct = Column(Float, nullable=True, comment="Taxa de acurácia (0 a 100%)")
+    confidence_min = Column(Float, nullable=True, comment="Limite inferior da faixa de confiança")
+    confidence_max = Column(Float, nullable=True, comment="Limite superior da faixa de confiança")
+    hit_confidence_interval = Column(Boolean, nullable=True, comment="Se o valor real caiu dentro da faixa prevista")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    product = relationship("Product", back_populates="prediction_logs")
+
+    __table_args__ = (
+        Index("idx_prediction_product_target", "product_id", "target_date"),
+        Index("idx_prediction_date", "prediction_date"),
+    )
+
+    def __repr__(self):
+        return f"<PredictionLog(product_id={self.product_id}, target={self.target_date}, pred={self.predicted_demand}, actual={self.actual_demand})>"
+

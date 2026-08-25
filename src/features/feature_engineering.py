@@ -43,6 +43,13 @@ class FeatureEngineer:
         
         df = df.copy()
         df["date"] = pd.to_datetime(df["date"])
+        
+        # Garantir coluna de preço (pode vir como price_at_date ou price)
+        if "price" not in df.columns and "price_at_date" in df.columns:
+            df["price"] = df["price_at_date"]
+        elif "price" not in df.columns:
+            df["price"] = 0.0
+            
         df = df.sort_values(["product_id", "date"])
         
         grouped = df.groupby("product_id")
