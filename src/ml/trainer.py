@@ -133,7 +133,7 @@ class DemandTrainer:
         
         importances = self.model.feature_importances_
         return dict(sorted(
-            zip(self.feature_names, importances),
+            zip(self.feature_names, [float(v) for v in importances]),
             key=lambda x: x[1],
             reverse=True
         ))
