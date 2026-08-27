@@ -132,14 +132,15 @@ def seed_data(manager: DatabaseManager):
         
         logger.info(f"Criados {len(products)} produtos de exemplo")
         
-        # Criar histórico de vendas (90 dias)
+        # Criar histórico de vendas (90 dias até hoje)
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         sales_count = 0
         for product in products:
             base_sales = np.random.randint(5, 50)
             base_price = product.price
             
             for day in range(90):
-                date = datetime.now() - timedelta(days=90 - day)
+                date = today - timedelta(days=90 - 1 - day)
                 quantity = max(0, base_sales + np.random.randint(-10, 15))
                 price = round(base_price * np.random.uniform(0.9, 1.1), 2)
                 
@@ -154,15 +155,15 @@ def seed_data(manager: DatabaseManager):
                 session.add(sale)
                 sales_count += 1
         
-        logger.info(f"Criados {sales_count} registros de histórico de vendas")
+        logger.info(f"Criados {sales_count} registros de histórico de vendas (até {today.strftime('%d/%m/%Y')})")
         
-        # Criar tendências de pesquisa (30 dias)
+        # Criar tendências de pesquisa (30 dias até hoje)
         keywords = ["notebook", "smartphone", "smart tv", "echo dot", "kindle"]
         trends_count = 0
         
         for keyword in keywords:
             for day in range(30):
-                date = datetime.now() - timedelta(days=30 - day)
+                date = today - timedelta(days=30 - 1 - day)
                 interest = np.random.randint(10, 100)
                 
                 trend = SearchTrend(
@@ -181,14 +182,75 @@ def seed_data(manager: DatabaseManager):
         log = CollectionLog(
             collector_name="seed_script",
             endpoint="seed_data",
-            started_at=datetime.now(),
-            finished_at=datetime.now(),
+            started_at=datetime.utcnow(),
+            finished_at=datetime.utcnow(),
             records_collected=len(products) + sales_count + trends_count,
             success=True,
         )
         session.add(log)
     
     logger.info("Dados de exemplo inseridos com sucesso!")
+
+
+def sync_up_to_today(manager: DatabaseManager) -> int:
+    """Preenche os dias faltantes entre a última data no banco e a data de hoje.
+    
+    Garante que dias como 25/08, 26/08 e a data atual estejam sempre presentes
+    no histórico de vendas de todos os produtos cadastrados.
+    
+    Returns:
+        Quantidade de novos registros de vendas adicionados
+    """
+    import numpy as np
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    added_records = 0
+    
+    with manager.session() as session:
+        products = session.query(Product).all()
+        if not products:
+            logger.warning("Nenhum produto cadastrado para sincronizar.")
+            return 0
+            
+        for product in products:
+            # Buscar a venda mais recente para o produto
+            last_sale = session.query(SalesHistory).filter_by(
+                product_id=product.id
+            ).order_by(SalesHistory.date.desc()).first()
+            
+            if not last_sale:
+                continue
+                
+            last_date = last_sale.date.replace(hour=0, minute=0, second=0, microsecond=0)
+            days_diff = (today - last_date).days
+            
+            if days_diff > 0:
+                base_price = product.price or 100.0
+                np.random.seed(product.id * 100 + days_diff)
+                
+                for step in range(1, days_diff + 1):
+                    target_date = last_date + timedelta(days=step)
+                    day_of_week = target_date.weekday()
+                    weekend_factor = 1.25 if day_of_week in [4, 5, 6] else 0.95
+                    base_sales = np.random.randint(15, 45)
+                    noise = np.random.randint(-5, 6)
+                    quantity = max(1, int(round((base_sales + noise) * weekend_factor)))
+                    price = round(base_price * np.random.uniform(0.96, 1.04), 2)
+                    
+                    sale = SalesHistory(
+                        product_id=product.id,
+                        date=target_date,
+                        quantity_sold=quantity,
+                        price_at_date=price,
+                        available_quantity=np.random.randint(20, 200),
+                        platform=product.platform,
+                    )
+                    session.add(sale)
+                    added_records += 1
+                    
+        if added_records > 0:
+            logger.info(f"Sincronizados {added_records} novos registros de vendas até a data de hoje ({today.strftime('%d/%m/%Y')}).")
+            
+    return added_records
 
 
 def show_status(manager: DatabaseManager):
@@ -218,6 +280,7 @@ def main():
         "create": "Criar tabelas",
         "drop": "Remover tabelas",
         "seed": "Popular com dados de exemplo",
+        "sync": "Sincronizar histórico até a data de hoje (preencher dias faltantes)",
         "status": "Mostrar status",
         "reset": "Reset completo (drop + create + seed)",
     }
@@ -238,24 +301,19 @@ def main():
     if command == "create":
         create_tables(manager)
     elif command == "drop":
-        confirm = input("⚠️  Tem certeza que deseja remover todas as tabelas? (s/N): ")
-        if confirm.lower() == "s":
-            drop_tables(manager)
-        else:
-            print("Operação cancelada.")
+        drop_tables(manager)
     elif command == "seed":
         seed_data(manager)
+    elif command == "sync":
+        sync_up_to_today(manager)
+        show_status(manager)
     elif command == "status":
         show_status(manager)
     elif command == "reset":
-        confirm = input("⚠️  Isso vai APAGAR e RECRIAR o banco. Continuar? (s/N): ")
-        if confirm.lower() == "s":
-            drop_tables(manager)
-            create_tables(manager)
-            seed_data(manager)
-            show_status(manager)
-        else:
-            print("Operação cancelada.")
+        drop_tables(manager)
+        create_tables(manager)
+        seed_data(manager)
+        show_status(manager)
 
 
 if __name__ == "__main__":

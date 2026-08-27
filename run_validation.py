@@ -24,7 +24,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 import pandas as pd
-from src.database.setup import get_db_manager
+from src.database.setup import get_db_manager, sync_up_to_today
 from src.database.models import Product, SalesHistory
 from src.collectors.live_tracker import LiveTracker
 from src.ml.comparator import DemandComparator
@@ -45,6 +45,9 @@ def main():
     manager = get_db_manager()
     # Garantir que as tabelas existem
     manager.create_tables()
+
+    # Sincronizar histórico para cobrir até a data atual (incluindo 25/08, 26/08, 27/08...)
+    sync_up_to_today(manager)
 
     # 1. Coleta de dados reais via API pública do Mercado Livre
     if not args.skip_api:
