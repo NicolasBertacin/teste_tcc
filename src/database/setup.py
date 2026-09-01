@@ -77,79 +77,95 @@ def seed_data(manager: DatabaseManager):
     logger.info("Populando banco com dados de exemplo...")
     
     with manager.session() as session:
-        # Criar produtos de exemplo
+        # Criar catálogo expandido de produtos reais de mercado
         products = [
-            Product(
-                external_id="MLB001",
-                platform="mercadolivre",
-                title="Notebook Dell Inspiron 15 Intel Core i7 16GB 512GB SSD",
-                category="Eletrônicos",
-                price=3499.99,
-                currency="BRL",
-                condition="new",
-            ),
-            Product(
-                external_id="MLB002",
-                platform="mercadolivre",
-                title="iPhone 15 Pro 256GB",
-                category="Celulares",
-                price=7999.00,
-                currency="BRL",
-                condition="new",
-            ),
-            Product(
-                external_id="MLB003",
-                platform="mercadolivre",
-                title="Smart TV Samsung 55\" 4K Crystal UHD",
-                category="Eletrônicos",
-                price=2599.00,
-                currency="BRL",
-                condition="new",
-            ),
-            Product(
-                external_id="ASIN001",
-                platform="amazon",
-                title="Echo Dot 5ª Geração com Alexa",
-                category="Eletrônicos",
-                price=349.99,
-                currency="BRL",
-                condition="new",
-            ),
-            Product(
-                external_id="ASIN002",
-                platform="amazon",
-                title="Kindle Paperwhite 16GB",
-                category="Eletrônicos",
-                price=599.00,
-                currency="BRL",
-                condition="new",
-            ),
+            # Notebooks & Informática
+            Product(external_id="MLB101", platform="mercadolivre", title="Notebook Dell Inspiron 15 Intel Core i7 16GB 512GB SSD", category="Informática", price=3499.99, currency="BRL", condition="new"),
+            Product(external_id="MLB102", platform="mercadolivre", title="MacBook Air M2 13.6 Polegadas 8GB RAM 256GB SSD", category="Informática", price=6899.00, currency="BRL", condition="new"),
+            Product(external_id="MLB103", platform="mercadolivre", title="Notebook Gamer Acer Nitro 5 Intel Core i5 RTX 3050 16GB", category="Informática", price=4299.00, currency="BRL", condition="new"),
+            Product(external_id="MLB104", platform="mercadolivre", title="Notebook Lenovo IdeaPad 1 AMD Ryzen 5 8GB 256GB SSD", category="Informática", price=2399.00, currency="BRL", condition="new"),
+            Product(external_id="MLB105", platform="mercadolivre", title="Monitor Gamer LG UltraGear 27 IPS 144Hz 1ms Full HD", category="Informática", price=999.00, currency="BRL", condition="new"),
+            
+            # Celulares & Smartphones
+            Product(external_id="MLB201", platform="mercadolivre", title="iPhone 15 Pro 256GB Titânio Natural", category="Celulares", price=7999.00, currency="BRL", condition="new"),
+            Product(external_id="MLB202", platform="mercadolivre", title="iPhone 13 Apple 128GB Estelar", category="Celulares", price=3599.00, currency="BRL", condition="new"),
+            Product(external_id="MLB203", platform="mercadolivre", title="Samsung Galaxy S24 Ultra 5G 512GB 12GB RAM", category="Celulares", price=6499.00, currency="BRL", condition="new"),
+            Product(external_id="MLB204", platform="mercadolivre", title="Xiaomi Redmi Note 13 Pro 5G 256GB 8GB RAM", category="Celulares", price=1699.00, currency="BRL", condition="new"),
+            Product(external_id="MLB205", platform="mercadolivre", title="Motorola Moto G84 5G 256GB 8GB RAM", category="Celulares", price=1299.00, currency="BRL", condition="new"),
+            
+            # Consoles & Games
+            Product(external_id="MLB301", platform="mercadolivre", title="Console PlayStation 5 Edição Digital 1TB", category="Games", price=3699.00, currency="BRL", condition="new"),
+            Product(external_id="MLB302", platform="mercadolivre", title="Console Xbox Series S 512GB SSD Branco", category="Games", price=2499.00, currency="BRL", condition="new"),
+            Product(external_id="MLB303", platform="mercadolivre", title="Console Nintendo Switch OLED 64GB com Joy-Con", category="Games", price=2099.00, currency="BRL", condition="new"),
+            Product(external_id="MLB304", platform="mercadolivre", title="Controle Sem Fio DualSense PS5 Midnight Black", category="Games", price=399.00, currency="BRL", condition="new"),
+            Product(external_id="MLB305", platform="mercadolivre", title="Headset Gamer HyperX Cloud II Som Surround 7.1", category="Games", price=459.00, currency="BRL", condition="new"),
+
+            # Áudio & Som
+            Product(external_id="MLB401", platform="mercadolivre", title="Fone de Ouvido Apple AirPods Pro 2ª Geração MagSafe", category="Áudio", price=1899.00, currency="BRL", condition="new"),
+            Product(external_id="MLB402", platform="mercadolivre", title="Fone Bluetooth JBL Tune 520BT com Microfone", category="Áudio", price=219.00, currency="BRL", condition="new"),
+            Product(external_id="MLB403", platform="mercadolivre", title="Caixa de Som Bluetooth JBL Boombox 3 180W RMS", category="Áudio", price=2399.00, currency="BRL", condition="new"),
+            Product(external_id="MLB404", platform="mercadolivre", title="Fone de Ouvido Sony WH-1000XM5 Noise Cancelling", category="Áudio", price=2199.00, currency="BRL", condition="new"),
+
+            # Smart TVs & Home Theater
+            Product(external_id="MLB501", platform="mercadolivre", title="Smart TV Samsung 55 4K Crystal UHD HDR10+", category="Eletrônicos", price=2599.00, currency="BRL", condition="new"),
+            Product(external_id="MLB502", platform="mercadolivre", title="Smart TV LG 50 4K UHD ThinQ AI HDR", category="Eletrônicos", price=2199.00, currency="BRL", condition="new"),
+            Product(external_id="MLB503", platform="mercadolivre", title="Smart TV TCL 65 4K QLED Google TV", category="Eletrônicos", price=3299.00, currency="BRL", condition="new"),
+
+            # Casa Inteligente & Eletroportáteis
+            Product(external_id="ASIN001", platform="amazon", title="Echo Dot 5ª Geração Smart Speaker com Alexa", category="Casa Inteligente", price=349.99, currency="BRL", condition="new"),
+            Product(external_id="ASIN002", platform="amazon", title="Kindle Paperwhite 16GB Tela de 6.8 Polegadas", category="Eletrônicos", price=599.00, currency="BRL", condition="new"),
+            Product(external_id="ASIN003", platform="amazon", title="Fritadeira Elétrica Airfryer Philips Walita 4.1L", category="Eletroportáteis", price=429.00, currency="BRL", condition="new"),
+            Product(external_id="ASIN004", platform="amazon", title="Aspirador de Pó Robô Xiaomi Robot Vacuum E10", category="Eletroportáteis", price=1099.00, currency="BRL", condition="new"),
         ]
         
         for product in products:
             session.add(product)
         session.flush()  # Para obter os IDs
         
-        logger.info(f"Criados {len(products)} produtos de exemplo")
+        logger.info(f"Criados {len(products)} produtos reais de mercado")
         
-        # Criar histórico de vendas (90 dias até hoje)
+        # Criar histórico de vendas realista (90 dias até hoje)
+        # Modelando: Volume base por faixa de preço, elasticidade de preço e sazonalidade semanal
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         sales_count = 0
+        
         for product in products:
-            base_sales = np.random.randint(5, 50)
+            # Produtos mais baratos têm volume diário base maior; produtos caros têm volume menor
+            if product.price < 500:
+                base_sales = np.random.randint(35, 75)
+            elif product.price < 2500:
+                base_sales = np.random.randint(18, 40)
+            elif product.price < 5000:
+                base_sales = np.random.randint(8, 22)
+            else:
+                base_sales = np.random.randint(3, 12)
+                
             base_price = product.price
+            np.random.seed(product.id * 31 + 42)
             
             for day in range(90):
                 date = today - timedelta(days=90 - 1 - day)
-                quantity = max(0, base_sales + np.random.randint(-10, 15))
-                price = round(base_price * np.random.uniform(0.9, 1.1), 2)
+                day_of_week = date.weekday()
+                
+                # Efeito Sazonal: Fins de semana (Sex, Sáb, Dom) vendem mais
+                weekend_multiplier = 1.30 if day_of_week in [4, 5, 6] else 0.92
+                
+                # Flutuação de preço (promoções pontuais ou aumentos)
+                price_ratio = np.random.uniform(0.92, 1.08)
+                current_price = round(base_price * price_ratio, 2)
+                
+                # Elasticidade de preço: Preço menor gera mais vendas; preço maior reduz vendas
+                price_elasticity = (1.0 - (price_ratio - 1.0) * 1.5)
+                
+                noise = np.random.uniform(0.75, 1.25)
+                quantity = max(1, int(round(base_sales * weekend_multiplier * price_elasticity * noise)))
                 
                 sale = SalesHistory(
                     product_id=product.id,
                     date=date,
                     quantity_sold=quantity,
-                    price_at_date=price,
-                    available_quantity=np.random.randint(10, 200),
+                    price_at_date=current_price,
+                    available_quantity=int(np.random.randint(25, 250)),
                     platform=product.platform,
                 )
                 session.add(sale)

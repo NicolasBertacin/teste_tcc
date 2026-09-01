@@ -240,15 +240,16 @@ class FeatureEngineer:
         if exclude_cols is None:
             exclude_cols = ["date", "product_id", "keyword", "platform", "title", "external_id"]
         
-        # Separar target
-        if target_col not in df.columns:
-            raise ValueError(f"Coluna alvo '{target_col}' não encontrada")
-        
-        y = df[target_col].copy()
+        # Separar target se existir
+        if target_col and target_col in df.columns:
+            y = df[target_col].copy()
+            cols_to_drop_target = [target_col]
+        else:
+            y = None
+            cols_to_drop_target = []
         
         # Remover colunas não-features
-        cols_to_drop = [c for c in exclude_cols if c in df.columns]
-        cols_to_drop.append(target_col)
+        cols_to_drop = [c for c in exclude_cols if c in df.columns] + cols_to_drop_target
         X = df.drop(columns=cols_to_drop, errors="ignore")
         
         # Remover colunas não-numéricas restantes
