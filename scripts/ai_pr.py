@@ -2,17 +2,20 @@ import subprocess
 import sys
 import datetime
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 def run_cmd(cmd):
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding='utf-8')
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding='utf-8', errors='ignore')
     return result.returncode, result.stdout.strip(), result.stderr.strip()
 
 def main():
     task_desc = sys.argv[1] if len(sys.argv) > 1 else 'ai-update'
     
-    # 1. Verificar se há alterações
+    # 1. Verificar se ha alteracoes
     code, status_out, _ = run_cmd('git status --porcelain')
     if not status_out:
-        print('Nenhuma alteração pendente para commit.')
+        print('[INFO] Nenhuma alteracao pendente para commit.')
         return
 
     # 2. Criar nome de branch seguro
@@ -37,9 +40,9 @@ def main():
     # 6. Gerar URL de Pull Request
     pr_url = f'https://github.com/NicolasBertacin/teste_tcc/compare/{branch_name}?expand=1'
     print('\n' + '='*60)
-    print('✅ Alterações enviadas com sucesso!')
-    print(f'🌿 Branch criada: {branch_name}')
-    print(f'🔗 Link para abrir e aprovar o Pull Request no GitHub:')
+    print('>>> Alteracoes enviadas com sucesso!')
+    print(f'>>> Branch criada: {branch_name}')
+    print(f'>>> Link para abrir e aprovar o Pull Request no GitHub:')
     print(pr_url)
     print('='*60 + '\n')
 
