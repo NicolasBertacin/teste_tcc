@@ -25,7 +25,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from sqlalchemy import inspect, text
 from src.database.connection import DatabaseManager
-from src.database.models import Base, Product, SalesHistory, SearchTrend, CollectionLog
+from src.database.models import (
+    Base, Product, SalesHistory, SearchTrend, CollectionLog,
+    MacroIndicator, MarketplaceFeedback, ProductOpportunity
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -116,6 +119,45 @@ def seed_data(manager: DatabaseManager):
             Product(external_id="ASIN002", platform="amazon", title="Kindle Paperwhite 16GB Tela de 6.8 Polegadas", category="Eletrônicos", price=599.00, currency="BRL", condition="new"),
             Product(external_id="ASIN003", platform="amazon", title="Fritadeira Elétrica Airfryer Philips Walita 4.1L", category="Eletroportáteis", price=429.00, currency="BRL", condition="new"),
             Product(external_id="ASIN004", platform="amazon", title="Aspirador de Pó Robô Xiaomi Robot Vacuum E10", category="Eletroportáteis", price=1099.00, currency="BRL", condition="new"),
+
+            # Moda & Vestuário
+            Product(external_id="MLB601", platform="mercadolivre", title="Tênis de Corrida Masculino Nike Revolution 7", category="Moda & Vestuário", price=299.90, currency="BRL", condition="new"),
+            Product(external_id="MLB602", platform="mercadolivre", title="Vestido Midi Feminino Canelado Elegante", category="Moda & Vestuário", price=89.90, currency="BRL", condition="new"),
+            Product(external_id="MLB603", platform="mercadolivre", title="Jaqueta Corta Vento Impermeável Unissex", category="Moda & Vestuário", price=129.90, currency="BRL", condition="new"),
+            Product(external_id="MLB604", platform="mercadolivre", title="Camisa Social Masculina Slim Fit Algodão", category="Moda & Vestuário", price=119.00, currency="BRL", condition="new"),
+
+            # Beleza & Cuidados Pessoais
+            Product(external_id="MLB701", platform="mercadolivre", title="Protetor Solar Facial Anthelios Airlicium FPS 60", category="Beleza & Cosméticos", price=84.90, currency="BRL", condition="new"),
+            Product(external_id="MLB702", platform="mercadolivre", title="Perfume Importado Masculino 1 Million Paco Rabanne 100ml", category="Beleza & Cosméticos", price=489.00, currency="BRL", condition="new"),
+            Product(external_id="MLB703", platform="mercadolivre", title="Sérum Facial Vitamina C 10 Anti-Idade La Roche-Posay", category="Beleza & Cosméticos", price=179.90, currency="BRL", condition="new"),
+            Product(external_id="MLB704", platform="mercadolivre", title="Secador de Cabelo Taiff Vulcan 2500W Profissional", category="Beleza & Cosméticos", price=459.00, currency="BRL", condition="new"),
+
+            # Esportes & Suplementos
+            Product(external_id="MLB801", platform="mercadolivre", title="Whey Protein 100% Pure Integralmédica 900g Baunilha", category="Esportes & Fitness", price=109.90, currency="BRL", condition="new"),
+            Product(external_id="MLB802", platform="mercadolivre", title="Creatina Monohidratada 100% Pura Max Titanium 300g", category="Esportes & Fitness", price=89.90, currency="BRL", condition="new"),
+            Product(external_id="MLB803", platform="mercadolivre", title="Kit 5 Elásticos Extensores Faixas Borracha Musculação", category="Esportes & Fitness", price=49.90, currency="BRL", condition="new"),
+            Product(external_id="MLB804", platform="mercadolivre", title="Tapete Yoga Mat 10mm Antiderrapante com Alça", category="Esportes & Fitness", price=79.90, currency="BRL", condition="new"),
+
+            # Móveis & Decoração
+            Product(external_id="MLB901", platform="mercadolivre", title="Cadeira de Escritório Ergonômica Presidente com Apoio", category="Móveis & Casa", price=649.00, currency="BRL", condition="new"),
+            Product(external_id="MLB902", platform="mercadolivre", title="Mesa Home Office Escrivaninha Computador 120cm", category="Móveis & Casa", price=289.00, currency="BRL", condition="new"),
+            Product(external_id="MLB903", platform="mercadolivre", title="Luminária de Mesa Articulada com Garra LED", category="Móveis & Casa", price=59.90, currency="BRL", condition="new"),
+
+            # Ferramentas & Construção
+            Product(external_id="MLB1001", platform="mercadolivre", title="Parafusadeira e Furadeira de Impacto Bateria 12V Bosch", category="Ferramentas", price=329.00, currency="BRL", condition="new"),
+            Product(external_id="MLB1002", platform="mercadolivre", title="Maleta de Ferramentas Completa 110 Peças Aço Cromo", category="Ferramentas", price=199.90, currency="BRL", condition="new"),
+
+            # Alimentos & Bebidas
+            Product(external_id="MLB1101", platform="mercadolivre", title="Kit 50 Cápsulas de Café Espresso Compatíveis Nespresso", category="Alimentos & Bebidas", price=98.00, currency="BRL", condition="new"),
+            Product(external_id="MLB1102", platform="mercadolivre", title="Azeite de Oliva Chileno Deleyda Extra Virgem 500ml", category="Alimentos & Bebidas", price=54.90, currency="BRL", condition="new"),
+
+            # Automotivo
+            Product(external_id="MLB1201", platform="mercadolivre", title="Suporte de Celular Veicular Magnético MagSafe para Painel", category="Automotivo", price=45.90, currency="BRL", condition="new"),
+            Product(external_id="MLB1202", platform="mercadolivre", title="Compressor de Ar Portátil Digital Recarregável Pneus 12V", category="Automotivo", price=139.90, currency="BRL", condition="new"),
+
+            # Livros
+            Product(external_id="ASIN101", platform="amazon", title="Livro A Psicologia Financeira - Morgan Housel", category="Livros", price=42.90, currency="BRL", condition="new"),
+            Product(external_id="ASIN102", platform="amazon", title="Livro Hábitos Atômicos - James Clear", category="Livros", price=49.90, currency="BRL", condition="new"),
         ]
         
         for product in products:
@@ -194,18 +236,92 @@ def seed_data(manager: DatabaseManager):
         
         logger.info(f"Criados {trends_count} registros de tendências")
         
+        # Criar indicadores macroeconômicos (Dólar, Selic, Feriados)
+        from src.collectors.macro_collector import MacroCollector
+        macro_col = MacroCollector()
+        holidays = macro_col.fetch_holidays_brasilapi(today.year)
+        macro_count = 0
+
+        for h in holidays:
+            try:
+                h_dt = datetime.strptime(h["date"], "%Y-%m-%d")
+                m_ind = MacroIndicator(
+                    date=h_dt,
+                    indicator_type="holiday",
+                    value=1.0,
+                    label=f"Feriado: {h['name']}",
+                    source=h.get("source", "brasilapi")
+                )
+                session.add(m_ind)
+                macro_count += 1
+            except Exception:
+                continue
+
+        # Inserir série diária de Dólar PTAX e Selic
+        dolar_series = macro_col.fetch_bcb_series(10813, last_n=90)
+        for d in dolar_series:
+            try:
+                d_dt = datetime.strptime(d["date"], "%Y-%m-%d")
+                m_ind = MacroIndicator(
+                    date=d_dt,
+                    indicator_type="dolar_ptax",
+                    value=d["value"],
+                    label="Dólar Comercial PTAX Venda",
+                    source=d.get("source", "bcb_sgs")
+                )
+                session.add(m_ind)
+                macro_count += 1
+            except Exception:
+                continue
+
+        # Inserir Selic
+        m_selic = MacroIndicator(
+            date=today,
+            indicator_type="selic",
+            value=10.50,
+            label="Taxa Selic Meta (% a.a.)",
+            source="bcb_sgs"
+        )
+        session.add(m_selic)
+        macro_count += 1
+
+        logger.info(f"Criados {macro_count} registros de indicadores macroeconômicos e feriados")
+
+        # Criar métricas de feedback de marketplace para cada produto
+        from src.collectors.marketplace_public_collector import MarketplacePublicCollector
+        mkt_col = MarketplacePublicCollector()
+        feedback_count = 0
+
+        for p in products:
+            q_info = mkt_col.fetch_questions(p.external_id)
+            r_info = mkt_col.fetch_reviews(p.external_id)
+            fb = MarketplaceFeedback(
+                product_id=p.id,
+                date=today,
+                platform=p.platform,
+                questions_count=q_info["total_questions"],
+                unanswered_questions=q_info["unanswered"],
+                average_rating=r_info["rating_average"],
+                reviews_count=r_info["total_reviews"],
+                trend_term=p.category
+            )
+            session.add(fb)
+            feedback_count += 1
+
+        logger.info(f"Criados {feedback_count} registros de feedback público de marketplace")
+
         # Log da coleta
         log = CollectionLog(
             collector_name="seed_script",
             endpoint="seed_data",
             started_at=datetime.utcnow(),
             finished_at=datetime.utcnow(),
-            records_collected=len(products) + sales_count + trends_count,
+            records_collected=len(products) + sales_count + trends_count + macro_count + feedback_count,
             success=True,
         )
         session.add(log)
     
-    logger.info("Dados de exemplo inseridos com sucesso!")
+    logger.info("Dados de exemplo e novos indicadores inseridos com sucesso!")
 
 
 def sync_up_to_today(manager: DatabaseManager) -> int:

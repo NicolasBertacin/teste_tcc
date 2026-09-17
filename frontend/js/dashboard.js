@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedCategory: 'Celulares',
         selectedHorizon: 7,
         rankingData: null,
-        user: null
+        user: null,
+        mainChartInstance: null,
+        specificChartInstance: null
     };
 
     // ==========================================
@@ -61,6 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Listener de redimensionamento de janela para manter gráficos perfeitos
+        window.addEventListener('resize', () => {
+            if (dashboardState.mainChartInstance) dashboardState.mainChartInstance.resize();
+            if (dashboardState.specificChartInstance) dashboardState.specificChartInstance.resize();
+        });
     }
 
     function switchTab(tabId) {
@@ -76,14 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
             content.classList.toggle('active', content.id === `tab-${tabId}`);
         });
 
-        // Recarregar dados específicos da aba
-        if (tabId === 'ia-preditiva') {
-            loadIaPreditivaTab();
-        } else if (tabId === 'ranking') {
-            loadRankingTab();
-        } else if (tabId === 'analise-especifica') {
-            loadAnaliseEspecificaTab();
-        }
+        // Forçar renderização com timeout para garantir que o container esteja visível
+        setTimeout(() => {
+            if (tabId === 'ia-preditiva') {
+                loadIaPreditivaTab();
+                if (dashboardState.mainChartInstance) dashboardState.mainChartInstance.resize();
+            } else if (tabId === 'ranking') {
+                loadRankingTab();
+            } else if (tabId === 'analise-especifica') {
+                loadAnaliseEspecificaTab();
+                if (dashboardState.specificChartInstance) dashboardState.specificChartInstance.resize();
+            }
+        }, 80);
     }
 
     // ==========================================
@@ -106,6 +118,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (catFilter) {
             catFilter.innerHTML = '<option value="">Todas as Categorias</option>' + 
                 cats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            catFilter.addEventListener('change', async (e) => {
+                const selectedCat = e.target.value;
+                const filteredTopSales = await window.api.products.getTopSales(5, selectedCat);
+                renderMaisVendidosList(filteredTopSales);
+                const featured = filteredTopSales[0] || dashboardState.products.find(p => !selectedCat || p.category === selectedCat) || dashboardState.products[0];
+                if (featured) {
+                    const history = await window.api.products.getHistory(featured.id, 7);
+                    renderMainSalesChart(history, featured);
+                }
+            });
         }
 
         if (rankingCatDropdown) {
@@ -118,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadProducts() {
         try {
-            const data = await window.api.products.list({ limit: 50 });
+            const data = await window.api.products.list({ limit: 100 });
             dashboardState.products = data.items || [];
             if (dashboardState.products.length > 0 && !dashboardState.selectedProduct) {
                 dashboardState.selectedProduct = dashboardState.products[0];
@@ -129,15 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // ABA 1: IA PREDITIVA (Images 2 & 4)
+    // ABA 1: IA PREDITIVA (Gráfico de Vendas & Mais Vendidos)
     // ==========================================
     async function loadIaPreditivaTab() {
         try {
-            // 1. Carregar lista dos mais vendidos atualmente
             const topSales = await window.api.products.getTopSales(5);
             renderMaisVendidosList(topSales);
 
-            // 2. Carregar série temporal para o gráfico principal
             const featuredProd = topSales[0] || dashboardState.products[0];
             if (featuredProd) {
                 const history = await window.api.products.getHistory(featuredProd.id, 7);
@@ -153,12 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         if (!items || items.length === 0) {
-            container.innerHTML = '<p class="empty-msg">Nenhum dado disponível.</p>';
+            container.innerHTML = '<p class="empty-msg" style="color: #64748b; padding: 15px;">Nenhum produto encontrado nesta categoria.</p>';
             return;
         }
 
         container.innerHTML = items.map(item => `
-            <div class="ranking-row" data-id="${item.id}">
+            <div class="ranking-row" data-id="${item.id}" style="cursor: pointer;">
                 <div class="ranking-row-left">
                     <span class="ranking-num">${item.rank}.</span>
                     <span class="ranking-title">${item.title}</span>
@@ -169,122 +190,144 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+
+        // Clicar em um item da lista atualiza o gráfico principal
+        container.querySelectorAll('.ranking-row[data-id]').forEach(row => {
+            row.addEventListener('click', async () => {
+                const pid = parseInt(row.getAttribute('data-id'));
+                const prod = items.find(i => i.id === pid) || dashboardState.products.find(p => p.id === pid);
+                if (prod) {
+                    const history = await window.api.products.getHistory(prod.id, 7);
+                    renderMainSalesChart(history, prod);
+                }
+            });
+        });
     }
 
     function renderMainSalesChart(history, product) {
         const canvas = document.getElementById('mainSalesChartCanvas');
         if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.parentElement.clientWidth;
-        const height = canvas.height = 240;
+        // Ocultar tooltip HTML estático antigo se existir
+        const oldTooltip = document.getElementById('chartTooltip');
+        if (oldTooltip) oldTooltip.style.display = 'none';
 
-        ctx.clearRect(0, 0, width, height);
-
-        // Dias da semana
-        const daysLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        // Preparar Labels e Valores dos últimos 7 dias
+        let labels = [];
         let values = [];
 
-        if (history && history.length >= 7) {
-            values = history.slice(-7).map(h => h.quantity_sold);
+        if (history && history.length > 0) {
+            const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            labels = history.map(h => {
+                const parts = h.date.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    return `${daysOfWeek[d.getDay()]} (${parts[2]}/${parts[1]})`;
+                }
+                return h.date;
+            });
+            values = history.map(h => h.quantity_sold);
         } else {
+            labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
             values = [180, 290, 230, 80, 200, 210, 175];
         }
 
-        const maxVal = 400;
-        const padLeft = 45;
-        const padRight = 30;
-        const padTop = 30;
-        const padBottom = 35;
+        const prodTitle = product ? product.title : 'Vendas Recentes';
+        const unitPrice = product ? product.price : 100.0;
 
-        const chartW = width - padLeft - padRight;
-        const chartH = height - padTop - padBottom;
-
-        // Desenhar Grid Horizontal (0, 100, 200, 300, 400)
-        ctx.strokeStyle = 'rgba(0, 150, 255, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.fillStyle = '#8da2bd';
-        ctx.font = '11px Plus Jakarta Sans';
-        ctx.textAlign = 'right';
-
-        const yLevels = [0, 100, 200, 300, 400];
-        yLevels.forEach(lvl => {
-            const y = padTop + chartH - (lvl / maxVal) * chartH;
-            ctx.beginPath();
-            ctx.moveTo(padLeft, y);
-            ctx.lineTo(width - padRight, y);
-            ctx.stroke();
-            ctx.fillText(lvl.toString(), padLeft - 10, y + 4);
-        });
-
-        // Coordenadas dos pontos
-        const points = values.map((val, i) => {
-            const x = padLeft + (i / (values.length - 1)) * chartW;
-            const y = padTop + chartH - (Math.min(val, maxVal) / maxVal) * chartH;
-            return { x, y, val, day: daysLabels[i] };
-        });
-
-        // Desenhar Labels X
-        ctx.textAlign = 'center';
-        points.forEach(p => {
-            ctx.fillText(p.day, p.x, height - 10);
-        });
-
-        // Desenhar Área com Gradiente
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
+        // Destruir instância anterior do Chart.js se existir
+        if (dashboardState.mainChartInstance) {
+            dashboardState.mainChartInstance.destroy();
+            dashboardState.mainChartInstance = null;
         }
-        ctx.lineTo(points[points.length - 1].x, padTop + chartH);
-        ctx.lineTo(points[0].x, padTop + chartH);
-        ctx.closePath();
 
-        const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
-        grad.addColorStop(0, 'rgba(0, 180, 216, 0.25)');
-        grad.addColorStop(1, 'rgba(0, 180, 216, 0.0)');
-        ctx.fillStyle = grad;
-        ctx.fill();
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+        gradient.addColorStop(0, 'rgba(0, 212, 255, 0.45)');
+        gradient.addColorStop(1, 'rgba(0, 119, 182, 0.02)');
 
-        // Desenhar Linha Azul Brilhante
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Desenhar Pontos Circulares
-        points.forEach((p, idx) => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00d4ff';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            ctx.strokeStyle = '#07172b';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+        // Criar novo gráfico Chart.js
+        dashboardState.mainChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `${prodTitle} (Unidades Vendidas)`,
+                    data: values,
+                    borderColor: '#00e5ff',
+                    borderWidth: 3,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.38,
+                    pointBackgroundColor: '#00f0ff',
+                    pointBorderColor: '#07172b',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#ffffff',
+                    pointHoverBorderColor: '#00d4ff',
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#94a3b8',
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                            boxWidth: 14
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(7, 23, 43, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#38bdf8',
+                        borderColor: '#00d4ff',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { family: 'Plus Jakarta Sans', size: 13, weight: '700' },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                        callbacks: {
+                            label: function(context) {
+                                const qty = context.parsed.y;
+                                const revenue = (qty * unitPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                return [
+                                    `  Volume: ${qty} unidades vendidas`,
+                                    `  Faturamento: ${revenue}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                        ticks: {
+                            color: '#8da2bd',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: {
+                            color: '#8da2bd',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
+                            callback: function(val) { return val + ' un'; }
+                        }
+                    }
+                }
+            }
         });
-
-        // Atualizar Tooltip em Destaque (ex: ponto mais alto)
-        const maxPoint = points.reduce((prev, curr) => (curr.val > prev.val) ? curr : prev, points[0]);
-        const tooltipEl = document.getElementById('chartTooltip');
-        if (tooltipEl) {
-            const prodTitle = product ? product.title.split(' ')[0] + ' ' + (product.title.split(' ')[1] || '') : 'PRODUTO DESTAQUE';
-            const prodPrice = product ? `R$ ${product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 10.169,10';
-            tooltipEl.innerHTML = `
-                <div class="tooltip-title">${prodTitle.toUpperCase()}</div>
-                <div class="tooltip-price">${prodPrice}</div>
-                <div class="tooltip-sold">${maxPoint.val * 3} VENDIDOS</div>
-            `;
-            tooltipEl.style.left = `${maxPoint.x - 70}px`;
-            tooltipEl.style.top = `${maxPoint.y - 65}px`;
-        }
     }
 
     // ==========================================
@@ -294,11 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnExportExcel) {
         btnExportExcel.addEventListener('click', async () => {
             try {
-                window.showToast('Gerando relatório consolidado...', 'info');
+                window.showToast('Gerando relatório consolidado de projeções...', 'info');
                 const summary = await window.api.forecast.summary(30);
 
-                let csvContent = 'data:text/csv;charset=utf-8,';
-                csvContent += 'ID;Produto;Categoria;Preco Unitario;Demanda 30 Dias;Faturamento Projetado;Media Diaria;Estoque Recomendado\n';
+                let csvContent = '\uFEFF'; // UTF-8 BOM para abrir perfeitamente no Excel
+                csvContent += 'ID;Produto;Categoria;Preco Unitario;Demanda 30 Dias (un);Faturamento Projetado (R$);Media Diaria (un);Margem Confianca Maxima\n';
 
                 summary.items.forEach(item => {
                     const row = [
@@ -314,10 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     csvContent += row + '\n';
                 });
 
-                const encodedUri = encodeURI(csvContent);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                link.setAttribute('href', encodedUri);
-                link.setAttribute('download', `trendecommerce_relatorio_previsoes_30d.csv`);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `trendecommerce_projecoes_demanda_30d.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -330,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // ABA 2: RANKING PRODUTOS (Images 1 & 3)
+    // ABA 2: RANKING PRODUTOS (Top 7 Geral & Top 5 Categoria)
     // ==========================================
     async function loadRankingTab() {
         try {
@@ -349,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         if (!items || items.length === 0) {
-            container.innerHTML = '<p class="empty-msg">Carregando projeções...</p>';
+            container.innerHTML = '<p class="empty-msg" style="color:#64748b; padding:15px;">Carregando projeções...</p>';
             return;
         }
 
@@ -370,18 +414,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('top5CategoryList');
         if (!container) return;
 
-        const items = (byCategoryData && byCategoryData[selectedCategory]) 
-            ? byCategoryData[selectedCategory] 
-            : [];
+        let items = (byCategoryData && byCategoryData[selectedCategory]) ? byCategoryData[selectedCategory] : [];
 
         if (items.length === 0) {
-            // Fallback se não houver itens na categoria selecionada
             const firstCat = Object.keys(byCategoryData || {})[0];
             if (firstCat && byCategoryData[firstCat]) {
-                return renderTop5ByCategory(byCategoryData, firstCat);
+                dashboardState.selectedCategory = firstCat;
+                items = byCategoryData[firstCat];
+            } else {
+                container.innerHTML = '<p class="empty-msg" style="color:#64748b; padding:15px;">Nenhum produto nesta categoria.</p>';
+                return;
             }
-            container.innerHTML = '<p class="empty-msg">Nenhum produto nesta categoria.</p>';
-            return;
         }
 
         container.innerHTML = items.slice(0, 5).map(item => `
@@ -408,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // ABA 3: ANÁLISE ESPECÍFICA (Image 5)
+    // ABA 3: ANÁLISE ESPECÍFICA (XGBoost com Faixas de Confiança)
     // ==========================================
     async function loadAnaliseEspecificaTab() {
         setupProductSearch();
@@ -434,15 +477,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const matches = dashboardState.products.filter(p => 
                 p.title.toLowerCase().includes(query) || (p.category && p.category.toLowerCase().includes(query))
-            ).slice(0, 6);
+            ).slice(0, 8);
 
             if (resultsContainer) {
                 if (matches.length === 0) {
-                    resultsContainer.innerHTML = '<div class="search-item">Nenhum produto correspondente</div>';
+                    resultsContainer.innerHTML = '<div class="search-item" style="color: #94a3b8;">Nenhum produto correspondente</div>';
                 } else {
                     resultsContainer.innerHTML = matches.map(p => `
                         <div class="search-item" data-id="${p.id}">
-                            <span class="search-item-title">${p.title}</span>
+                            <div>
+                                <span class="search-item-title">${p.title}</span>
+                                <span style="font-size: 11px; color: #64748b; display: block;">${p.category || 'Geral'}</span>
+                            </div>
                             <span class="search-item-price">R$ ${p.price.toFixed(2)}</span>
                         </div>
                     `).join('');
@@ -497,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stockEl = document.getElementById('kpiStockBuffer');
 
         try {
-            window.showToast('Calculando projeção com XGBoost...', 'info', 2000);
+            window.showToast('Calculando projeção com XGBoost...', 'info', 1800);
             const data = await window.api.forecast.predict(productId, horizonDays);
 
             if (titleEl) titleEl.textContent = data.product_title.toUpperCase();
@@ -517,106 +563,139 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('specificChartCanvas');
         if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.parentElement.clientWidth;
-        const height = canvas.height = 300;
-
-        ctx.clearRect(0, 0, width, height);
+        // Ocultar tooltip HTML antigo se houver
+        const oldSpecificTooltip = document.getElementById('specificChartTooltip');
+        if (oldSpecificTooltip) oldSpecificTooltip.style.display = 'none';
 
         const days = forecastData.days;
-        const values = days.map(d => d.predicted_demand);
-        const maxVal = Math.max(400, ...values.map(v => v * 1.3));
+        const labels = days.map(d => `${d.day_name.substring(0, 3)} (${d.date.substring(5)})`);
+        const predictedValues = days.map(d => d.predicted_demand);
+        const maxConfidenceValues = days.map(d => d.confidence_max);
+        const minConfidenceValues = days.map(d => d.confidence_min);
+        const unitPrice = forecastData.unit_price;
 
-        const padLeft = 45;
-        const padRight = 30;
-        const padTop = 40;
-        const padBottom = 40;
-
-        const chartW = width - padLeft - padRight;
-        const chartH = height - padTop - padBottom;
-
-        // Grid Horizontal
-        ctx.strokeStyle = 'rgba(0, 150, 255, 0.15)';
-        ctx.lineWidth = 1;
-        ctx.fillStyle = '#8da2bd';
-        ctx.font = '12px Plus Jakarta Sans';
-        ctx.textAlign = 'right';
-
-        const yLevels = [0, 100, 200, 300, 400];
-        yLevels.forEach(lvl => {
-            const y = padTop + chartH - (lvl / maxVal) * chartH;
-            ctx.beginPath();
-            ctx.moveTo(padLeft, y);
-            ctx.lineTo(width - padRight, y);
-            ctx.stroke();
-            ctx.fillText(lvl.toString(), padLeft - 10, y + 4);
-        });
-
-        // Pontos X, Y
-        const points = days.map((d, i) => {
-            const x = padLeft + (i / Math.max(1, days.length - 1)) * chartW;
-            const y = padTop + chartH - (d.predicted_demand / maxVal) * chartH;
-            return { x, y, d };
-        });
-
-        // Labels X
-        ctx.textAlign = 'center';
-        points.forEach((p, idx) => {
-            const label = days.length <= 7 ? p.d.day_name.substring(0, 3) : p.d.date.substring(0, 5);
-            ctx.fillText(label, p.x, height - 12);
-        });
-
-        // Área Preenchida com Gradiente
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
+        // Destruir instância anterior do Chart.js
+        if (dashboardState.specificChartInstance) {
+            dashboardState.specificChartInstance.destroy();
+            dashboardState.specificChartInstance = null;
         }
-        ctx.lineTo(points[points.length - 1].x, padTop + chartH);
-        ctx.lineTo(points[0].x, padTop + chartH);
-        ctx.closePath();
 
-        const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
-        grad.addColorStop(0, 'rgba(0, 180, 216, 0.35)');
-        grad.addColorStop(1, 'rgba(0, 180, 216, 0.02)');
-        ctx.fillStyle = grad;
-        ctx.fill();
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(0, 229, 255, 0.40)');
+        gradient.addColorStop(1, 'rgba(0, 119, 182, 0.02)');
 
-        // Linha Principal
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3.5;
-        ctx.stroke();
-
-        // Círculos
-        points.forEach((p) => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = '#00d4ff';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            ctx.strokeStyle = '#07172b';
-            ctx.lineWidth = 2.5;
-            ctx.stroke();
+        dashboardState.specificChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Demanda Prevista (XGBoost)',
+                        data: predictedValues,
+                        borderColor: '#00f0ff',
+                        borderWidth: 3.5,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#00f0ff',
+                        pointBorderColor: '#07172b',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#00d4ff'
+                    },
+                    {
+                        label: 'Faixa de Confiança Máxima',
+                        data: maxConfidenceValues,
+                        borderColor: 'rgba(56, 189, 248, 0.5)',
+                        borderWidth: 1.5,
+                        borderDash: [5, 5],
+                        backgroundColor: 'transparent',
+                        fill: false,
+                        tension: 0.35,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    },
+                    {
+                        label: 'Faixa de Confiança Mínima',
+                        data: minConfidenceValues,
+                        borderColor: 'rgba(0, 119, 182, 0.5)',
+                        borderWidth: 1.5,
+                        borderDash: [5, 5],
+                        backgroundColor: 'transparent',
+                        fill: false,
+                        tension: 0.35,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#cbd5e1',
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                            boxWidth: 14
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(7, 23, 43, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#38bdf8',
+                        borderColor: '#00d4ff',
+                        borderWidth: 1,
+                        padding: 14,
+                        cornerRadius: 8,
+                        titleFont: { family: 'Plus Jakarta Sans', size: 13, weight: '700' },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 12, weight: '500' },
+                        callbacks: {
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const dayData = days[index];
+                                const dsLabel = context.dataset.label || '';
+                                if (dsLabel.includes('Demanda Prevista')) {
+                                    const rev = (dayData.predicted_demand * unitPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    return [
+                                        `  🎯 Demanda Prevista: ${dayData.predicted_demand} un`,
+                                        `  💵 Faturamento Estimado: ${rev}`,
+                                        `  📊 Intervalo [Min - Max]: [${dayData.confidence_min} - ${dayData.confidence_max}] un`
+                                    ];
+                                }
+                                return null;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.06)' },
+                        ticks: {
+                            color: '#8da2bd',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: {
+                            color: '#8da2bd',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
+                            callback: function(val) { return val + ' un'; }
+                        }
+                    }
+                }
+            }
         });
-
-        // Tooltip Central/Pico (matching image 5)
-        const peakPoint = points[1] || points[0];
-        const specificTooltip = document.getElementById('specificChartTooltip');
-        if (specificTooltip) {
-            specificTooltip.innerHTML = `
-                <div class="tooltip-badge">+5%</div>
-                <div class="tooltip-main-text">AUMENTO DE ${peakPoint.d.predicted_demand} VENDAS</div>
-            `;
-            specificTooltip.style.left = `${peakPoint.x - 75}px`;
-            specificTooltip.style.top = `${peakPoint.y - 65}px`;
-        }
     }
 });

@@ -8,9 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 
-from src.api.routers import auth_router, products_router, forecast_router, trends_router
+from src.api.routers import auth_router, products_router, forecast_router, trends_router, opportunity_router
 from src.api.dependencies import get_db_instance, get_password_hash
 from src.database.models import Base, User
+
 
 
 @asynccontextmanager
@@ -73,6 +74,7 @@ app.include_router(auth_router, prefix=API_PREFIX)
 app.include_router(products_router, prefix=API_PREFIX)
 app.include_router(forecast_router, prefix=API_PREFIX)
 app.include_router(trends_router, prefix=API_PREFIX)
+app.include_router(opportunity_router, prefix=API_PREFIX)
 
 
 # ==========================================
