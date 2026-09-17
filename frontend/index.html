@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendEcommerce - Sistema Preditivo de Vendas e Inteligência de Dados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Background Futuristic Circuit and HUD elements -->
+    <div class="background-effects">
+        <div class="hud-circle hud-circle-left"></div>
+        <div class="hud-circle hud-circle-right"></div>
+        <div class="hud-circle hud-circle-center"></div>
+        <div class="circuit-grid"></div>
+        <canvas id="circuit-canvas"></canvas>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <main class="main-wrapper">
+        <!-- Logo Header -->
+        <header class="logo-header">
+            <div class="logo-icon-wrap">
+                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Outer Glowing Rings -->
+                    <circle cx="50" cy="50" r="44" stroke="#00b4d8" stroke-width="2" stroke-dasharray="8 6" opacity="0.75" />
+                    <circle cx="50" cy="50" r="36" stroke="#0077b6" stroke-width="1.5" opacity="0.6" />
+                    <circle cx="50" cy="28" r="1.5" fill="#00d4ff" />
+                    
+                    <!-- Nodes & Circuits -->
+                    <circle cx="20" cy="50" r="3.5" fill="#00d4ff" />
+                    <circle cx="80" cy="50" r="3.5" fill="#00d4ff" />
+                    <circle cx="50" cy="14" r="2.5" fill="#48cae4" />
+                    <circle cx="50" cy="86" r="2.5" fill="#48cae4" />
+                    <line x1="23" y1="50" x2="33" y2="50" stroke="#00b4d8" stroke-width="1.8" />
+                    <line x1="67" y1="50" x2="77" y2="50" stroke="#00b4d8" stroke-width="1.8" />
+                    
+                    <!-- Stylized "T" and Upward Trend Arrow -->
+                    <path d="M34 33 H66 M50 33 V67" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M35 62 L48 48 L58 56 L72 38" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M64 38 H72 V46" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    
+                    <!-- Inner Tech Dots -->
+                    <circle cx="35" cy="62" r="3" fill="#38bdf8" />
+                    <circle cx="48" cy="48" r="3" fill="#38bdf8" />
+                    <circle cx="58" cy="56" r="3" fill="#38bdf8" />
+                    <circle cx="72" cy="38" r="3.5" fill="#00f0ff" />
+                </svg>
+            </div>
+            <div class="logo-text-wrap">
+                <h1 class="logo-title"><span class="logo-accent">Trend</span><span class="logo-main">Ecommerce</span></h1>
+                <p class="logo-subtitle">SISTEMA PREDITIVO DE VENDAS E INTELIGÊNCIA DE DADOS</p>
+            </div>
+        </header>
+
+        <!-- Main Interactive Auth Card Container -->
+        <section class="auth-card" id="authCard">
+            
+            <!-- Left Banner / Sidebar Panel -->
+            <div class="auth-side-panel" id="sidePanel">
+                <!-- State: Login Active -->
+                <div class="side-content active" id="side-login">
+                    <h2 class="side-title">BEM-VINDO<br>DE VOLTA!</h2>
+                    <div class="side-action-wrap">
+                        <p class="side-caption">Ainda não tem conta?</p>
+                        <button type="button" class="btn-side" id="btnGoToRegister">CADASTRAR</button>
+                    </div>
+                </div>
+
+                <!-- State: Register Active -->
+                <div class="side-content" id="side-register">
+                    <h2 class="side-title">ACESSE SUA<br>CONTA</h2>
+                    <div class="side-action-wrap">
+                        <p class="side-caption">Já possui conta?</p>
+                        <button type="button" class="btn-side" id="btnGoToLogin">ENTRAR</button>
+                    </div>
+                </div>
+
+                <!-- State: Recovery Active -->
+                <div class="side-content" id="side-recovery">
+                    <h2 class="side-title">RECUPERE<br>SUA SENHA</h2>
+                    <div class="side-action-wrap">
+                        <p class="side-caption">Lembrou da senha?</p>
+                        <button type="button" class="btn-side" id="btnRecoveryBackToLogin">ENTRAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="auth-form-panel">
+                
+                <!-- VIEW 1: LOGIN (Image 2) -->
+                <form class="auth-form active" id="formLogin" novalidate>
+                    <div class="form-group">
+                        <label for="loginEmail" class="form-label">EMAIL:</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                class="form-input" 
+                                placeholder="Digite seu email..." 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                        <span class="field-error" id="loginEmailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword" class="form-label">SENHA:</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                class="form-input" 
+                                placeholder="Digite sua senha..." 
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="loginPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error" id="loginPasswordError"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="btnSubmitLogin">
+                            <span class="btn-text">ENTRAR</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+
+                    <div class="form-footer">
+                        <p class="forgot-text">
+                            Esqueceu a senha?<br>
+                            <button type="button" class="btn-link" id="linkForgotPassword">Clique aqui.</button>
+                        </p>
+                    </div>
+                </form>
+
+                <!-- VIEW 2: CADASTRO / REGISTER (Image 1) -->
+                <form class="auth-form" id="formRegister" novalidate>
+                    <div class="form-group">
+                        <label for="registerEmail" class="form-label">EMAIL:</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="registerEmail" 
+                                class="form-input" 
+                                placeholder="Digite seu email..." 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                        <span class="field-error" id="registerEmailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword" class="form-label">SENHA:</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input 
+                                type="password" 
+                                id="registerPassword" 
+                                class="form-input" 
+                                placeholder="Digite sua senha..." 
+                                required
+                                autocomplete="new-password"
+                            >
+                            <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="registerPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error" id="registerPasswordError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerConfirmPassword" class="form-label">SENHA:</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input 
+                                type="password" 
+                                id="registerConfirmPassword" 
+                                class="form-input" 
+                                placeholder="Digite sua senha..." 
+                                required
+                                autocomplete="new-password"
+                            >
+                            <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="registerConfirmPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error" id="registerConfirmPasswordError"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="btnSubmitRegister">
+                            <span class="btn-text">CADASTRAR</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- VIEW 3: RECUPERAÇÃO - ETAPA 1 (EMAIL) (Image 3) -->
+                <form class="auth-form" id="formRecoveryStep1" novalidate>
+                    <h3 class="form-banner-text">ENVIAREMOS UM CÓDIGO<br>PARA SEU EMAIL</h3>
+
+                    <div class="form-group mt-large">
+                        <label for="recoveryEmail" class="form-label">EMAIL:</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="recoveryEmail" 
+                                class="form-input" 
+                                placeholder="Digite seu email..." 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                        <span class="field-error" id="recoveryEmailError"></span>
+                    </div>
+
+                    <div class="form-actions mt-xlarge">
+                        <button type="submit" class="btn-primary" id="btnSubmitRecoveryEmail">
+                            <span class="btn-text">ENVIAR</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- VIEW 4: RECUPERAÇÃO - ETAPA 2 (DIGITE SEU CÓDIGO) (Image 5) -->
+                <form class="auth-form" id="formRecoveryStep2" novalidate>
+                    <h3 class="form-banner-text-subtle">DIGITE SEU CÓDIGO:</h3>
+
+                    <div class="otp-container" id="otpContainer">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp1" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp2" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp3" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp4" autocomplete="off">
+                    </div>
+                    <span class="field-error text-center" id="otpError"></span>
+
+                    <div class="otp-resend">
+                        <span class="otp-info">Não recebeu o código? </span>
+                        <button type="button" class="btn-link" id="btnResendCode">Reenviar código</button>
+                    </div>
+
+                    <div class="form-actions mt-large">
+                        <button type="submit" class="btn-primary" id="btnSubmitOtp">
+                            <span class="btn-text">ENVIAR</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- VIEW 5: RECUPERAÇÃO - ETAPA 3 (NOVA SENHA) (Image 4) -->
+                <form class="auth-form" id="formRecoveryStep3" novalidate>
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label">SENHA:</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input 
+                                type="password" 
+                                id="newPassword" 
+                                class="form-input" 
+                                placeholder="Digite sua senha..." 
+                                required
+                                autocomplete="new-password"
+                            >
+                            <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="newPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error" id="newPasswordError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmNewPassword" class="form-label">SENHA:</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input 
+                                type="password" 
+                                id="confirmNewPassword" 
+                                class="form-input" 
+                                placeholder="Digite sua senha..." 
+                                required
+                                autocomplete="new-password"
+                            >
+                            <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="confirmNewPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="field-error" id="confirmNewPasswordError"></span>
+                    </div>
+
+                    <div class="form-actions mt-large">
+                        <button type="submit" class="btn-primary" id="btnSubmitNewPassword">
+                            <span class="btn-text">LOGIN</span>
+                            <span class="btn-spinner hidden"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- VIEW 6: LOGGED IN DASHBOARD PREVIEW STATE -->
+                <div class="auth-success-view" id="authSuccessView">
+                    <div class="success-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="success-title">ACESSO AUTORIZADO!</h3>
+                    <p class="success-message">Conectado ao núcleo <strong>TrendEcommerce AI</strong>.</p>
+                    <div class="user-session-card">
+                        <p class="session-email-label">Usuário Ativo:</p>
+                        <p class="session-email-val" id="loggedUserEmail">admin@trendecommerce.com</p>
+                        <span class="session-status-badge">SISTEMA ONLINE</span>
+                    </div>
+                    <button type="button" class="btn-primary" id="btnLogout">
+                        <span class="btn-text">ENCERRAR SESSÃO</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>© 2026 TrendEcommerce AI. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
