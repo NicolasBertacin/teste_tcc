@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendEcommerce - Sistema Preditivo de Vendas e Inteligência de Dados</title>
+    <title>TrendCommerce AI - Sistema Preditivo de Vendas e Inteligência de Dados</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -22,30 +22,26 @@
     <!-- Notification Toast Container -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-    <main class="main-wrapper">
+    <!-- ==========================================================================
+         SEÇÃO 1: AUTENTICAÇÃO (LOGIN / CADASTRO / RECUPERAÇÃO DE SENHA)
+         ========================================================================== -->
+    <main class="main-wrapper" id="authSection">
         <!-- Logo Header -->
         <header class="logo-header">
             <div class="logo-icon-wrap">
                 <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Outer Glowing Rings -->
                     <circle cx="50" cy="50" r="44" stroke="#00b4d8" stroke-width="2" stroke-dasharray="8 6" opacity="0.75" />
                     <circle cx="50" cy="50" r="36" stroke="#0077b6" stroke-width="1.5" opacity="0.6" />
                     <circle cx="50" cy="28" r="1.5" fill="#00d4ff" />
-                    
-                    <!-- Nodes & Circuits -->
                     <circle cx="20" cy="50" r="3.5" fill="#00d4ff" />
                     <circle cx="80" cy="50" r="3.5" fill="#00d4ff" />
                     <circle cx="50" cy="14" r="2.5" fill="#48cae4" />
                     <circle cx="50" cy="86" r="2.5" fill="#48cae4" />
                     <line x1="23" y1="50" x2="33" y2="50" stroke="#00b4d8" stroke-width="1.8" />
                     <line x1="67" y1="50" x2="77" y2="50" stroke="#00b4d8" stroke-width="1.8" />
-                    
-                    <!-- Stylized "T" and Upward Trend Arrow -->
                     <path d="M34 33 H66 M50 33 V67" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M35 62 L48 48 L58 56 L72 38" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M64 38 H72 V46" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
-                    
-                    <!-- Inner Tech Dots -->
                     <circle cx="35" cy="62" r="3" fill="#38bdf8" />
                     <circle cx="48" cy="48" r="3" fill="#38bdf8" />
                     <circle cx="58" cy="56" r="3" fill="#38bdf8" />
@@ -60,10 +56,8 @@
 
         <!-- Main Interactive Auth Card Container -->
         <section class="auth-card" id="authCard">
-            
             <!-- Left Banner / Sidebar Panel -->
             <div class="auth-side-panel" id="sidePanel">
-                <!-- State: Login Active -->
                 <div class="side-content active" id="side-login">
                     <h2 class="side-title">BEM-VINDO<br>DE VOLTA!</h2>
                     <div class="side-action-wrap">
@@ -72,7 +66,6 @@
                     </div>
                 </div>
 
-                <!-- State: Register Active -->
                 <div class="side-content" id="side-register">
                     <h2 class="side-title">ACESSE SUA<br>CONTA</h2>
                     <div class="side-action-wrap">
@@ -81,7 +74,6 @@
                     </div>
                 </div>
 
-                <!-- State: Recovery Active -->
                 <div class="side-content" id="side-recovery">
                     <h2 class="side-title">RECUPERE<br>SUA SENHA</h2>
                     <div class="side-action-wrap">
@@ -93,20 +85,12 @@
 
             <!-- Right Form Panel -->
             <div class="auth-form-panel">
-                
-                <!-- VIEW 1: LOGIN (Image 2) -->
+                <!-- VIEW 1: LOGIN -->
                 <form class="auth-form active" id="formLogin" novalidate>
                     <div class="form-group">
                         <label for="loginEmail" class="form-label">EMAIL:</label>
                         <div class="input-wrapper">
-                            <input 
-                                type="email" 
-                                id="loginEmail" 
-                                class="form-input" 
-                                placeholder="Digite seu email..." 
-                                required
-                                autocomplete="email"
-                            >
+                            <input type="email" id="loginEmail" class="form-input" placeholder="Digite seu email..." required autocomplete="email" value="admin@trendecommerce.com">
                         </div>
                         <span class="field-error" id="loginEmailError"></span>
                     </div>
@@ -114,14 +98,7 @@
                     <div class="form-group">
                         <label for="loginPassword" class="form-label">SENHA:</label>
                         <div class="input-wrapper password-wrapper">
-                            <input 
-                                type="password" 
-                                id="loginPassword" 
-                                class="form-input" 
-                                placeholder="Digite sua senha..." 
-                                required
-                                autocomplete="current-password"
-                            >
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Digite sua senha..." required autocomplete="current-password" value="admin123">
                             <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="loginPassword">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -151,19 +128,12 @@
                     </div>
                 </form>
 
-                <!-- VIEW 2: CADASTRO / REGISTER (Image 1) -->
+                <!-- VIEW 2: CADASTRO -->
                 <form class="auth-form" id="formRegister" novalidate>
                     <div class="form-group">
                         <label for="registerEmail" class="form-label">EMAIL:</label>
                         <div class="input-wrapper">
-                            <input 
-                                type="email" 
-                                id="registerEmail" 
-                                class="form-input" 
-                                placeholder="Digite seu email..." 
-                                required
-                                autocomplete="email"
-                            >
+                            <input type="email" id="registerEmail" class="form-input" placeholder="Digite seu email..." required autocomplete="email">
                         </div>
                         <span class="field-error" id="registerEmailError"></span>
                     </div>
@@ -171,14 +141,7 @@
                     <div class="form-group">
                         <label for="registerPassword" class="form-label">SENHA:</label>
                         <div class="input-wrapper password-wrapper">
-                            <input 
-                                type="password" 
-                                id="registerPassword" 
-                                class="form-input" 
-                                placeholder="Digite sua senha..." 
-                                required
-                                autocomplete="new-password"
-                            >
+                            <input type="password" id="registerPassword" class="form-input" placeholder="Digite sua senha..." required autocomplete="new-password">
                             <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="registerPassword">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -196,14 +159,7 @@
                     <div class="form-group">
                         <label for="registerConfirmPassword" class="form-label">SENHA:</label>
                         <div class="input-wrapper password-wrapper">
-                            <input 
-                                type="password" 
-                                id="registerConfirmPassword" 
-                                class="form-input" 
-                                placeholder="Digite sua senha..." 
-                                required
-                                autocomplete="new-password"
-                            >
+                            <input type="password" id="registerConfirmPassword" class="form-input" placeholder="Digite sua senha..." required autocomplete="new-password">
                             <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="registerConfirmPassword">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -226,25 +182,16 @@
                     </div>
                 </form>
 
-                <!-- VIEW 3: RECUPERAÇÃO - ETAPA 1 (EMAIL) (Image 3) -->
+                <!-- VIEW 3: RECUPERAÇÃO - ETAPA 1 -->
                 <form class="auth-form" id="formRecoveryStep1" novalidate>
                     <h3 class="form-banner-text">ENVIAREMOS UM CÓDIGO<br>PARA SEU EMAIL</h3>
-
                     <div class="form-group mt-large">
                         <label for="recoveryEmail" class="form-label">EMAIL:</label>
                         <div class="input-wrapper">
-                            <input 
-                                type="email" 
-                                id="recoveryEmail" 
-                                class="form-input" 
-                                placeholder="Digite seu email..." 
-                                required
-                                autocomplete="email"
-                            >
+                            <input type="email" id="recoveryEmail" class="form-input" placeholder="Digite seu email..." required autocomplete="email">
                         </div>
                         <span class="field-error" id="recoveryEmailError"></span>
                     </div>
-
                     <div class="form-actions mt-xlarge">
                         <button type="submit" class="btn-primary" id="btnSubmitRecoveryEmail">
                             <span class="btn-text">ENVIAR</span>
@@ -253,23 +200,20 @@
                     </div>
                 </form>
 
-                <!-- VIEW 4: RECUPERAÇÃO - ETAPA 2 (DIGITE SEU CÓDIGO) (Image 5) -->
+                <!-- VIEW 4: RECUPERAÇÃO - ETAPA 2 (OTP) -->
                 <form class="auth-form" id="formRecoveryStep2" novalidate>
                     <h3 class="form-banner-text-subtle">DIGITE SEU CÓDIGO:</h3>
-
                     <div class="otp-container" id="otpContainer">
-                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp1" autocomplete="off">
-                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp2" autocomplete="off">
-                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp3" autocomplete="off">
-                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-input" id="otp4" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" class="otp-input" id="otp1" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" class="otp-input" id="otp2" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" class="otp-input" id="otp3" autocomplete="off">
+                        <input type="text" maxlength="1" inputmode="numeric" class="otp-input" id="otp4" autocomplete="off">
                     </div>
                     <span class="field-error text-center" id="otpError"></span>
-
                     <div class="otp-resend">
                         <span class="otp-info">Não recebeu o código? </span>
                         <button type="button" class="btn-link" id="btnResendCode">Reenviar código</button>
                     </div>
-
                     <div class="form-actions mt-large">
                         <button type="submit" class="btn-primary" id="btnSubmitOtp">
                             <span class="btn-text">ENVIAR</span>
@@ -278,19 +222,12 @@
                     </div>
                 </form>
 
-                <!-- VIEW 5: RECUPERAÇÃO - ETAPA 3 (NOVA SENHA) (Image 4) -->
+                <!-- VIEW 5: RECUPERAÇÃO - ETAPA 3 (NOVA SENHA) -->
                 <form class="auth-form" id="formRecoveryStep3" novalidate>
                     <div class="form-group">
                         <label for="newPassword" class="form-label">SENHA:</label>
                         <div class="input-wrapper password-wrapper">
-                            <input 
-                                type="password" 
-                                id="newPassword" 
-                                class="form-input" 
-                                placeholder="Digite sua senha..." 
-                                required
-                                autocomplete="new-password"
-                            >
+                            <input type="password" id="newPassword" class="form-input" placeholder="Digite sua senha..." required autocomplete="new-password">
                             <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="newPassword">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -308,14 +245,7 @@
                     <div class="form-group">
                         <label for="confirmNewPassword" class="form-label">SENHA:</label>
                         <div class="input-wrapper password-wrapper">
-                            <input 
-                                type="password" 
-                                id="confirmNewPassword" 
-                                class="form-input" 
-                                placeholder="Digite sua senha..." 
-                                required
-                                autocomplete="new-password"
-                            >
+                            <input type="password" id="confirmNewPassword" class="form-input" placeholder="Digite sua senha..." required autocomplete="new-password">
                             <button type="button" class="btn-toggle-pass" aria-label="Mostrar ou ocultar senha" data-target="confirmNewPassword">
                                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -337,35 +267,219 @@
                         </button>
                     </div>
                 </form>
-
-                <!-- VIEW 6: LOGGED IN DASHBOARD PREVIEW STATE -->
-                <div class="auth-success-view" id="authSuccessView">
-                    <div class="success-icon-wrap">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                    </div>
-                    <h3 class="success-title">ACESSO AUTORIZADO!</h3>
-                    <p class="success-message">Conectado ao núcleo <strong>TrendEcommerce AI</strong>.</p>
-                    <div class="user-session-card">
-                        <p class="session-email-label">Usuário Ativo:</p>
-                        <p class="session-email-val" id="loggedUserEmail">admin@trendecommerce.com</p>
-                        <span class="session-status-badge">SISTEMA ONLINE</span>
-                    </div>
-                    <button type="button" class="btn-primary" id="btnLogout">
-                        <span class="btn-text">ENCERRAR SESSÃO</span>
-                    </button>
-                </div>
-
             </div>
         </section>
     </main>
 
-    <footer class="main-footer">
-        <p>© 2026 TrendEcommerce AI. Todos os direitos reservados.</p>
-    </footer>
 
-    <script src="js/app.js"></script>
+    <!-- ==========================================================================
+         SEÇÃO 2: DASHBOARD FULLSTACK INTEGRADO (MOCKUPS 1 A 5)
+         ========================================================================== -->
+    <div class="dashboard-layout hidden" id="dashboardSection">
+        
+        <!-- Sidebar Esquerda -->
+        <aside class="dash-sidebar">
+            <div class="dash-user-profile">
+                <div class="user-avatar-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="user-info-text">
+                    <span class="user-info-name" id="dashUserName">Admin</span>
+                    <button type="button" class="btn-logout-link" id="btnDashLogout">Sair</button>
+                </div>
+            </div>
+
+            <!-- Navegação Vertical -->
+            <nav class="dash-nav-menu">
+                <button type="button" class="dash-nav-btn active" data-tab="ia-preditiva">
+                    <span>IA PREDITIVA</span>
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="ranking">
+                    <span>RANKING PRODUTOS</span>
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="analise-especifica">
+                    <span>ANÁLISE ESPECÍFICA</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Área Principal de Conteúdo -->
+        <div class="dash-main-area">
+            
+            <!-- Header Superior -->
+            <header class="dash-top-header">
+                <div class="dash-header-left">
+                    <span class="hud-status-dot"></span>
+                    <span class="hud-status-text">MOTOR PREDITIVO XGBOOST ATIVO</span>
+                </div>
+                <div class="dash-header-right">
+                    <div class="dash-brand-logo">
+                        <svg class="dash-brand-svg" viewBox="0 0 100 100" fill="none">
+                            <circle cx="50" cy="50" r="44" stroke="#00b4d8" stroke-width="3" stroke-dasharray="8 6" />
+                            <circle cx="50" cy="50" r="32" stroke="#0077b6" stroke-width="2" />
+                            <path d="M34 34 H66 M50 34 V66" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" />
+                            <path d="M35 62 L48 48 L58 56 L72 38" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+                        </svg>
+                        <span class="dash-brand-title"><span class="logo-accent">Trend</span><span class="logo-main">Ecommerce</span></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ==========================================================
+                 ABA 1: IA PREDITIVA (Images 2 & 4)
+                 ========================================================== -->
+            <section class="dash-tab-content active" id="tab-ia-preditiva">
+                <!-- Top Chart Card -->
+                <div class="dash-card main-chart-card">
+                    <div class="chart-container-wrap">
+                        <canvas id="mainSalesChartCanvas"></canvas>
+                        <!-- Tooltip Overlay -->
+                        <div class="chart-tooltip-bubble" id="chartTooltip">
+                            <div class="tooltip-title">IPHONE 17 PRO MAX</div>
+                            <div class="tooltip-price">R$ 10.169,10</div>
+                            <div class="tooltip-sold">897 VENDIDOS</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Controls inside Top Card -->
+                    <div class="chart-controls-box">
+                        <h3 class="controls-title">MAIS VENDIDOS</h3>
+                        <div class="controls-dropdowns">
+                            <button type="button" class="btn-dropdown-ctrl">
+                                <span>FILTRAR DATAS</span>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <select class="select-dropdown-ctrl" id="catFilterSelect">
+                                <option value="">CATEGORIAS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Two Cards -->
+                <div class="dash-bottom-grid">
+                    <!-- Mais Vendidos Card -->
+                    <div class="dash-card mais-vendidos-card">
+                        <h3 class="dash-card-header-title">MAIS VENDIDOS ATUALMENTE</h3>
+                        <div class="ranking-rows-container" id="maisVendidosList">
+                            <!-- Inserido dinamicamente via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Exportar Relatório Card -->
+                    <div class="dash-card export-card">
+                        <h3 class="dash-card-header-title">EXPORTAR<br>RELATÓRIO</h3>
+                        <button type="button" class="btn-export-excel" id="btnExportExcel">
+                            <span>EXCEL</span>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 ABA 2: RANKING PRODUTOS (Images 1 & 3)
+                 ========================================================== -->
+            <section class="dash-tab-content" id="tab-ranking">
+                <div class="ranking-two-col-grid">
+                    <!-- Left Column: Top 7 Próximos 30 Dias -->
+                    <div class="dash-card ranking-col-card">
+                        <h2 class="ranking-card-title">TOP 7 PRODUTOS<br>PRÓXIMOS 30 DIAS</h2>
+                        <div class="ranking-items-list" id="top7OverallList">
+                            <!-- Dinâmico via API -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Top 5 por Categoria -->
+                    <div class="dash-card ranking-col-card">
+                        <h2 class="ranking-card-title">TOP 5 PRODUTOS<br>POR CATEGORIA</h2>
+                        <div class="ranking-items-list" id="top5CategoryList">
+                            <!-- Dinâmico via API -->
+                        </div>
+                        <div class="ranking-cat-btn-wrap">
+                            <select class="btn-category-select" id="rankingCatDropdown">
+                                <option value="">CATEGORIAS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================
+                 ABA 3: ANÁLISE ESPECÍFICA (Image 5)
+                 ========================================================== -->
+            <section class="dash-tab-content" id="tab-analise-especifica">
+                <!-- Search Bar -->
+                <div class="specific-search-wrap">
+                    <div class="search-input-box">
+                        <input type="text" class="specific-search-input" id="specificSearchInput" placeholder="Digite o produto que deseja fazer análise...">
+                        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <div class="search-results-dropdown hidden" id="searchResultsContainer"></div>
+                </div>
+
+                <!-- Product Detail Analysis Card -->
+                <div class="dash-card specific-analysis-card">
+                    <div class="specific-card-header">
+                        <h2 class="specific-prod-title" id="specificProductTitle">IPHONE 15 PRO MAX</h2>
+                        <div class="specific-prod-price" id="specificProductPrice">PREÇO: R$ 4.342,98</div>
+                    </div>
+
+                    <!-- Horizon Toggle Buttons -->
+                    <div class="horizon-toggle-bar">
+                        <span class="horizon-label">Horizonte de Previsão IA:</span>
+                        <button type="button" class="horizon-btn active" data-days="7">7 DIAS</button>
+                        <button type="button" class="horizon-btn" data-days="14">14 DIAS</button>
+                        <button type="button" class="horizon-btn" data-days="30">30 DIAS</button>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div class="specific-chart-wrap">
+                        <canvas id="specificChartCanvas"></canvas>
+                        <div class="specific-chart-tooltip" id="specificChartTooltip">
+                            <div class="tooltip-badge">+5%</div>
+                            <div class="tooltip-main-text">AUMENTO DE 107 VENDAS</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Confidence & Buffer Indicators -->
+                    <div class="kpi-grid">
+                        <div class="kpi-box">
+                            <span class="kpi-title">DEMANDA TOTAL PROJETADA</span>
+                            <span class="kpi-val" id="kpiTotalUnits">107 un</span>
+                        </div>
+                        <div class="kpi-box">
+                            <span class="kpi-title">FATURAMENTO ESTIMADO</span>
+                            <span class="kpi-val text-cyan" id="kpiTotalRevenue">R$ 464.698,86</span>
+                        </div>
+                        <div class="kpi-box">
+                            <span class="kpi-title">MÉDIA DIÁRIA PROJETADA</span>
+                            <span class="kpi-val" id="kpiDailyAvg">15.3 un/dia</span>
+                        </div>
+                        <div class="kpi-box">
+                            <span class="kpi-title">ESTOQUE DE SEGURANÇA SUGERIDO</span>
+                            <span class="kpi-val text-emerald" id="kpiStockBuffer">135 un</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

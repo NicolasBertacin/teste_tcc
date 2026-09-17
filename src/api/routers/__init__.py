@@ -1,0 +1,7 @@
+"""Módulo de Rotas REST da API."""
+from .auth_router import router as auth_router
+from .products_router import router as products_router
+from .forecast_router import router as forecast_router
+from .trends_router import router as trends_router
+
+__all__ = ["auth_router", "products_router", "forecast_router", "trends_router"]
