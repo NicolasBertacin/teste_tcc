@@ -20,6 +20,29 @@ function IaPreditivaTab({ categories, showToast }) {
         loadData();
     }, [selectedCategory]);
 
+    React.useEffect(() => {
+        const handleResize = () => {
+            if (canvasRef.current) {
+                drawChart(topProducts);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        let observer = null;
+        if (canvasRef.current && canvasRef.current.parentElement) {
+            observer = new ResizeObserver(() => {
+                handleResize();
+            });
+            observer.observe(canvasRef.current.parentElement);
+        }
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (observer) observer.disconnect();
+        };
+    }, [topProducts]);
+
     const loadData = async () => {
         setLoading(true);
         try {

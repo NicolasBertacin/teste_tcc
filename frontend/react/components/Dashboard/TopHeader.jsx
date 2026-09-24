@@ -3,12 +3,25 @@
  * Barra superior de status do Dashboard com indicador em tempo real da IA.
  */
 
-function TopHeader() {
+function TopHeader({ isSidebarOpen = true, onToggleSidebar }) {
     return (
         <header className="dash-top-header">
             <div className="dash-header-left">
-                <span className="hud-status-dot"></span>
-                <span className="hud-status-text">MOTOR PREDITIVO XGBOOST ATIVO</span>
+                <button
+                    type="button"
+                    className="sidebar-toggle-btn"
+                    onClick={onToggleSidebar}
+                    title={isSidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
+                    aria-label={isSidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
+                >
+                    <span className="toggle-dot"></span>
+                    <span className="toggle-dot"></span>
+                    <span className="toggle-dot"></span>
+                </button>
+                <div className="hud-status-wrapper">
+                    <span className="hud-status-dot"></span>
+                    <span className="hud-status-text">MOTOR PREDITIVO XGBOOST ATIVO</span>
+                </div>
             </div>
             <div className="dash-header-right">
                 <div className="dash-brand-logo">

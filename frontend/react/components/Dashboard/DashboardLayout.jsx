@@ -7,6 +7,18 @@ function DashboardLayout({ user, onLogout, showToast }) {
     const [activeTab, setActiveTab] = React.useState('ia-preditiva');
     const [categories, setCategories] = React.useState([]);
     const [products, setProducts] = React.useState([]);
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(() => {
+        const saved = localStorage.getItem('trend_sidebar_open');
+        return saved !== null ? saved === 'true' : true;
+    });
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(prev => {
+            const next = !prev;
+            localStorage.setItem('trend_sidebar_open', String(next));
+            return next;
+        });
+    };
 
     React.useEffect(() => {
         loadInitialData();
@@ -26,16 +38,20 @@ function DashboardLayout({ user, onLogout, showToast }) {
     };
 
     return (
-        <div className="dashboard-layout" id="dashboardSection">
+        <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`} id="dashboardSection">
             <Sidebar
                 user={user}
                 activeTab={activeTab}
                 onSelectTab={setActiveTab}
                 onLogout={onLogout}
+                isOpen={isSidebarOpen}
             />
 
             <div className="dash-main-area">
-                <TopHeader />
+                <TopHeader 
+                    isSidebarOpen={isSidebarOpen} 
+                    onToggleSidebar={toggleSidebar} 
+                />
 
                 {activeTab === 'ia-preditiva' && (
                     <IaPreditivaTab

@@ -3,7 +3,7 @@
  * Barra lateral de navegação do Dashboard TrendCommerce AI.
  */
 
-function Sidebar({ user, activeTab, onSelectTab, onLogout }) {
+function Sidebar({ user, activeTab, onSelectTab, onLogout, isOpen = true }) {
     const navItems = [
         { id: 'ia-preditiva', label: 'IA PREDITIVA' },
         { id: 'ranking', label: 'RANKING PRODUTOS' },
@@ -11,7 +11,7 @@ function Sidebar({ user, activeTab, onSelectTab, onLogout }) {
     ];
 
     return (
-        <aside className="dash-sidebar">
+        <aside className={`dash-sidebar ${isOpen ? 'open' : 'collapsed'}`} aria-hidden={!isOpen}>
             <div className="dash-user-profile">
                 <div className="user-avatar-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
