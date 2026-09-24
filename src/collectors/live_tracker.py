@@ -120,9 +120,10 @@ class LiveTracker:
                     
                     base_price = product.price
                     np.random.seed(abs(hash(ext_id)) % (2**32))
+                    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     
                     for day in range(days_history):
-                        hist_date = datetime.now() - timedelta(days=days_history - day)
+                        hist_date = today - timedelta(days=days_history - 1 - day)
                         day_of_week = hist_date.weekday()
                         
                         # Fatores de sazonalidade (fim de semana tem ligeiro aumento no e-commerce)

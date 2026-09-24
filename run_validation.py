@@ -19,12 +19,15 @@ from pathlib import Path
 # Adicionar raiz ao PYTHONPATH
 sys.path.insert(0, str(Path(__file__).parent))
 
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent / ".env")
+
 # Configurar encoding utf-8 para console Windows
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 import pandas as pd
-from src.database.setup import get_db_manager
+from src.database.setup import get_db_manager, sync_up_to_today
 from src.database.models import Product, SalesHistory
 from src.collectors.live_tracker import LiveTracker
 from src.ml.comparator import DemandComparator
@@ -33,32 +36,34 @@ from src.ml.comparator import DemandComparator
 def main():
     parser = argparse.ArgumentParser(description="Validação Real vs Previsto do XGBoost com dados de API")
     parser.add_argument("--query", type=str, default="notebook dell", help="Termo de busca para consultar na API")
-    parser.add_argument("--days", type=int, default=7, help="Dias de teste para conferência")
+    parser.add_argument("--days", type=int, default=7, choices=[7, 14, 30], help="Dias de teste para conferência (7, 14 ou 30)")
+    parser.add_argument("--all-horizons", action="store_true", help="Executa e compara 7, 14 e 30 dias lado a lado")
+    parser.add_argument("--summary-only", action="store_true", help="Exibe apenas a tabela resumo consolidada por produto")
     parser.add_argument("--skip-api", action="store_true", help="Usa apenas os dados já existentes no banco")
     args = parser.parse_args()
 
-    print("\n" + "=" * 75)
+    print("\n" + "=" * 80)
     print("      🔍 TRENDCOMMERCE AI — VALIDADOR DE PREVISÕES (REAL vs XGBOOST)")
-    print("       Auditoria de Precisão e Acertos com Dados de APIs Reais")
-    print("=" * 75)
+    print("       Auditoria de Precisão e Acertos em Múltiplos Horizontes (7d, 14d, 30d)")
+    print("=" * 80)
 
     manager = get_db_manager()
-    # Garantir que as tabelas existem
     manager.create_tables()
 
-    # 1. Coleta de dados reais via API pública do Mercado Livre
+    # Sincronizar histórico para cobrir até a data atual
+    sync_up_to_today(manager)
+
+    # 1. Coleta de dados reais via API do Mercado Livre se habilitado
     if not args.skip_api:
-        print(f"\n📡 1. Consultando API pública do Mercado Livre para: '{args.query}'...")
+        print(f"\n📡 1. Consultando API do Mercado Livre para: '{args.query}'...")
         tracker = LiveTracker(db_manager=manager)
-        
-        # Buscar múltiplas categorias de produtos reais para um dataset rico
         queries = [args.query, "iphone 15", "smart tv 4k", "fone bluetooth"]
         total_synced = 0
         
         for q in queries:
             real_items = tracker.fetch_real_products(query=q, limit=2)
             if real_items:
-                saved = tracker.sync_products_to_db(real_items, days_history=60)
+                saved = tracker.sync_products_to_db(real_items, days_history=90)
                 total_synced += len(saved)
                 
         print(f"   ✓ Sincronizados {total_synced} anúncios reais com histórico de vendas no banco.")
@@ -90,32 +95,54 @@ def main():
     print(f"   ✓ Total de produtos no banco: {len(products_df)}")
     print(f"   ✓ Total de dias de vendas no banco: {len(sales_df)}")
 
-    # 3. Executar Comparador e Backtest
-    print(f"\n🤖 3. Executando auditoria: Treinando XGBoost e testando nos últimos {args.days} dias...")
     comparator = DemandComparator(db_manager=manager)
-    
-    report = comparator.run_backtest_validation(
-        products_df=products_df,
-        sales_df=sales_df,
-        test_days=args.days
-    )
 
-    # 4. Exibir Tabela de Resultados
-    table_str = comparator.format_terminal_table(report)
-    print(table_str)
+    # 3. Execução em Múltiplos Horizontes (7, 14 e 30 dias)
+    if args.all_horizons:
+        print("\n🤖 3. Executando auditoria multi-horizonte (7, 14 e 30 dias)...")
+        reports = comparator.run_multi_horizon_validation(
+            products_df=products_df,
+            sales_df=sales_df,
+            horizons=[7, 14, 30]
+        )
+        
+        # Tabela comparativa geral
+        print(comparator.format_multi_horizon_comparison(reports))
+        
+        # Resumo por produto para cada horizonte
+        for h, rep in reports.items():
+            print(comparator.format_product_summary_table(rep, days=h))
+            
+    else:
+        # Execução para o horizonte específico selecionado
+        print(f"\n🤖 3. Executando auditoria: Treinando XGBoost e testando nos últimos {args.days} dias...")
+        report = comparator.run_backtest_validation(
+            products_df=products_df,
+            sales_df=sales_df,
+            test_days=args.days
+        )
+
+        # 4. Exibir Relatórios
+        if not args.summary_only:
+            table_str = comparator.format_terminal_table(report)
+            print(table_str)
+
+        # Tabela resumo por produto (Total Real vs Total Previsto)
+        summary_str = comparator.format_product_summary_table(report, days=args.days)
+        print(summary_str)
 
     # 5. Explicação dos Resultados
     print("💡 COMO INTERPRETAR O RESULTADO:")
-    print("  • REAL: Quantidade real de unidades vendidas pelo anúncio naquele dia.")
-    print("  • PREVISTO: Quantidade que o XGBoost estimou sem conhecer o dado real.")
-    print("  • FAIXA DE CONFIANÇA: Intervalo estatístico previsto pelo modelo.")
-    print("  • DIFERENÇA: Diferença absoluta entre a previsão e a realidade.")
-    print("  • STATUS:")
-    print("      🎯 EXATO: O modelo acertou o número com erro menor ou igual a 1 unidade.")
-    print("      ✅ NA FAIXA: O valor real caiu exatamente dentro do intervalo previsto.")
+    print("  • TOTAL REAL: Soma das unidades reais vendidas por aquele anúncio no período.")
+    print("  • TOTAL PREVISTO: Soma das unidades estimadas pelo XGBoost no período.")
+    print("  • DIFERENÇA: Diferença acumulada entre o previsto e a realidade.")
+    print("  • ACURÁCIA TOTAL: Grau de precisão do modelo no planejamento de estoque.")
+    print("  • STATUS DIA A DIA:")
+    print("      🎯 EXATO: O modelo acertou o número diário com erro menor ou igual a 1 unidade.")
+    print("      ✅ NA FAIXA: O valor real caiu exatamente dentro do intervalo estatístico.")
     print("      🟡 PRÓXIMO: Previsão muito próxima (erro menor que 25%).")
     print("      ❌ FORA DA FAIXA: Ocorrência fora do padrão esperado.")
-    print("\n" + "=" * 75 + "\n")
+    print("\n" + "=" * 80 + "\n")
 
 
 if __name__ == "__main__":

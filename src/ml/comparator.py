@@ -226,6 +226,19 @@ class DemandComparator:
             rows=validation_rows
         )
 
+    def run_multi_horizon_validation(
+        self,
+        products_df: pd.DataFrame,
+        sales_df: pd.DataFrame,
+        horizons: list[int] = [7, 14, 30]
+    ) -> dict[int, ValidationReport]:
+        """Executa a validação comparativa para múltiplos horizontes (ex: 7, 14 e 30 dias)."""
+        reports = {}
+        for h in horizons:
+            logger.info(f"Executando auditoria para horizonte de {h} dias...")
+            reports[h] = self.run_backtest_validation(products_df, sales_df, test_days=h)
+        return reports
+
     def _save_prediction_logs(self, logs: list[dict]):
         """Persiste os logs de comparação no banco."""
         try:
@@ -236,6 +249,70 @@ class DemandComparator:
             logger.info(f"Salvos {len(logs)} registros de auditoria em 'prediction_logs'")
         except Exception as e:
             logger.warning(f"Não foi possível salvar logs no banco: {e}")
+
+    @staticmethod
+    def format_product_summary_table(report: ValidationReport, days: int) -> str:
+        """Agrupa e compara a quantidade TOTAL real vendida vs TOTAL prevista por produto no período."""
+        from collections import defaultdict
+        
+        prod_data = defaultdict(lambda: {"title": "", "real_total": 0, "pred_total": 0.0, "count": 0})
+        
+        for r in report.rows:
+            p = prod_data[r.product_id]
+            p["title"] = r.product_title
+            p["real_total"] += r.actual_demand
+            p["pred_total"] += r.predicted_demand
+            p["count"] += 1
+            
+        lines = []
+        lines.append("\n" + "=" * 95)
+        lines.append(f"   📦 COMPARATIVO TOTAL ACUMULADO POR PRODUTO — HORIZONTE DE {days} DIAS (REAL vs PREVISTO)")
+        lines.append("=" * 95)
+        lines.append(f" {'Produto':40s} | {'Total Real':10s} | {'Total Prev':10s} | {'Diferença':10s} | {'Acurácia Total':14s}")
+        lines.append("-" * 95)
+        
+        total_real_all = 0
+        total_pred_all = 0.0
+        
+        for pid, data in prod_data.items():
+            r_tot = data["real_total"]
+            p_tot = round(data["pred_total"], 1)
+            diff = round(p_tot - r_tot, 1)
+            acc = max(0.0, 100.0 - (abs(diff) / r_tot * 100.0)) if r_tot > 0 else 100.0
+            total_real_all += r_tot
+            total_pred_all += p_tot
+            
+            diff_str = f"{diff:+6.1f} un"
+            lines.append(f" {data['title'][:40]:40s} | {r_tot:7d} un | {p_tot:7.1f} un | {diff_str:10s} | {acc:12.1f}%")
+            
+        total_diff = round(total_pred_all - total_real_all, 1)
+        total_acc = max(0.0, 100.0 - (abs(total_diff) / total_real_all * 100.0)) if total_real_all > 0 else 100.0
+        
+        lines.append("-" * 95)
+        lines.append(f" {'🏆 TOTAL GERAL CONSOLIDADO':40s} | {total_real_all:7d} un | {total_pred_all:7.1f} un | {total_diff:+6.1f} un | {total_acc:12.1f}%")
+        lines.append("=" * 95 + "\n")
+        
+        return "\n".join(lines)
+
+    @staticmethod
+    def format_multi_horizon_comparison(reports: dict[int, ValidationReport]) -> str:
+        """Formata tabela comparativa comparando 7d, 14d e 30d lado a lado."""
+        lines = []
+        lines.append("\n" + "=" * 85)
+        lines.append("     🎯 AUDITORIA COMPARATIVA DE HORIZONTES TEMPORAIS (7d vs 14d vs 30d)")
+        lines.append("=" * 85)
+        lines.append(f" {'Horizonte':12s} | {'Qtd Testes':10s} | {'Acurácia Média':14s} | {'Taxa Acerto':12s} | {'MAE':8s} | {'RMSE':8s}")
+        lines.append("-" * 85)
+        
+        for h, rep in reports.items():
+            lines.append(
+                f" {f'{h} Dias':12s} | {rep.total_predictions:10d} | "
+                f"{rep.mean_accuracy_pct:12.2f}% | {rep.hit_rate_pct:10.2f}% | "
+                f"{rep.mae:6.2f} un | {rep.rmse:6.2f} un"
+            )
+            
+        lines.append("=" * 85 + "\n")
+        return "\n".join(lines)
 
     @staticmethod
     def format_terminal_table(report: ValidationReport) -> str:

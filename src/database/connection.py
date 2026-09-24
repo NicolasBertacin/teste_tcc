@@ -7,12 +7,22 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 
+from pathlib import Path
+
+
 def get_database_url() -> str:
-    """Obtém a URL de conexão do banco de dados."""
-    return os.getenv(
-        "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/trendcommerce"
-    )
+    """Obtém a URL de conexão do banco de dados.
+    
+    Em desenvolvimento local, se DATABASE_URL não estiver configurado
+    ou contiver os valores padrão de exemplo, utiliza SQLite local.
+    """
+    db_url = os.getenv("DATABASE_URL", "").strip()
+    if not db_url or "user:password" in db_url:
+        db_path = Path(__file__).parent.parent.parent / "data" / "trendcommerce_dev.db"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        return f"sqlite:///{db_path}"
+    return db_url
+
 
 
 def get_engine(database_url: str | None = None):

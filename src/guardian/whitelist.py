@@ -104,6 +104,96 @@ class APIWhitelist:
             description="Produtos destacados/populares"
         ))
 
+        # Mercado Livre - Questions (Público)
+        self._endpoints.append(AllowedEndpoint(
+            name="Mercado Livre Questions",
+            base_url="https://api.mercadolibre.com",
+            path_pattern="/questions/search",
+            methods=["GET"],
+            requires_auth=False,
+            description="Volume e histórico de perguntas de compradores"
+        ))
+
+        # Mercado Livre - Reviews (Público)
+        self._endpoints.append(AllowedEndpoint(
+            name="Mercado Livre Reviews",
+            base_url="https://api.mercadolibre.com",
+            path_pattern="/reviews/item/{item_id}",
+            methods=["GET"],
+            requires_auth=False,
+            description="Avaliações e notas médias de produtos"
+        ))
+
+        # BrasilAPI - Feriados Nacionais
+        self._endpoints.append(AllowedEndpoint(
+            name="BrasilAPI Feriados",
+            base_url="https://brasilapi.com.br",
+            path_pattern="/api/feriados/v1/{ano}",
+            methods=["GET"],
+            requires_auth=False,
+            description="Feriados nacionais brasileiros e pontos facultativos"
+        ))
+
+        # Banco Central do Brasil - SGS (Séries Temporais: Dólar PTAX, Selic, IPCA)
+        self._endpoints.append(AllowedEndpoint(
+            name="BCB SGS Series",
+            base_url="https://api.bcb.gov.br",
+            path_pattern="/dados/serie/bcdata.sgs.{serie}/dados/ultimos/{n}",
+            methods=["GET"],
+            requires_auth=False,
+            description="Cotações oficiais diárias do Dólar PTAX, Selic e IPCA"
+        ))
+
+        # IBGE - Dados Agregados
+        self._endpoints.append(AllowedEndpoint(
+            name="IBGE Dados Agregados",
+            base_url="https://servicodados.ibge.gov.br",
+            path_pattern="/api/v3/agregados",
+            methods=["GET"],
+            requires_auth=False,
+            description="Índices de inflação e comércio varejista do IBGE"
+        ))
+
+        # Nager.Date - Feriados Mundiais e Datas Comerciais
+        self._endpoints.append(AllowedEndpoint(
+            name="Nager Date Holidays",
+            base_url="https://date.nager.at",
+            path_pattern="/api/v3/PublicHolidays/{year}/{country_code}",
+            methods=["GET"],
+            requires_auth=False,
+            description="Calendário internacional com datas como Black Friday e Cyber Monday"
+        ))
+
+        # CoinGecko - Câmbio e Liquidez
+        self._endpoints.append(AllowedEndpoint(
+            name="CoinGecko Price",
+            base_url="https://api.coingecko.com",
+            path_pattern="/api/v3/simple/price",
+            methods=["GET"],
+            requires_auth=False,
+            description="Índices de liquidez financeira e câmbio em tempo real"
+        ))
+
+        # OpenWeatherMap - Clima & Temperatura
+        self._endpoints.append(AllowedEndpoint(
+            name="OpenWeatherMap Weather",
+            base_url="https://api.openweathermap.org",
+            path_pattern="/data/2.5/weather",
+            methods=["GET"],
+            requires_auth=False,
+            description="Temperatura e condições climáticas atuais"
+        ))
+
+        # WeatherAPI - Previsão Meteorológica
+        self._endpoints.append(AllowedEndpoint(
+            name="WeatherAPI Forecast",
+            base_url="https://api.weatherapi.com",
+            path_pattern="/v1/forecast.json",
+            methods=["GET"],
+            requires_auth=False,
+            description="Histórico e previsão meteorológica por região"
+        ))
+
     def add_endpoint(self, endpoint: AllowedEndpoint):
         """Adiciona um endpoint à whitelist."""
         self._endpoints.append(endpoint)

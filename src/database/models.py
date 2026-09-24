@@ -16,7 +16,24 @@ class Base(DeclarativeBase):
     pass
 
 
+class User(Base):
+    """Tabela de usuários para autenticação e controle de acesso."""
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<User(id={self.id}, email='{self.email}')>"
+
+
 class Product(Base):
+
     """Tabela de produtos coletados.
     
     Armazena informações básicas de produtos de
@@ -41,6 +58,8 @@ class Product(Base):
     # Relacionamentos
     sales_history = relationship("SalesHistory", back_populates="product", cascade="all, delete-orphan")
     prediction_logs = relationship("PredictionLog", back_populates="product", cascade="all, delete-orphan")
+    marketplace_feedbacks = relationship("MarketplaceFeedback", back_populates="product", cascade="all, delete-orphan")
+    opportunities = relationship("ProductOpportunity", back_populates="product", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("idx_products_platform", "platform"),
@@ -161,4 +180,92 @@ class PredictionLog(Base):
 
     def __repr__(self):
         return f"<PredictionLog(product_id={self.product_id}, target={self.target_date}, pred={self.predicted_demand}, actual={self.actual_demand})>"
+
+
+class MacroIndicator(Base):
+    """Tabela de Indicadores Macroeconômicos e Calendário.
+    
+    Armazena dados de fontes como BrasilAPI (feriados), BCB SGS (Dólar, Selic, IPCA),
+    Nager.Date, CoinGecko e clima histórico.
+    """
+    __tablename__ = "macro_indicators"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    date = Column(DateTime, nullable=False, index=True)
+    indicator_type = Column(String(50), nullable=False, comment="Tipo: dolar_ptax, selic, ipca, holiday, weather_temp")
+    value = Column(Float, nullable=True, comment="Valor numérico do indicador")
+    label = Column(String(255), nullable=True, comment="Descrição legível ou nome do feriado")
+    source = Column(String(50), nullable=False, comment="Fonte: brasilapi, bcb_sgs, ibge, nager_date, coingecko, weather")
+    details = Column(JSON, nullable=True)
+    collected_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("idx_macro_date_type", "date", "indicator_type"),
+        Index("idx_macro_type", "indicator_type"),
+    )
+
+    def __repr__(self):
+        return f"<MacroIndicator(date={self.date}, type='{self.indicator_type}', value={self.value})>"
+
+
+class MarketplaceFeedback(Base):
+    """Tabela de métricas de engajamento público de marketplace.
+    
+    Armazena volume de perguntas, reviews, notas médias e tendências de termos
+    obtidos via endpoints públicos do Mercado Livre.
+    """
+    __tablename__ = "marketplace_feedbacks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    date = Column(DateTime, nullable=False)
+    platform = Column(String(50), default="mercadolivre")
+    questions_count = Column(Integer, default=0, comment="Volume diário/acumulado de perguntas")
+    unanswered_questions = Column(Integer, default=0)
+    average_rating = Column(Float, nullable=True, comment="Nota média das avaliações (1 a 5)")
+    reviews_count = Column(Integer, default=0, comment="Total de avaliações recebidas")
+    trend_term = Column(String(255), nullable=True, comment="Termo de tendência associado")
+    collected_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    product = relationship("Product", back_populates="marketplace_feedbacks")
+
+    __table_args__ = (
+        Index("idx_mkt_feedback_product_date", "product_id", "date"),
+    )
+
+    def __repr__(self):
+        return f"<MarketplaceFeedback(product_id={self.product_id}, date={self.date}, rating={self.average_rating})>"
+
+
+class ProductOpportunity(Base):
+    """Tabela de Recomendações e Ranking de Melhores Produtos para Vender.
+    
+    Registra os scores de oportunidade gerados pelo OpportunityRecommender.
+    """
+    __tablename__ = "product_opportunities"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    generated_at = Column(DateTime, default=datetime.utcnow, index=True)
+    horizon_days = Column(Integer, default=14, comment="Horizonte temporal avaliado: 7, 14 ou 30 dias")
+    opportunity_score = Column(Float, nullable=False, comment="Score de 0 a 100 de recomendação")
+    quadrant = Column(String(50), nullable=False, comment="EXPLOSIVE_GROWTH, HIGH_STABILITY, MODERATE, LOW_PRIORITY")
+    projected_growth_pct = Column(Float, nullable=False, comment="Crescimento projetado de vendas em %")
+    predicted_units = Column(Integer, nullable=False, comment="Total de unidades previstas no período")
+    estimated_revenue = Column(Float, nullable=False, comment="Faturamento estimado no período")
+    rationale = Column(Text, nullable=True, comment="Justificativa explicável do score")
+    details = Column(JSON, nullable=True)
+
+    # Relacionamentos
+    product = relationship("Product", back_populates="opportunities")
+
+    __table_args__ = (
+        Index("idx_opp_product_horizon", "product_id", "horizon_days"),
+        Index("idx_opp_score", "opportunity_score"),
+    )
+
+    def __repr__(self):
+        return f"<ProductOpportunity(product_id={self.product_id}, score={self.opportunity_score}, quad='{self.quadrant}')>"
+
 
