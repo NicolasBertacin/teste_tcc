@@ -3,7 +3,7 @@
  * Aba Análise Específica: Busca preditiva de produto e projeções com XGBoost (7/14/30 dias).
  */
 
-function AnaliseEspecificaTab({ products, showToast }) {
+function AnaliseEspecificaTab({ products = [], showToast }) {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [searchResults, setSearchResults] = React.useState([]);
     const [showDropdown, setShowDropdown] = React.useState(false);
@@ -27,9 +27,16 @@ function AnaliseEspecificaTab({ products, showToast }) {
     const selectedProductRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (products.length > 0 && !selectedProduct) {
+        if (products && products.length > 0 && !selectedProduct) {
             setSelectedProduct(products[0]);
             selectedProductRef.current = products[0];
+        } else if ((!products || products.length === 0) && !selectedProduct) {
+            window.apiService?.products?.list({ limit: 20 }).then(res => {
+                if (res && res.items && res.items.length > 0 && !selectedProductRef.current) {
+                    setSelectedProduct(res.items[0]);
+                    selectedProductRef.current = res.items[0];
+                }
+            }).catch(() => {});
         }
     }, [products]);
 
@@ -39,6 +46,12 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
     React.useEffect(() => {
         forecastRef.current = forecast;
+        if (forecast) {
+            // Garantir desenho imediato ao receber novos dados de previsão
+            requestAnimationFrame(() => {
+                drawSpecificChart(forecast, hoveredIndexRef.current, selectedProductRef.current);
+            });
+        }
     }, [forecast]);
 
     React.useEffect(() => {
@@ -53,8 +66,8 @@ function AnaliseEspecificaTab({ products, showToast }) {
         const handleResize = () => {
             cancelAnimationFrame(animFrame);
             animFrame = requestAnimationFrame(() => {
-                if (canvasRef.current && forecastRef.current) {
-                    drawSpecificChart(forecastRef.current, hoveredIndexRef.current, selectedProductRef.current);
+                if (canvasRef.current && (forecastRef.current || forecast)) {
+                    drawSpecificChart(forecastRef.current || forecast, hoveredIndexRef.current, selectedProductRef.current);
                 }
             });
         };
@@ -69,12 +82,15 @@ function AnaliseEspecificaTab({ products, showToast }) {
             observer.observe(canvasRef.current.parentElement);
         }
 
+        // Desenhar imediatamente se já houver dados
+        handleResize();
+
         return () => {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animFrame);
             if (observer) observer.disconnect();
         };
-    }, []);
+    }, [forecast]);
 
     const handleSearchInput = (val) => {
         setSearchQuery(val);
@@ -84,7 +100,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
             return;
         }
 
-        const matches = products.filter((p) =>
+        const matches = (products || []).filter((p) =>
             p.title.toLowerCase().includes(val.toLowerCase()) ||
             (p.category && p.category.toLowerCase().includes(val.toLowerCase()))
         ).slice(0, 6);
@@ -103,7 +119,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
     const runForecast = async (productId, days) => {
         setLoading(true);
         try {
-            showToast('Calculando projeção com XGBoost...', 'info', 1800);
+            showToast('Calculando projeção com XGBoost...', 'info', 1500);
             const data = await window.apiService.forecast.predict(productId, days);
             setForecast(data);
             forecastRef.current = data;
@@ -280,18 +296,45 @@ function AnaliseEspecificaTab({ products, showToast }) {
         const mouseY = clientY - rect.top;
 
         const points = pointsRef.current || [];
+        if (!points || points.length === 0) return;
+
+        const padLeft = 45;
+        const padRight = 30;
+        const padTop = 40;
+        const padBottom = 40;
+        const width = canvas.width || rect.width;
+        const height = canvas.height || 300;
+
+        // Limites da área do gráfico para ativação
+        const inBounds = mouseX >= (padLeft - 25) &&
+                         mouseX <= (width - padRight + 25) &&
+                         mouseY >= (padTop - 30) &&
+                         mouseY <= (height - padBottom + 30);
+
         let matchedPoint = null;
-        let minDistance = 25;
 
-        for (const p of points) {
-            const dist = Math.hypot(mouseX - p.x, mouseY - p.y);
-            const xDist = Math.abs(mouseX - p.x);
-            const yInRange = mouseY >= 30 && mouseY <= 280;
-            const effectiveDist = (points.length > 20 && yInRange) ? Math.min(dist, xDist * 1.4) : dist;
+        if (inBounds) {
+            const totalPoints = points.length;
+            const colWidth = (width - padLeft - padRight) / Math.max(1, totalPoints - 1);
+            const xThreshold = Math.max(28, colWidth * 0.52);
 
-            if (effectiveDist < minDistance) {
-                minDistance = effectiveDist;
-                matchedPoint = p;
+            let minDistance = Infinity;
+
+            for (const p of points) {
+                const xDist = Math.abs(mouseX - p.x);
+                const directDist = Math.hypot(mouseX - p.x, mouseY - p.y);
+
+                // Se o mouse estiver muito próximo ao ponto (raio 35px), prioriza-o
+                if (directDist < 35) {
+                    if (directDist < minDistance) {
+                        minDistance = directDist;
+                        matchedPoint = p;
+                    }
+                } else if (xDist < xThreshold && xDist < minDistance) {
+                    // Senão, detecta por aproximação da coluna horizontal daquele dia
+                    minDistance = xDist;
+                    matchedPoint = p;
+                }
             }
         }
 
@@ -302,26 +345,27 @@ function AnaliseEspecificaTab({ products, showToast }) {
                 drawSpecificChart(forecastRef.current, matchedPoint.index, selectedProductRef.current);
 
                 const currentProd = selectedProductRef.current;
-                const bubbleHalfW = 85;
+                const bubbleHalfW = 95;
                 const canvasW = canvas.width || 600;
-                const clampedX = Math.max(bubbleHalfW + 5, Math.min(canvasW - bubbleHalfW - 5, matchedPoint.x));
+                const clampedX = Math.max(bubbleHalfW + 8, Math.min(canvasW - bubbleHalfW - 8, matchedPoint.x));
 
-                const rawDay = matchedPoint.d.day_name || '';
+                const rawDay = matchedPoint.d?.day_name || '';
                 const dayAbbr = rawDay ? rawDay.split('-')[0].toUpperCase().slice(0, 3) : '';
-                const dateShort = matchedPoint.d.date ? matchedPoint.d.date.slice(0, 5) : '';
+                const dateShort = matchedPoint.d?.date ? matchedPoint.d.date.slice(0, 5) : '';
                 const dateInfo = dayAbbr && dateShort ? `${dayAbbr} (${dateShort})` : (dayAbbr || dateShort);
                 const dateSuffix = dateInfo ? ` • ${dateInfo}` : '';
 
                 const prodTitle = currentProd?.title || forecastRef.current?.product_title || 'PRODUTO';
                 const prodPrice = currentProd?.price ?? forecastRef.current?.unit_price;
+                const demand = matchedPoint.d?.predicted_demand ?? matchedPoint.val ?? 0;
 
                 setTooltipData({
                     visible: true,
                     title: prodTitle.toUpperCase().slice(0, 26),
-                    price: prodPrice !== undefined ? `R$ ${prodPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '',
-                    sold: `${matchedPoint.d.predicted_demand.toLocaleString('pt-BR')} VENDAS PREVISTAS${dateSuffix}`,
+                    price: prodPrice !== undefined ? `R$ ${Number(prodPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '',
+                    sold: `${demand.toLocaleString('pt-BR')} VENDAS PREVISTAS${dateSuffix}`,
                     x: clampedX,
-                    y: Math.max(65, matchedPoint.y - 12)
+                    y: Math.max(70, matchedPoint.y - 12)
                 });
             }
         } else {
