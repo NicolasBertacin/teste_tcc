@@ -27,10 +27,15 @@ function AnaliseEspecificaTab({ products, showToast }) {
     }, [selectedProduct, horizonDays]);
 
     React.useEffect(() => {
+        let animFrame;
+
         const handleResize = () => {
-            if (canvasRef.current && forecast) {
-                drawSpecificChart(forecast);
-            }
+            cancelAnimationFrame(animFrame);
+            animFrame = requestAnimationFrame(() => {
+                if (canvasRef.current && forecast) {
+                    drawSpecificChart(forecast);
+                }
+            });
         };
 
         window.addEventListener('resize', handleResize);
@@ -45,6 +50,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
         return () => {
             window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animFrame);
             if (observer) observer.disconnect();
         };
     }, [forecast]);
@@ -88,10 +94,13 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
     const drawSpecificChart = (data) => {
         const canvas = canvasRef.current;
-        if (!canvas || !data || !data.days) return;
+        if (!canvas || !data || !data.days || !canvas.parentElement) return;
+
+        const parentW = canvas.parentElement.getBoundingClientRect().width || canvas.parentElement.clientWidth;
+        if (!parentW || parentW <= 0) return;
 
         const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.parentElement.clientWidth || 600;
+        const width = canvas.width = Math.round(parentW);
         const height = canvas.height = 300;
 
         ctx.clearRect(0, 0, width, height);

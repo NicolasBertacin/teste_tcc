@@ -21,10 +21,15 @@ function IaPreditivaTab({ categories, showToast }) {
     }, [selectedCategory]);
 
     React.useEffect(() => {
+        let animFrame;
+
         const handleResize = () => {
-            if (canvasRef.current) {
-                drawChart(topProducts);
-            }
+            cancelAnimationFrame(animFrame);
+            animFrame = requestAnimationFrame(() => {
+                if (canvasRef.current) {
+                    drawChart(topProducts);
+                }
+            });
         };
 
         window.addEventListener('resize', handleResize);
@@ -39,6 +44,7 @@ function IaPreditivaTab({ categories, showToast }) {
 
         return () => {
             window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animFrame);
             if (observer) observer.disconnect();
         };
     }, [topProducts]);
@@ -58,10 +64,13 @@ function IaPreditivaTab({ categories, showToast }) {
 
     const drawChart = (items) => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas || !canvas.parentElement) return;
+
+        const parentW = canvas.parentElement.getBoundingClientRect().width || canvas.parentElement.clientWidth;
+        if (!parentW || parentW <= 0) return;
 
         const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.parentElement.clientWidth || 500;
+        const width = canvas.width = Math.round(parentW);
         const height = canvas.height = 240;
 
         ctx.clearRect(0, 0, width, height);
