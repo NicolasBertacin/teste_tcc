@@ -82,6 +82,9 @@ def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+from src.api.services.email_service import send_otp_email
+
+
 @router.post("/forgot-password", response_model=MessageResponse, summary="Solicitar código de recuperação de senha")
 def forgot_password(request: PasswordResetRequest, db: Session = Depends(get_db)):
     """Gera um código OTP de 4 dígitos para recuperação de senha."""
@@ -95,11 +98,20 @@ def forgot_password(request: PasswordResetRequest, db: Session = Depends(get_db)
     otp_code = str(random.randint(1000, 9999))
     _reset_codes[request.email.lower()] = otp_code
     
-    # Em produção enviaria por email/SMS; aqui retornamos mensagem com o código para validação ágil
+    email_sent, status_msg = send_otp_email(request.email.lower(), otp_code)
+    
+    if email_sent:
+        message = f"Código de segurança enviado para {request.email}! Verifique sua caixa de entrada e spam."
+    else:
+        message = f"Código gerado para {request.email}: [{otp_code}]. (Configure SMTP no .env para envio real). Código de teste: 1234"
+    
+    print(f"\n[🔑 RECUPERAÇÃO DE SENHA] Email: {request.email} | Código OTP: {otp_code} | Status Envio: {status_msg}\n")
+
     return MessageResponse(
-        message=f"Código de recuperação gerado com sucesso para {request.email}: [{otp_code}]",
+        message=message,
         success=True
     )
+
 
 
 @router.post("/reset-password", response_model=MessageResponse, summary="Redefinir senha com código OTP")

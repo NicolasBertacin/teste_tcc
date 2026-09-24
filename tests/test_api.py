@@ -54,7 +54,8 @@ def test_auth_forgot_and_reset_password(client):
         "email": "admin@trendecommerce.com"
     })
     assert req_resp.status_code == 200
-    assert "Código de recuperação" in req_resp.json()["message"]
+    assert req_resp.json()["success"] is True
+    assert "admin@trendecommerce.com" in req_resp.json()["message"]
 
     reset_resp = client.post("/api/v1/auth/reset-password", json={
         "email": "admin@trendecommerce.com",
