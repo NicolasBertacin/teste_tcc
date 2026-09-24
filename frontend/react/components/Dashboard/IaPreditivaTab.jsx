@@ -6,14 +6,21 @@
 function IaPreditivaTab({ categories, showToast }) {
     const [topProducts, setTopProducts] = React.useState([]);
     const [selectedCategory, setSelectedCategory] = React.useState('');
+    const [selectedProduct, setSelectedProduct] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const canvasRef = React.useRef(null);
+    const pointsRef = React.useRef([]);
+    const topProductsRef = React.useRef([]);
+    const selectedProductRef = React.useRef(null);
+    const hoveredIndexRef = React.useRef(null);
+
     const [tooltipData, setTooltipData] = React.useState({
-        title: 'IPHONE 17 PRO MAX',
-        price: 'R$ 10.169,10',
-        sold: '897 VENDIDOS',
-        x: 150,
-        y: 60
+        visible: false,
+        title: '',
+        price: '',
+        sold: '',
+        x: 0,
+        y: 0
     });
 
     React.useEffect(() => {
@@ -27,7 +34,7 @@ function IaPreditivaTab({ categories, showToast }) {
             cancelAnimationFrame(animFrame);
             animFrame = requestAnimationFrame(() => {
                 if (canvasRef.current) {
-                    drawChart(topProducts);
+                    drawChart(topProductsRef.current, hoveredIndexRef.current, selectedProductRef.current);
                 }
             });
         };
@@ -47,14 +54,18 @@ function IaPreditivaTab({ categories, showToast }) {
             cancelAnimationFrame(animFrame);
             if (observer) observer.disconnect();
         };
-    }, [topProducts]);
+    }, []);
 
     const loadData = async () => {
         setLoading(true);
         try {
             const data = await window.apiService.products.getTopSales(5, selectedCategory || null);
             setTopProducts(data);
-            drawChart(data);
+            topProductsRef.current = data;
+            const initialProduct = data && data[0] ? data[0] : null;
+            setSelectedProduct(initialProduct);
+            selectedProductRef.current = initialProduct;
+            drawChart(data, null, initialProduct);
         } catch (err) {
             console.error('Erro ao carregar dados da IA Preditiva:', err);
         } finally {
@@ -62,7 +73,7 @@ function IaPreditivaTab({ categories, showToast }) {
         }
     };
 
-    const drawChart = (items) => {
+    const drawChart = (items, activeHoverIdx = hoveredIndexRef.current, activeProd = selectedProductRef.current) => {
         const canvas = canvasRef.current;
         if (!canvas || !canvas.parentElement) return;
 
@@ -107,12 +118,15 @@ function IaPreditivaTab({ categories, showToast }) {
         const points = values.map((val, i) => {
             const x = padLeft + (i / (values.length - 1)) * chartW;
             const y = padTop + chartH - (val / maxVal) * chartH;
-            return { x, y, val, day: daysLabels[i] };
+            return { x, y, val, day: daysLabels[i], index: i };
         });
+        pointsRef.current = points;
 
         // Labels X
         ctx.textAlign = 'center';
-        points.forEach(p => {
+        points.forEach((p, i) => {
+            ctx.fillStyle = (activeHoverIdx === i) ? '#00f0ff' : '#8da2bd';
+            ctx.font = (activeHoverIdx === i) ? 'bold 11px Plus Jakarta Sans' : '11px Plus Jakarta Sans';
             ctx.fillText(p.day, p.x, height - 10);
         });
 
@@ -142,31 +156,120 @@ function IaPreditivaTab({ categories, showToast }) {
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Círculos
-        points.forEach((p) => {
+        // Linha guia vertical quando em hover
+        if (activeHoverIdx !== null && points[activeHoverIdx]) {
+            const hp = points[activeHoverIdx];
+            ctx.save();
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.45)';
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.shadowBlur = 10;
+            ctx.moveTo(hp.x, padTop);
+            ctx.lineTo(hp.x, padTop + chartH);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Círculos
+        points.forEach((p, i) => {
+            const isHovered = (activeHoverIdx === i);
+
+            // Halo externo se hovered
+            if (isHovered) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.25)';
+                ctx.fill();
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, isHovered ? 7 : 5, 0, Math.PI * 2);
+            ctx.fillStyle = isHovered ? '#ffffff' : '#00f0ff';
+            ctx.shadowBlur = isHovered ? 16 : 10;
             ctx.shadowColor = '#00d4ff';
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            ctx.strokeStyle = '#07172b';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = isHovered ? '#00f0ff' : '#07172b';
+            ctx.lineWidth = isHovered ? 2.5 : 2;
             ctx.stroke();
         });
+    };
 
-        // Ponto de pico para o tooltip
-        const peak = points[1] || points[0];
-        const topItem = items && items[0];
-        setTooltipData({
-            title: topItem ? topItem.title.toUpperCase().slice(0, 22) : 'IPHONE 17 PRO MAX',
-            price: topItem ? `R$ ${topItem.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 10.169,10',
-            sold: topItem ? `${topItem.quantity_sold.toLocaleString('pt-BR')} VENDIDOS` : '897 VENDIDOS',
-            x: peak.x - 70,
-            y: peak.y - 65
-        });
+    const updateHoverAt = (clientX, clientY) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = clientX - rect.left;
+        const mouseY = clientY - rect.top;
+
+        const points = pointsRef.current || [];
+        let matchedPoint = null;
+
+        for (const p of points) {
+            const dist = Math.hypot(mouseX - p.x, mouseY - p.y);
+            // Raio de 25px para detecção do ponto
+            if (dist <= 25) {
+                matchedPoint = p;
+                break;
+            }
+        }
+
+        if (matchedPoint) {
+            canvas.style.cursor = 'pointer';
+            if (hoveredIndexRef.current !== matchedPoint.index) {
+                hoveredIndexRef.current = matchedPoint.index;
+                drawChart(topProductsRef.current, matchedPoint.index, selectedProductRef.current);
+
+                const currentProd = selectedProductRef.current || (topProductsRef.current && topProductsRef.current[0]);
+                const bubbleHalfW = 85;
+                const canvasW = canvas.width || 600;
+                const clampedX = Math.max(bubbleHalfW + 5, Math.min(canvasW - bubbleHalfW - 5, matchedPoint.x));
+
+                setTooltipData({
+                    visible: true,
+                    title: currentProd ? currentProd.title.toUpperCase().slice(0, 24) : 'PRODUTO',
+                    price: currentProd ? `R$ ${currentProd.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 429,00',
+                    sold: `${matchedPoint.val.toLocaleString('pt-BR')} VENDIDOS`,
+                    x: clampedX,
+                    y: Math.max(65, matchedPoint.y - 12)
+                });
+            }
+        } else {
+            canvas.style.cursor = 'default';
+            if (hoveredIndexRef.current !== null) {
+                hoveredIndexRef.current = null;
+                drawChart(topProductsRef.current, null, selectedProductRef.current);
+                setTooltipData(prev => ({ ...prev, visible: false }));
+            }
+        }
+    };
+
+    const handleMouseMove = (e) => {
+        updateHoverAt(e.clientX, e.clientY);
+    };
+
+    const handleMouseLeave = () => {
+        const canvas = canvasRef.current;
+        if (canvas) canvas.style.cursor = 'default';
+        if (hoveredIndexRef.current !== null) {
+            hoveredIndexRef.current = null;
+            drawChart(topProductsRef.current, null, selectedProductRef.current);
+            setTooltipData(prev => ({ ...prev, visible: false }));
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (e.touches && e.touches.length > 0) {
+            updateHoverAt(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    };
+
+    const handleSelectProduct = (item) => {
+        setSelectedProduct(item);
+        selectedProductRef.current = item;
+        drawChart(topProductsRef.current, hoveredIndexRef.current, item);
     };
 
     const handleExportExcel = async () => {
@@ -210,15 +313,24 @@ function IaPreditivaTab({ categories, showToast }) {
             {/* Top Chart Card */}
             <div className="dash-card main-chart-card">
                 <div className="chart-container-wrap">
-                    <canvas ref={canvasRef}></canvas>
-                    <div
-                        className="chart-tooltip-bubble"
-                        style={{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }}
-                    >
-                        <div className="tooltip-title">{tooltipData.title}</div>
-                        <div className="tooltip-price">{tooltipData.price}</div>
-                        <div className="tooltip-sold">{tooltipData.sold}</div>
-                    </div>
+                    <canvas
+                        ref={canvasRef}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                        onTouchStart={handleTouchMove}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleMouseLeave}
+                    ></canvas>
+                    {tooltipData.visible && (
+                        <div
+                            className="chart-tooltip-bubble"
+                            style={{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }}
+                        >
+                            <div className="tooltip-title">{tooltipData.title}</div>
+                            <div className="tooltip-price">{tooltipData.price}</div>
+                            <div className="tooltip-sold">{tooltipData.sold}</div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Controles Laterais */}
@@ -254,7 +366,13 @@ function IaPreditivaTab({ categories, showToast }) {
                             <p className="empty-msg">Carregando produtos...</p>
                         ) : (
                             topProducts.map((item) => (
-                                <div key={item.id} className="ranking-row">
+                                <div
+                                    key={item.id}
+                                    className={`ranking-row ${selectedProduct?.id === item.id ? 'active-row' : ''}`}
+                                    onClick={() => handleSelectProduct(item)}
+                                    style={{ cursor: 'pointer' }}
+                                    title="Clique para destacar no gráfico"
+                                >
                                     <div className="ranking-row-left">
                                         <span className="ranking-num">{item.rank}.</span>
                                         <span className="ranking-title">{item.title}</span>

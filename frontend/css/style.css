@@ -883,6 +883,20 @@ canvas {
     pointer-events: none;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 212, 255, 0.4);
     z-index: 10;
+    transform: translate(-50%, -100%);
+    white-space: nowrap;
+    animation: fadeInBubble 0.15s ease-out;
+}
+
+@keyframes fadeInBubble {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -90%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+    }
 }
 
 .tooltip-title {
@@ -1009,6 +1023,12 @@ canvas {
 .ranking-row:hover {
     border-color: #00d4ff;
     background: #0c2b52;
+}
+
+.ranking-row.active-row {
+    border-color: #00d4ff;
+    background: #0f3565;
+    box-shadow: 0 0 14px rgba(0, 212, 255, 0.35);
 }
 
 .ranking-row-left {
