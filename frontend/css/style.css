@@ -867,7 +867,8 @@ canvas {
     max-width: 100%;
 }
 
-.chart-container-wrap canvas {
+.chart-container-wrap canvas,
+.specific-chart-wrap canvas {
     width: 100% !important;
     height: 100% !important;
     display: block;
@@ -1430,6 +1431,7 @@ canvas {
     width: 100%;
     height: 300px;
     margin-bottom: 24px;
+    overflow: hidden;
 }
 
 .specific-chart-tooltip {
