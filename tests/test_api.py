@@ -124,15 +124,45 @@ def test_forecast_predict_xgboost(client):
     assert data["total_projected_revenue"] > 0
     assert "confidence_min" in data["days"][0]
     assert "confidence_max" in data["days"][0]
+    # Testar Explicabilidade IA
+    assert "explanation" in data
+    assert data["explanation"] is not None
+    assert "summary" in data["explanation"]
+    assert "primary_driver" in data["explanation"]
+    assert len(data["explanation"]["factors"]) == 4
 
 
 def test_forecast_ranking(client):
-    """Testa ranking preditivo de 30 dias."""
+    """Testa ranking preditivo de 30 dias com explicabilidade."""
     response = client.get("/api/v1/forecast/ranking?horizon_days=30")
     assert response.status_code == 200
     data = response.json()
     assert len(data["top_overall"]) <= 7
     assert isinstance(data["top_by_category"], dict)
+    if data["top_overall"]:
+        first_item = data["top_overall"][0]
+        assert "rank_reason" in first_item
+        assert "key_driver" in first_item
+        assert first_item["rank"] == 1
+
+
+def test_forecast_compare_endpoint(client):
+    """Testa comparador preditivo lado a lado (Produto A vs B)."""
+    response = client.post("/api/v1/forecast/compare", json={
+        "product_id_a": 1,
+        "product_id_b": 2,
+        "horizon_days": 14
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["horizon_days"] == 14
+    assert data["product_a"]["product_id"] == 1
+    assert data["product_b"]["product_id"] == 2
+    assert "verdict" in data
+    assert "demand_leader" in data
+    assert "revenue_leader" in data
+    assert data["demand_difference"] >= 0
+    assert data["revenue_difference"] >= 0
 
 
 def test_trends_search(client):
@@ -140,3 +170,17 @@ def test_trends_search(client):
     response = client.get("/api/v1/trends/search?limit=10")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
+
+def test_discover_live_products(client):
+    """Testa descoberta e importação em tempo real de produtos da Amazon/Mercado Livre."""
+    response = client.post("/api/v1/products/discover-live", json={
+        "query": "Monitor Gamer 144Hz",
+        "limit": 3
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total_found"] > 0
+    assert len(data["products"]) > 0
+    assert "Monitor" in data["products"][0]["title"] or "Gamer" in data["products"][0]["title"]
+

@@ -92,6 +92,8 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         };
     }, [forecast]);
 
+    const [discovering, setDiscovering] = React.useState(false);
+
     const handleSearchInput = (val) => {
         setSearchQuery(val);
         if (!val.trim()) {
@@ -100,12 +102,29 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
             return;
         }
 
-        const matches = (products || []).filter((p) =>
-            p.title.toLowerCase().includes(val.toLowerCase()) ||
-            (p.category && p.category.toLowerCase().includes(val.toLowerCase()))
-        ).slice(0, 6);
+        const rawTokens = val.toLowerCase().trim().split(/\s+/).filter((t) => t.length >= 2);
 
-        setSearchResults(matches);
+        const scoredMatches = (products || []).map((p) => {
+            const titleLower = p.title.toLowerCase();
+            const catLower = (p.category || '').toLowerCase();
+            let score = 0;
+
+            if (titleLower.includes(val.toLowerCase().trim())) {
+                score += 10;
+            }
+
+            rawTokens.forEach((token) => {
+                if (titleLower.includes(token)) score += 3;
+                if (catLower.includes(token)) score += 1;
+            });
+
+            return { product: p, score };
+        }).filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.product)
+          .slice(0, 6);
+
+        setSearchResults(scoredMatches);
         setShowDropdown(true);
     };
 
@@ -114,6 +133,31 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         selectedProductRef.current = prod;
         setSearchQuery(prod.title);
         setShowDropdown(false);
+    };
+
+    const handleLiveDiscovery = async (term) => {
+        const q = term || searchQuery;
+        if (!q || !q.trim()) return;
+
+        setDiscovering(true);
+        showToast(`Buscando "${q.trim()}" em tempo real na Amazon e Mercado Livre...`, 'info', 4000);
+        try {
+            const res = await window.apiService.products.discoverLive(q.trim(), 5);
+            if (res && res.products && res.products.length > 0) {
+                const first = res.products[0];
+                setSelectedProduct(first);
+                setSearchQuery(first.title);
+                setShowDropdown(false);
+                showToast(`${res.total_found} produto(s) sincronizados com sucesso!`, 'success', 5000);
+                runForecast(first.id, horizonDays);
+            } else {
+                showToast('Nenhum produto novo encontrado para este termo.', 'warning');
+            }
+        } catch (err) {
+            showToast('Erro na busca em tempo real: ' + err.message, 'error');
+        } finally {
+            setDiscovering(false);
+        }
     };
 
     const runForecast = async (productId, days) => {
@@ -406,17 +450,30 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <input
                         type="text"
                         className="specific-search-input"
-                        placeholder="Digite o produto que deseja fazer análise..."
+                        placeholder="Digite qualquer produto do mercado (ex: RTX 4070, Air Fryer, Kindle, Tênis Nike)..."
                         value={searchQuery}
                         onChange={(e) => handleSearchInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleLiveDiscovery(searchQuery);
+                            }
+                        }}
                     />
-                    <svg className="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
+                    <button
+                        type="button"
+                        className="btn-live-search"
+                        onClick={() => handleLiveDiscovery(searchQuery)}
+                        title="Buscar produto em tempo real na Amazon & Mercado Livre"
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 8px', display: 'flex', alignItems: 'center' }}
+                    >
+                        <svg className="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
                 </div>
 
-                {showDropdown && searchResults.length > 0 && (
+                {showDropdown && (
                     <div className="search-results-dropdown">
                         {searchResults.map((prod) => (
                             <div
@@ -430,6 +487,27 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                 </span>
                             </div>
                         ))}
+                        {searchQuery.trim().length > 0 && (
+                            <div
+                                className="search-item-live-sync"
+                                onClick={() => handleLiveDiscovery(searchQuery)}
+                                style={{
+                                    padding: '12px 16px',
+                                    borderTop: '1px solid rgba(0, 212, 255, 0.25)',
+                                    background: 'linear-gradient(90deg, rgba(0, 212, 255, 0.12), rgba(0, 114, 255, 0.08))',
+                                    color: '#00f0ff',
+                                    fontWeight: 700,
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px'
+                                }}
+                            >
+                                <span>⚡</span>
+                                <span>{discovering ? 'Buscando nas APIs...' : `Buscar "${searchQuery}" em tempo real na Amazon & Mercado Livre`}</span>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -509,7 +587,232 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                         </span>
                     </div>
                 </div>
+
+                {/* AI Explainability Section (Por que vai vender essa quantidade?) */}
+                {forecast && forecast.explanation && (
+                    <div className="ai-explainability-card">
+                        <div className="ai-explain-header">
+                            <div className="ai-badge-group">
+                                <span className="ai-badge-robot">🤖 IA EXPLICABILIDADE</span>
+                                <span className="ai-badge-driver">Fator Principal: {forecast.explanation.primary_driver}</span>
+                            </div>
+                            <h3 className="ai-explain-title">Por que este produto vai vender {forecast.total_predicted_units} unidades nos próximos {horizonDays} dias?</h3>
+                        </div>
+
+                        <p className="ai-explain-summary">
+                            {forecast.explanation.summary}
+                        </p>
+
+                        <div className="ai-factors-grid">
+                            {forecast.explanation.factors && forecast.explanation.factors.map((factor, idx) => (
+                                <div key={idx} className="ai-factor-card">
+                                    <div className="ai-factor-header">
+                                        <span className="ai-factor-name">{factor.name}</span>
+                                        <span className={`ai-factor-impact impact-${factor.impact}`}>
+                                            {factor.impact.toUpperCase()} ({factor.weight_pct}%)
+                                        </span>
+                                    </div>
+                                    <div className="ai-factor-bar-bg">
+                                        <div
+                                            className={`ai-factor-bar-fill fill-${factor.impact}`}
+                                            style={{ width: `${factor.weight_pct}%` }}
+                                        ></div>
+                                    </div>
+                                    <p className="ai-factor-desc">{factor.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
+
+            {/* Comparador Preditivo de Produtos (Recurso 4) */}
+            <PredictiveComparator products={products} showToast={showToast} />
         </section>
+    );
+}
+
+/**
+ * Subcomponente: Comparador Preditivo de Produtos (A vs B)
+ */
+function PredictiveComparator({ products, showToast }) {
+    const [productAId, setProductAId] = React.useState('');
+    const [productBId, setProductBId] = React.useState('');
+    const [compareHorizon, setCompareHorizon] = React.useState(30);
+    const [comparing, setComparing] = React.useState(false);
+    const [compareResult, setCompareResult] = React.useState(null);
+
+    React.useEffect(() => {
+        if (products && products.length >= 2 && !productAId && !productBId) {
+            setProductAId(products[0].id.toString());
+            setProductBId(products[1].id.toString());
+        }
+    }, [products]);
+
+    const handleCompare = async () => {
+        if (!productAId || !productBId) {
+            showToast('Selecione dois produtos para comparar.', 'warning');
+            return;
+        }
+        if (productAId === productBId) {
+            showToast('Selecione dois produtos diferentes para a comparação.', 'warning');
+            return;
+        }
+
+        setComparing(true);
+        try {
+            showToast('Calculando projeção comparativa com IA...', 'info', 2000);
+            const data = await window.apiService.forecast.compare(productAId, productBId, compareHorizon);
+            setCompareResult(data);
+            showToast('Comparação preditiva concluída!', 'success');
+        } catch (err) {
+            showToast('Erro ao comparar: ' + err.message, 'error');
+        } finally {
+            setComparing(false);
+        }
+    };
+
+    return (
+        <div className="dash-card comparator-card" style={{ marginTop: '24px' }}>
+            <div className="comparator-header">
+                <div className="comparator-badge">⚡ RECURSO PREDITIVO</div>
+                <h2 className="comparator-title">COMPARADOR PREDITIVO DE PRODUTOS (A vs B)</h2>
+                <p className="comparator-subtitle">
+                    Compare projeções de demanda e receita lado a lado para tomar decisões estratégicas de estoque e compra.
+                </p>
+            </div>
+
+            <div className="comparator-selectors-grid">
+                <div className="comparator-select-box">
+                    <label className="comparator-label">PRODUTO A:</label>
+                    <select
+                        className="comparator-select"
+                        value={productAId}
+                        onChange={(e) => setProductAId(e.target.value)}
+                    >
+                        {(products || []).map((p) => (
+                            <option key={`a-${p.id}`} value={p.id}>
+                                {p.title} - R$ {p.price.toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="comparator-vs-badge">VS</div>
+
+                <div className="comparator-select-box">
+                    <label className="comparator-label">PRODUTO B:</label>
+                    <select
+                        className="comparator-select"
+                        value={productBId}
+                        onChange={(e) => setProductBId(e.target.value)}
+                    >
+                        {(products || []).map((p) => (
+                            <option key={`b-${p.id}`} value={p.id}>
+                                {p.title} - R$ {p.price.toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="comparator-action-box">
+                    <div className="comparator-horizon-btns">
+                        {[7, 14, 30].map((d) => (
+                            <button
+                                key={d}
+                                type="button"
+                                className={`comparator-hbtn ${compareHorizon === d ? 'active' : ''}`}
+                                onClick={() => setCompareHorizon(d)}
+                            >
+                                {d}d
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        type="button"
+                        className="btn-run-compare"
+                        onClick={handleCompare}
+                        disabled={comparing}
+                    >
+                        {comparing ? 'Analisando...' : 'Comparar com IA'}
+                    </button>
+                </div>
+            </div>
+
+            {compareResult && (
+                <div className="compare-results-area">
+                    {/* Verdict Banner */}
+                    <div className="compare-verdict-banner">
+                        <span className="verdict-icon">🏆</span>
+                        <div className="verdict-text">
+                            <strong>Veredito da IA ({compareResult.horizon_days} dias):</strong> {compareResult.verdict}
+                        </div>
+                    </div>
+
+                    {/* Side-by-side Cards */}
+                    <div className="compare-side-by-side">
+                        {/* Product A */}
+                        <div className={`compare-prod-card ${compareResult.product_a.is_volume_leader ? 'is-winner' : ''}`}>
+                            {compareResult.product_a.is_volume_leader && (
+                                <div className="winner-tag">👑 Maior Volume</div>
+                            )}
+                            <h3 className="compare-prod-title">{compareResult.product_a.title}</h3>
+                            <div className="compare-prod-category">{compareResult.product_a.category}</div>
+
+                            <div className="compare-metrics-list">
+                                <div className="compare-metric">
+                                    <span className="c-label">Preço Unitário:</span>
+                                    <span className="c-val">R$ {compareResult.product_a.price.toFixed(2)}</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Demanda Prevista:</span>
+                                    <span className="c-val text-cyan">{compareResult.product_a.predicted_units} un</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Faturamento Projetado:</span>
+                                    <span className="c-val text-emerald">
+                                        R$ {compareResult.product_a.projected_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <div className="compare-metric">
+                                    <span className="c-label">Média Diária:</span>
+                                    <span className="c-val">{compareResult.product_a.daily_average} un/dia</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Product B */}
+                        <div className={`compare-prod-card ${compareResult.product_b.is_volume_leader ? 'is-winner' : ''}`}>
+                            {compareResult.product_b.is_volume_leader && (
+                                <div className="winner-tag">👑 Maior Volume</div>
+                            )}
+                            <h3 className="compare-prod-title">{compareResult.product_b.title}</h3>
+                            <div className="compare-prod-category">{compareResult.product_b.category}</div>
+
+                            <div className="compare-metrics-list">
+                                <div className="compare-metric">
+                                    <span className="c-label">Preço Unitário:</span>
+                                    <span className="c-val">R$ {compareResult.product_b.price.toFixed(2)}</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Demanda Prevista:</span>
+                                    <span className="c-val text-cyan">{compareResult.product_b.predicted_units} un</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Faturamento Projetado:</span>
+                                    <span className="c-val text-emerald">
+                                        R$ {compareResult.product_b.projected_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <div className="compare-metric">
+                                    <span className="c-label">Média Diária:</span>
+                                    <span className="c-val">{compareResult.product_b.daily_average} un/dia</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

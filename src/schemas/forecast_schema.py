@@ -18,6 +18,19 @@ class DailyForecastItem(BaseModel):
     projected_revenue: float
 
 
+class ExplanationFactor(BaseModel):
+    name: str
+    weight_pct: int
+    impact: str
+    description: str
+
+
+class ForecastExplanation(BaseModel):
+    summary: str
+    primary_driver: str
+    factors: List[ExplanationFactor]
+
+
 class ProductForecastResponse(BaseModel):
     product_id: int
     product_title: str
@@ -33,6 +46,7 @@ class ProductForecastResponse(BaseModel):
     daily_average: float
     recommended_stock_buffer: int
     days: List[DailyForecastItem]
+    explanation: Optional[ForecastExplanation] = None
 
 
 class ForecastSummaryResponse(BaseModel):
@@ -51,9 +65,28 @@ class RankingForecastItem(BaseModel):
     price: float
     projected_units: int
     projected_revenue: float
+    rank_reason: Optional[str] = None
+    key_driver: Optional[str] = None
 
 
 class ForecastRankingResponse(BaseModel):
     horizon_days: int
     top_overall: List[RankingForecastItem]
     top_by_category: Dict[str, List[RankingForecastItem]]
+
+
+class CompareForecastRequest(BaseModel):
+    product_id_a: int
+    product_id_b: int
+    horizon_days: Literal[7, 14, 30] = 30
+
+
+class CompareForecastResponse(BaseModel):
+    horizon_days: int
+    product_a: ProductForecastResponse
+    product_b: ProductForecastResponse
+    revenue_difference: float
+    revenue_leader: str
+    demand_difference: int
+    demand_leader: str
+    verdict: str
