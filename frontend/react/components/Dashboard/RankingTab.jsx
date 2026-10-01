@@ -41,9 +41,6 @@ function RankingTab({ categories }) {
                 <div className="dash-card ranking-col-card">
                     <div className="ranking-header-wrap">
                         <h2 className="ranking-card-title">TOP 7 PRODUTOS<br />PRÓXIMOS 30 DIAS</h2>
-                        <span className="ranking-hint-badge">
-                            <i className="ph ph-lightbulb" style={{ fontSize: '13px' }}></i> Clique em um produto para ver a explicação da IA
-                        </span>
                     </div>
                     
                     <div className="ranking-items-list">
@@ -84,9 +81,6 @@ function RankingTab({ categories }) {
                 <div className="dash-card ranking-col-card">
                     <div className="ranking-header-wrap">
                         <h2 className="ranking-card-title">TOP 5 PRODUTOS<br />POR CATEGORIA</h2>
-                        <span className="ranking-hint-badge">
-                            <i className="ph ph-lightbulb" style={{ fontSize: '13px' }}></i> Clique para ver o motivo da IA
-                        </span>
                     </div>
 
                     <div className="ranking-items-list">
