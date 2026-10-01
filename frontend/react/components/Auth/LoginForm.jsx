@@ -4,8 +4,8 @@
  */
 
 function LoginForm({ onSwitchView, onLoginSuccess, showToast }) {
-    const [email, setEmail] = React.useState('admin@trendecommerce.com');
-    const [password, setPassword] = React.useState('admin123');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
     const [errors, setErrors] = React.useState({});
     const [loading, setLoading] = React.useState(false);
