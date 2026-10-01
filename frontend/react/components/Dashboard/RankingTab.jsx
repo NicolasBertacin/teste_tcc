@@ -41,7 +41,9 @@ function RankingTab({ categories }) {
                 <div className="dash-card ranking-col-card">
                     <div className="ranking-header-wrap">
                         <h2 className="ranking-card-title">TOP 7 PRODUTOS<br />PRÓXIMOS 30 DIAS</h2>
-                        <span className="ranking-hint-badge">💡 Clique em um produto para ver a explicação da IA</span>
+                        <span className="ranking-hint-badge">
+                            <i className="ph ph-lightbulb" style={{ fontSize: '13px' }}></i> Clique em um produto para ver a explicação da IA
+                        </span>
                     </div>
                     
                     <div className="ranking-items-list">
@@ -60,7 +62,9 @@ function RankingTab({ categories }) {
                                         <div className="item-info">
                                             <span className="item-title">{item.title}</span>
                                             {item.key_driver && (
-                                                <span className="item-driver-pill">⚡ {item.key_driver}</span>
+                                                <span className="item-driver-pill">
+                                                    <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
@@ -80,7 +84,9 @@ function RankingTab({ categories }) {
                 <div className="dash-card ranking-col-card">
                     <div className="ranking-header-wrap">
                         <h2 className="ranking-card-title">TOP 5 PRODUTOS<br />POR CATEGORIA</h2>
-                        <span className="ranking-hint-badge">💡 Clique para ver o motivo da IA</span>
+                        <span className="ranking-hint-badge">
+                            <i className="ph ph-lightbulb" style={{ fontSize: '13px' }}></i> Clique para ver o motivo da IA
+                        </span>
                     </div>
 
                     <div className="ranking-items-list">
@@ -99,7 +105,9 @@ function RankingTab({ categories }) {
                                         <div className="item-info">
                                             <span className="item-title">{item.title}</span>
                                             {item.key_driver && (
-                                                <span className="item-driver-pill">⚡ {item.key_driver}</span>
+                                                <span className="item-driver-pill">
+                                                    <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
@@ -133,7 +141,9 @@ function RankingTab({ categories }) {
                     <div className="ranking-modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="ranking-modal-header">
                             <div className="modal-badge-row">
-                                <span className="modal-rank-badge">#{selectedItemModal.rank} NO RANKING</span>
+                                <span className="modal-rank-badge">
+                                    <i className="ph ph-trophy" style={{ fontSize: '13px', marginRight: '4px' }}></i> #{selectedItemModal.rank} NO RANKING
+                                </span>
                                 <span className="modal-category-badge">{selectedItemModal.category}</span>
                             </div>
                             <button
@@ -141,7 +151,7 @@ function RankingTab({ categories }) {
                                 className="modal-close-btn"
                                 onClick={() => setSelectedItemModal(null)}
                             >
-                                ✕
+                                <i className="ph ph-x" style={{ fontSize: '18px' }}></i>
                             </button>
                         </div>
 
@@ -149,7 +159,9 @@ function RankingTab({ categories }) {
 
                         {/* Rationale Banner */}
                         <div className="modal-reason-box">
-                            <div className="reason-label">🎯 MOTIVO DE ESTAR NO TOP RANKING:</div>
+                            <div className="reason-label">
+                                <i className="ph ph-target" style={{ fontSize: '13px', marginRight: '4px' }}></i> MOTIVO DE ESTAR NO TOP RANKING:
+                            </div>
                             <p className="reason-text">
                                 {selectedItemModal.rank_reason || `Produto classificado na posição ${selectedItemModal.rank} com alta probabilidade de conversão e forte tração de mercado nos próximos 30 dias.`}
                             </p>
@@ -181,7 +193,9 @@ function RankingTab({ categories }) {
 
                         {/* Explicação de Dinâmica Preditiva */}
                         <div className="modal-dynamics-box">
-                            <h4 className="dynamics-title">📊 Dinâmica de Vendas Prevista pelo Modelo IA:</h4>
+                            <h4 className="dynamics-title">
+                                <i className="ph ph-chart-bar" style={{ fontSize: '15px', marginRight: '5px' }}></i> Dinâmica de Vendas Prevista pelo Modelo IA:
+                            </h4>
                             <p className="dynamics-desc">
                                 A projeção considera uma média diária consistente de {(selectedItemModal.predicted_units / 30).toFixed(1)} un/dia, com picos impulsionados por {selectedItemModal.key_driver?.toLowerCase() || 'tendência orgânica'}. A recomendação é manter estoque de segurança calibrado em pelo menos {Math.round(selectedItemModal.predicted_units * 1.25)} unidades para evitar ruptura.
                             </p>

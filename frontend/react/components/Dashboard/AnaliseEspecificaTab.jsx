@@ -593,11 +593,12 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <div className="ai-explainability-card">
                         <div className="ai-explain-top-bar">
                             <div className="ai-top-badge">
-                                <span className="ai-pulse-dot"></span>
+                                <i className="ph ph-sparkle" style={{ fontSize: '14px' }}></i>
                                 <span>DIAGNÓSTICO PREDITIVO DA IA</span>
                             </div>
                             <div className="ai-driver-pill">
-                                <span>⚡ Fator Dominante:</span>
+                                <i className="ph ph-lightning" style={{ color: '#00f0ff', fontSize: '14px' }}></i>
+                                <span>Fator Dominante:</span>
                                 <strong>{forecast.explanation.primary_driver}</strong>
                             </div>
                         </div>
@@ -611,15 +612,24 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                             </p>
                         </div>
 
-                        {/* 4 Decision Factor Cards in Balanced 4-Column Grid */}
+                        {/* 4 Decision Factor Cards with Icon Library */}
                         <div className="ai-factors-grid-4col">
                             {(forecast.explanation.factors || []).map((factor, idx) => {
-                                const icons = ['📅', '📈', '🏷️', '🔍'];
+                                const iconClasses = [
+                                    'ph ph-calendar-check',
+                                    'ph ph-chart-line-up',
+                                    'ph ph-tag',
+                                    'ph ph-magnifying-glass'
+                                ];
+                                const iconColors = ['#38bdf8', '#10b981', '#f59e0b', '#a855f7'];
+
                                 return (
                                     <div key={idx} className="ai-factor-card-v2">
                                         <div className="factor-top-row">
                                             <div className="factor-icon-title">
-                                                <span className="factor-emoji">{icons[idx % icons.length]}</span>
+                                                <div className="factor-icon-wrap" style={{ color: iconColors[idx % iconColors.length] }}>
+                                                    <i className={iconClasses[idx % iconClasses.length]}></i>
+                                                </div>
                                                 <span className="factor-title-text">{factor.name.split('(')[0].trim()}</span>
                                             </div>
                                             <span className={`factor-impact-badge impact-${(factor.impact || 'positivo').toLowerCase().replace(/[^a-z]/g, '')}`}>
