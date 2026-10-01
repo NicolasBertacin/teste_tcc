@@ -591,36 +591,58 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                 {/* AI Explainability Section (Por que vai vender essa quantidade?) */}
                 {forecast && forecast.explanation && (
                     <div className="ai-explainability-card">
-                        <div className="ai-explain-header">
-                            <div className="ai-badge-group">
-                                <span className="ai-badge-robot">🤖 IA EXPLICABILIDADE</span>
-                                <span className="ai-badge-driver">Fator Principal: {forecast.explanation.primary_driver}</span>
+                        <div className="ai-explain-top-bar">
+                            <div className="ai-top-badge">
+                                <span className="ai-pulse-dot"></span>
+                                <span>DIAGNÓSTICO PREDITIVO DA IA</span>
                             </div>
-                            <h3 className="ai-explain-title">Por que este produto vai vender {forecast.total_predicted_units} unidades nos próximos {horizonDays} dias?</h3>
+                            <div className="ai-driver-pill">
+                                <span>⚡ Fator Dominante:</span>
+                                <strong>{forecast.explanation.primary_driver}</strong>
+                            </div>
                         </div>
 
-                        <p className="ai-explain-summary">
-                            {forecast.explanation.summary}
-                        </p>
+                        <div className="ai-explain-hero">
+                            <h3 className="ai-explain-headline">
+                                Projeção de <span className="text-cyan">{forecast.total_predicted_units} unidades</span> nos próximos {horizonDays} dias
+                            </h3>
+                            <p className="ai-explain-subtext">
+                                {forecast.explanation.summary}
+                            </p>
+                        </div>
 
-                        <div className="ai-factors-grid">
-                            {forecast.explanation.factors && forecast.explanation.factors.map((factor, idx) => (
-                                <div key={idx} className="ai-factor-card">
-                                    <div className="ai-factor-header">
-                                        <span className="ai-factor-name">{factor.name}</span>
-                                        <span className={`ai-factor-impact impact-${factor.impact}`}>
-                                            {factor.impact.toUpperCase()} ({factor.weight_pct}%)
-                                        </span>
+                        {/* 4 Decision Factor Cards in Balanced 4-Column Grid */}
+                        <div className="ai-factors-grid-4col">
+                            {(forecast.explanation.factors || []).map((factor, idx) => {
+                                const icons = ['📅', '📈', '🏷️', '🔍'];
+                                return (
+                                    <div key={idx} className="ai-factor-card-v2">
+                                        <div className="factor-top-row">
+                                            <div className="factor-icon-title">
+                                                <span className="factor-emoji">{icons[idx % icons.length]}</span>
+                                                <span className="factor-title-text">{factor.name.split('(')[0].trim()}</span>
+                                            </div>
+                                            <span className={`factor-impact-badge impact-${(factor.impact || 'positivo').toLowerCase().replace(/[^a-z]/g, '')}`}>
+                                                {factor.weight_pct}%
+                                            </span>
+                                        </div>
+
+                                        <div className="factor-progress-track">
+                                            <div
+                                                className={`factor-progress-fill fill-${(factor.impact || 'positivo').toLowerCase().replace(/[^a-z]/g, '')}`}
+                                                style={{ width: `${factor.weight_pct}%` }}
+                                            ></div>
+                                        </div>
+
+                                        <div className="factor-impact-label">
+                                            <span>Impacto:</span>
+                                            <strong>{factor.impact}</strong>
+                                        </div>
+
+                                        <p className="factor-description-text">{factor.description}</p>
                                     </div>
-                                    <div className="ai-factor-bar-bg">
-                                        <div
-                                            className={`ai-factor-bar-fill fill-${factor.impact}`}
-                                            style={{ width: `${factor.weight_pct}%` }}
-                                        ></div>
-                                    </div>
-                                    <p className="ai-factor-desc">{factor.description}</p>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
