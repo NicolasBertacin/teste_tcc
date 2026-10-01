@@ -18,10 +18,6 @@ function TopHeader({ isSidebarOpen = true, onToggleSidebar }) {
                     <span className="toggle-dot"></span>
                     <span className="toggle-dot"></span>
                 </button>
-                <div className="hud-status-wrapper">
-                    <span className="hud-status-dot"></span>
-                    <span className="hud-status-text">MOTOR PREDITIVO XGBOOST ATIVO</span>
-                </div>
             </div>
             <div className="dash-header-right">
                 <div className="dash-brand-logo">
