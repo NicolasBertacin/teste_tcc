@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     db_manager = get_db_instance()
     Base.metadata.create_all(db_manager.engine)
 
-    # Garantir usuário administrador padrão
+    # Garantir usuário administrador padrão e dados iniciais
     with db_manager.session() as session:
         admin_user = session.query(User).filter(User.email == "admin@trendecommerce.com").first()
         if not admin_user:
@@ -32,6 +32,10 @@ async def lifespan(app: FastAPI):
             )
             session.add(admin_user)
             print("[TrendCommerce AI] Usuário administrador padrão (admin@trendecommerce.com) criado com sucesso.")
+
+        # Injetar catálogo de produtos e histórico caso o banco esteja vazio
+        from src.database.seed_loader import seed_database_if_empty
+        seed_database_if_empty(session)
     yield
 
 
