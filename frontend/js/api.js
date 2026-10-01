@@ -3,9 +3,24 @@
  * Centraliza requisições HTTP para os endpoints FastAPI (/api/v1).
  */
 
-const API_BASE_URL = (window.location.port === '8000' || window.location.port === '5500')
-    ? `${window.location.origin}/api/v1`
-    : 'http://localhost:8000/api/v1';
+const API_BASE_URL = (() => {
+    if (window.TRENDCOMMERCE_API_URL) return window.TRENDCOMMERCE_API_URL;
+    const customUrl = localStorage.getItem('trendecommerce_api_url');
+    if (customUrl) return customUrl.replace(/\/+$/, '');
+
+    // Se estiver rodando na porta 8000 ou 5500 (mesmo servidor backend)
+    if (window.location.port === '8000' || window.location.port === '5500') {
+        return `${window.location.origin}/api/v1`;
+    }
+
+    // Se estiver em localhost/127.0.0.1 em outra porta de frontend (ex: 3000 ou Live Server 5501)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:8000/api/v1';
+    }
+
+    // Em produção (ex: Vercel): utiliza rota relativa /api/v1
+    return `${window.location.origin}/api/v1`;
+})();
 
 class ApiClient {
     constructor() {

@@ -21,13 +21,25 @@ from src.schemas.forecast_schema import (
 router = APIRouter(prefix="/forecast", tags=["Previsão de Demanda & IA"])
 
 
+_predict_cache: dict[tuple[int, int], tuple[float, ProductForecastResponse]] = {}
+_summary_cache: dict[int, tuple[float, ForecastSummaryResponse]] = {}
+_ranking_cache: dict[int, tuple[float, ForecastRankingResponse]] = {}
+
+
 @router.post("/predict", response_model=ProductForecastResponse, summary="Gerar previsão de demanda com XGBoost")
 def predict_product_demand(
     request: ForecastRequest,
     db: Session = Depends(get_db),
     forecaster: FutureForecaster = Depends(get_ml_forecaster)
 ):
-    """Executa a simulação autoregressiva do XGBoost com cálculo de faixas de confiança (Min/Max)."""
+    """Executa a simulação autoregressiva do XGBoost com cálculo de faixas de confiança (Min/Max) e cache de alta velocidade."""
+    now_ts = time.time()
+    cache_key = (request.product_id, request.horizon_days)
+    if cache_key in _predict_cache:
+        cached_time, cached_val = _predict_cache[cache_key]
+        if now_ts - cached_time < 180:  # 3 min cache
+            return cached_val
+
     product = db.query(Product).filter(Product.id == request.product_id).first()
     if not product:
         raise HTTPException(
@@ -74,7 +86,7 @@ def predict_product_demand(
             horizon_days=request.horizon_days
         )
 
-        return ProductForecastResponse(
+        resp = ProductForecastResponse(
             product_id=forecast_result.product_id,
             product_title=forecast_result.product_title,
             category=forecast_result.category,
@@ -101,6 +113,8 @@ def predict_product_demand(
             ],
             explanation=forecast_result.explanation
         )
+        _predict_cache[cache_key] = (now_ts, resp)
+        return resp
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -115,6 +129,12 @@ def get_forecast_summary(
     forecaster: FutureForecaster = Depends(get_ml_forecaster)
 ):
     """Gera projeção consolidada para todos os produtos ativos."""
+    now_ts = time.time()
+    if horizon_days in _summary_cache:
+        cached_time, cached_val = _summary_cache[horizon_days]
+        if now_ts - cached_time < 180:
+            return cached_val
+
     products = db.query(Product).filter(Product.is_active.is_(True)).all()
     sales = db.query(SalesHistory).all()
 
@@ -185,13 +205,15 @@ def get_forecast_summary(
         for f in forecasts
     ]
 
-    return ForecastSummaryResponse(
+    summary_result = ForecastSummaryResponse(
         horizon_days=horizon_days,
         total_products=len(items),
         total_projected_revenue=round(total_rev, 2),
         total_predicted_units=total_units,
         items=items
     )
+    _summary_cache[horizon_days] = (now_ts, summary_result)
+    return summary_result
 
 
 _ranking_cache: dict[int, tuple[float, ForecastRankingResponse]] = {}

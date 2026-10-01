@@ -9,6 +9,7 @@ function LoginForm({ onSwitchView, onLoginSuccess, showToast }) {
     const [showPassword, setShowPassword] = React.useState(false);
     const [errors, setErrors] = React.useState({});
     const [loading, setLoading] = React.useState(false);
+    const [coldStartNotice, setColdStartNotice] = React.useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,16 +25,26 @@ function LoginForm({ onSwitchView, onLoginSuccess, showToast }) {
 
         setErrors({});
         setLoading(true);
+        setColdStartNotice(false);
+
+        // Alerta de Cold Start caso a API na nuvem demore mais de 3.5s para responder
+        const coldStartTimer = setTimeout(() => {
+            setColdStartNotice(true);
+        }, 3500);
 
         try {
             const data = await window.apiService.auth.login(email.trim(), password);
+            clearTimeout(coldStartTimer);
             showToast(`Bem-vindo, ${data.user.email}!`, 'success');
             onLoginSuccess(data.user);
         } catch (err) {
+            clearTimeout(coldStartTimer);
             setErrors({ password: err.message || 'Email ou senha incorretos.' });
             showToast(err.message || 'Falha ao autenticar.', 'error');
         } finally {
+            clearTimeout(coldStartTimer);
             setLoading(false);
+            setColdStartNotice(false);
         }
     };
 
@@ -77,6 +88,23 @@ function LoginForm({ onSwitchView, onLoginSuccess, showToast }) {
             <button type="submit" className="button-right" disabled={loading}>
                 {loading ? <span className="login-spinner"></span> : 'ENTRAR'}
             </button>
+
+            {coldStartNotice && (
+                <div style={{
+                    marginTop: '12px',
+                    padding: '8px 12px',
+                    background: 'rgba(0, 240, 255, 0.08)',
+                    border: '1px solid rgba(0, 240, 255, 0.25)',
+                    borderRadius: '8px',
+                    color: '#00f0ff',
+                    fontSize: '11px',
+                    lineHeight: '1.4',
+                    textAlign: 'center'
+                }}>
+                    <i className="ph ph-lightning" style={{ marginRight: '4px' }}></i>
+                    Conectando ao servidor em nuvem... Isso pode levar alguns instantes na primeira inicialização.
+                </div>
+            )}
 
             <span
                 className="login-span"

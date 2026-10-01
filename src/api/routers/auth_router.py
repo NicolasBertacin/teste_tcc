@@ -25,13 +25,20 @@ from src.schemas.auth_schema import (
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
-# Armazenamento em memória para códigos OTP de recuperação de senha
+# Armazenamento em memória para códigos OTP de recuperação de senha e tentativas de login
 _reset_codes: Dict[str, str] = {}
+_login_attempts: Dict[str, list[float]] = {}
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED, summary="Cadastrar novo usuário")
 def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
     """Cria uma nova conta de usuário com senha criptografada em bcrypt."""
+    if len(user_data.password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A senha deve conter no mínimo 6 caracteres para maior segurança."
+        )
+
     existing = db.query(User).filter(User.email == user_data.email.lower()).first()
     if existing:
         raise HTTPException(
@@ -53,14 +60,33 @@ def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse, summary="Autenticar usuário e gerar token JWT")
 def login(credentials: LoginRequest, db: Session = Depends(get_db)):
-    """Valida as credenciais do usuário e retorna o Token JWT de acesso."""
-    user = db.query(User).filter(User.email == credentials.email.lower()).first()
+    """Valida as credenciais do usuário e retorna o Token JWT de acesso com proteção contra força bruta."""
+    import time
+    now = time.time()
+    email_key = credentials.email.lower().strip()
+
+    # Rate limiting simples: máximo 10 tentativas por minuto por email
+    attempts = _login_attempts.get(email_key, [])
+    attempts = [t for t in attempts if now - t < 60]
+    _login_attempts[email_key] = attempts
+
+    if len(attempts) >= 10:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Muitas tentativas consecutivas de login. Aguarde 1 minuto e tente novamente."
+        )
+
+    user = db.query(User).filter(User.email == email_key).first()
     if not user or not verify_password(credentials.password, user.hashed_password):
+        _login_attempts[email_key].append(now)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou senha incorretos.",
             headers={"WWW-Authenticate": "Bearer"}
         )
+
+    # Limpar tentativas ao logar com sucesso
+    _login_attempts.pop(email_key, None)
 
     if not user.is_active:
         raise HTTPException(
@@ -132,6 +158,12 @@ def reset_password(request: PasswordResetConfirmRequest, db: Session = Depends(g
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Usuário não encontrado."
+        )
+
+    if len(request.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A nova senha deve conter no mínimo 6 caracteres."
         )
 
     user.hashed_password = get_password_hash(request.new_password)
