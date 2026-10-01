@@ -140,3 +140,17 @@ def test_trends_search(client):
     response = client.get("/api/v1/trends/search?limit=10")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
+
+def test_discover_live_products(client):
+    """Testa descoberta e importação em tempo real de produtos da Amazon/Mercado Livre."""
+    response = client.post("/api/v1/products/discover-live", json={
+        "query": "Monitor Gamer 144Hz",
+        "limit": 3
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total_found"] > 0
+    assert len(data["products"]) > 0
+    assert "Monitor" in data["products"][0]["title"] or "Gamer" in data["products"][0]["title"]
+

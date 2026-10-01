@@ -55,6 +55,8 @@ function AnaliseEspecificaTab({ products, showToast }) {
         };
     }, [forecast]);
 
+    const [discovering, setDiscovering] = React.useState(false);
+
     const handleSearchInput = (val) => {
         setSearchQuery(val);
         if (!val.trim()) {
@@ -63,7 +65,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
             return;
         }
 
-        const matches = products.filter((p) =>
+        const matches = (products || []).filter((p) =>
             p.title.toLowerCase().includes(val.toLowerCase()) ||
             (p.category && p.category.toLowerCase().includes(val.toLowerCase()))
         ).slice(0, 6);
@@ -76,6 +78,31 @@ function AnaliseEspecificaTab({ products, showToast }) {
         setSelectedProduct(prod);
         setSearchQuery(prod.title);
         setShowDropdown(false);
+    };
+
+    const handleLiveDiscovery = async (term) => {
+        const q = term || searchQuery;
+        if (!q || !q.trim()) return;
+
+        setDiscovering(true);
+        showToast(`Buscando "${q.trim()}" em tempo real na Amazon e Mercado Livre...`, 'info', 4000);
+        try {
+            const res = await window.apiService.products.discoverLive(q.trim(), 5);
+            if (res && res.products && res.products.length > 0) {
+                const first = res.products[0];
+                setSelectedProduct(first);
+                setSearchQuery(first.title);
+                setShowDropdown(false);
+                showToast(`${res.total_found} produto(s) sincronizados com sucesso!`, 'success', 5000);
+                runForecast(first.id, horizonDays);
+            } else {
+                showToast('Nenhum produto novo encontrado para este termo.', 'warning');
+            }
+        } catch (err) {
+            showToast('Erro na busca em tempo real: ' + err.message, 'error');
+        } finally {
+            setDiscovering(false);
+        }
     };
 
     const runForecast = async (productId, days) => {
@@ -204,17 +231,30 @@ function AnaliseEspecificaTab({ products, showToast }) {
                     <input
                         type="text"
                         className="specific-search-input"
-                        placeholder="Digite o produto que deseja fazer análise..."
+                        placeholder="Digite qualquer produto do mercado (ex: RTX 4070, Air Fryer, Kindle, Tênis Nike)..."
                         value={searchQuery}
                         onChange={(e) => handleSearchInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleLiveDiscovery(searchQuery);
+                            }
+                        }}
                     />
-                    <svg className="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
+                    <button
+                        type="button"
+                        className="btn-live-search"
+                        onClick={() => handleLiveDiscovery(searchQuery)}
+                        title="Buscar produto em tempo real na Amazon & Mercado Livre"
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 8px', display: 'flex', alignItems: 'center' }}
+                    >
+                        <svg className="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
                 </div>
 
-                {showDropdown && searchResults.length > 0 && (
+                {showDropdown && (
                     <div className="search-results-dropdown">
                         {searchResults.map((prod) => (
                             <div
@@ -228,6 +268,27 @@ function AnaliseEspecificaTab({ products, showToast }) {
                                 </span>
                             </div>
                         ))}
+                        {searchQuery.trim().length > 0 && (
+                            <div
+                                className="search-item-live-sync"
+                                onClick={() => handleLiveDiscovery(searchQuery)}
+                                style={{
+                                    padding: '12px 16px',
+                                    borderTop: '1px solid rgba(0, 212, 255, 0.25)',
+                                    background: 'linear-gradient(90deg, rgba(0, 212, 255, 0.12), rgba(0, 114, 255, 0.08))',
+                                    color: '#00f0ff',
+                                    fontWeight: 700,
+                                    fontSize: '13px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px'
+                                }}
+                            >
+                                <span>⚡</span>
+                                <span>{discovering ? 'Buscando nas APIs...' : `Buscar "${searchQuery}" em tempo real na Amazon & Mercado Livre`}</span>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

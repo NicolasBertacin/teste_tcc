@@ -215,3 +215,90 @@ def get_product_sales_history(
             revenue=round(s.quantity_sold * price, 2)
         ))
     return history
+
+
+from pydantic import BaseModel
+
+class DiscoverLiveRequest(BaseModel):
+    query: str
+    limit: int = 5
+
+class DiscoverLiveResponse(BaseModel):
+    query: str
+    total_found: int
+    products: List[ProductResponse]
+    message: str
+
+
+@router.post("/discover-live", response_model=DiscoverLiveResponse, summary="Buscar e importar produtos em tempo real da Amazon e Mercado Livre")
+def discover_live_products(
+    request: DiscoverLiveRequest,
+    db: Session = Depends(get_db)
+):
+    """Busca qualquer produto em tempo real nas APIs de e-commerce, cadastra no banco e prepara para a IA."""
+    from src.collectors.live_discovery_engine import live_discovery
+
+    query_str = request.query.strip()
+    if not query_str:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Informe um termo de busca.")
+
+    imported_prods = live_discovery.discover_and_import(query_str, db, max_items=request.limit)
+    
+    items = []
+    for prod in imported_prods:
+        sales_agg = db.query(
+            func.sum(SalesHistory.quantity_sold).label("total_units"),
+            func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, prod.price or 0.0)).label("total_rev")
+        ).filter(SalesHistory.product_id == prod.id).first()
+
+        total_units = int(sales_agg.total_units or 0)
+        total_rev = float(sales_agg.total_rev or 0.0)
+
+        items.append(ProductResponse(
+            id=prod.id,
+            external_id=prod.external_id,
+            platform=prod.platform,
+            title=prod.title,
+            category=prod.category,
+            price=prod.price,
+            currency=prod.currency,
+            condition=prod.condition,
+            url=prod.url,
+            attributes=prod.attributes,
+            is_active=prod.is_active,
+            created_at=prod.created_at,
+            total_sold_units=total_units,
+            total_revenue=round(total_rev, 2)
+        ))
+
+    return DiscoverLiveResponse(
+        query=query_str,
+        total_found=len(items),
+        products=items,
+        message=f"{len(items)} produto(s) sincronizados em tempo real com sucesso!"
+    )
+
+
+class SyncCategoriesResponse(BaseModel):
+    status: str
+    total_synced_products: int
+    sample_products: List[str]
+    message: str
+
+
+@router.post("/sync-categories", response_model=SyncCategoriesResponse, summary="Sincronizar massivamente as principais categorias do mercado")
+def sync_top_categories_endpoint(
+    limit_per_term: int = Query(2, ge=1, le=10, description="Quantidade por termo"),
+    db: Session = Depends(get_db)
+):
+    """Varre e importa os top produtos das 15 principais categorias do Mercado Livre e Amazon."""
+    from src.collectors.category_harvester import harvest_all_top_categories
+    result = harvest_all_top_categories(db, limit_per_term=limit_per_term)
+    return SyncCategoriesResponse(
+        status=result["status"],
+        total_synced_products=result["total_synced_products"],
+        sample_products=result["sample_products"],
+        message=f"{result['total_synced_products']} produtos do catálogo multi-canal sincronizados com sucesso!"
+    )
+
+

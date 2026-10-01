@@ -138,6 +138,13 @@ class ApiService {
             return await this.request(endpoint);
         },
 
+        discoverLive: async (query, limit = 5) => {
+            return await this.request('/products/discover-live', {
+                method: 'POST',
+                body: JSON.stringify({ query, limit })
+            });
+        },
+
         getById: async (id) => {
             return await this.request(`/products/${id}`);
         },
