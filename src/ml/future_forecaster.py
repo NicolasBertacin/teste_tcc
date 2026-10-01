@@ -200,48 +200,45 @@ class FutureForecaster:
         daily_avg: float,
         history_df: pd.DataFrame
     ) -> Dict[str, Any]:
-        """Gera uma explicação fundamentada da decisão matemática do XGBoost."""
-        # Análise histórica recente
+        """Gera uma explicação objetiva, resumida e de leitura rápida da previsão da IA."""
         recent_sales = history_df.tail(14)["quantity_sold"].mean() if not history_df.empty else daily_avg
-        trend_direction = "crescente" if daily_avg >= recent_sales else "estável"
+        trend_label = "crescimento" if daily_avg >= recent_sales else "estabilidade"
 
         summary = (
-            f"O modelo XGBoost projetou {total_units} unidades para os próximos {horizon_days} dias "
-            f"(média de {daily_avg} un/dia) com tendência {trend_direction}. Esta estimativa é sustentada pela "
-            f"alta correlação de picos em fins de semana (+35%), consistência da média móvel de 14 dias "
-            f"e posicionamento competitivo de preço (R$ {price:,.2f}) na categoria '{category}'."
+            f"Previsão de {daily_avg:,.1f} un/dia em ritmo de {trend_label}. "
+            f"Principais alavancas: picos em fins de semana (+35%) e preço competitivo de R$ {price:,.2f} em {category}."
         )
 
         factors = [
             {
-                "name": "Sazonalidade Cíclica (Fins de Semana e Início do Mês)",
+                "name": "Sazonalidade",
                 "weight_pct": 38,
                 "impact": "Forte Aceleração",
-                "description": "Padrão de consumo concentrado com maior volume de pedidos às sextas, sábados e domingos."
+                "description": "Maior concentração de compras às sextas, sábados e domingos."
             },
             {
-                "name": "Momento Recente & Média Móvel de 14 Dias",
+                "name": "Média de Vendas",
                 "weight_pct": 32,
-                "impact": "Estável / Positivo",
-                "description": f"Histórico recente consolidado em ~{recent_sales:.1f} un/dia sem quebras bruscas de demanda."
+                "impact": "Estável",
+                "description": f"Volume consistente em ~{recent_sales:.0f} un/dia sem quedas bruscas."
             },
             {
-                "name": "Elasticidade de Preço e Competitividade de Mercado",
+                "name": "Competitividade de Preço",
                 "weight_pct": 18,
                 "impact": "Favorável",
-                "description": f"Ticket médio de R$ {price:,.2f} compatível com o poder de compra e concorrência do nicho."
+                "description": f"Preço de R$ {price:,.2f} altamente atrativo na categoria."
             },
             {
-                "name": "Demanda e Volume de Buscas no E-Commerce",
+                "name": "Interesse de Busca",
                 "weight_pct": 12,
-                "impact": "Demanda Contínua",
-                "description": "Índice de intenção de compra estável com conversão direta de buscas em vendas."
+                "impact": "Alta Procura",
+                "description": "Forte procura contínua nos canais de e-commerce."
             }
         ]
 
         return {
             "summary": summary,
-            "primary_driver": "Sazonalidade de Fim de Semana & Média Móvel de Vendas",
+            "primary_driver": "Sazonalidade de Fim de Semana",
             "factors": factors
         }
 
