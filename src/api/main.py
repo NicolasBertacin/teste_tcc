@@ -44,6 +44,14 @@ async def lifespan(app: FastAPI):
                 print("[TrendCommerce AI] Usuário administrador padrão criado com sucesso.")
         except Exception as err:
             print(f"[TrendCommerce AI] Erro ao criar admin padrão: {err}")
+
+        # 3. Pré-aquecer motor ML em background no startup para respostas instantâneas (<10ms)
+        try:
+            from src.api.dependencies import get_ml_forecaster
+            get_ml_forecaster(session)
+            print("[TrendCommerce AI] Motor preditivo XGBoost aquecido e pronto na memória.")
+        except Exception as err:
+            print(f"[TrendCommerce AI] Erro no warmup ML: {err}")
     yield
 
 

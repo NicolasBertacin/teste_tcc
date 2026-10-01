@@ -46,17 +46,23 @@ def list_products(
     offset = (page - 1) * limit
     products = query.order_by(Product.id).offset(offset).limit(limit).all()
 
-    # Agregar totais de venda por produto
+    # Agregar totais de venda por produto em 1 única query rápida (elimina N+1)
+    product_ids = [p.id for p in products]
+    sales_map = {}
+    if product_ids:
+        sales_aggs = db.query(
+            SalesHistory.product_id,
+            func.sum(SalesHistory.quantity_sold).label("total_units"),
+            func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, 100.0)).label("total_rev")
+        ).filter(SalesHistory.product_id.in_(product_ids))\
+         .group_by(SalesHistory.product_id)\
+         .all()
+        for s_pid, s_units, s_rev in sales_aggs:
+            sales_map[s_pid] = (int(s_units or 0), float(s_rev or 0.0))
+
     items = []
     for prod in products:
-        sales_agg = db.query(
-            func.sum(SalesHistory.quantity_sold).label("total_units"),
-            func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, prod.price or 0.0)).label("total_rev")
-        ).filter(SalesHistory.product_id == prod.id).first()
-
-        total_units = int(sales_agg.total_units or 0)
-        total_rev = float(sales_agg.total_rev or 0.0)
-
+        total_units, total_rev = sales_map.get(prod.id, (0, 0.0))
         item = ProductResponse(
             id=prod.id,
             external_id=prod.external_id,
