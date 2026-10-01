@@ -115,3 +115,21 @@ def health_check():
         "database": "connected",
         "model": "xgboost-demand-regressor"
     }
+
+
+@app.api_route("/api/v1/admin/reseed", methods=["GET", "POST"], tags=["Admin"], summary="Recarregar catálogo e histórico inicial")
+def reseed_database():
+    """Injeta ou sincroniza o catálogo completo de 89 produtos e 8.731 históricos diários."""
+    from src.database.seed_loader import seed_database_if_empty
+    db_manager = get_db_instance()
+    with db_manager.session() as session:
+        seed_database_if_empty(session)
+        from src.database.models import Product, SalesHistory
+        prod_count = session.query(Product).count()
+        sales_count = session.query(SalesHistory).count()
+    return {
+        "status": "success",
+        "message": "Catálogo e histórico sincronizados com sucesso!",
+        "total_products": prod_count,
+        "total_sales_history": sales_count
+    }
