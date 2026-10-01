@@ -171,6 +171,17 @@ class ApiService {
 
         ranking: async (horizonDays = 30) => {
             return await this.request(`/forecast/ranking?horizon_days=${horizonDays}`);
+        },
+
+        compare: async (productIdA, productIdB, horizonDays = 30) => {
+            return await this.request('/forecast/compare', {
+                method: 'POST',
+                body: JSON.stringify({
+                    product_id_a: parseInt(productIdA),
+                    product_id_b: parseInt(productIdB),
+                    horizon_days: parseInt(horizonDays)
+                })
+            });
         }
     };
 

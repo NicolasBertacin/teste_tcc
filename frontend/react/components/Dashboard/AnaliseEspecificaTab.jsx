@@ -375,7 +375,232 @@ function AnaliseEspecificaTab({ products, showToast }) {
                         </span>
                     </div>
                 </div>
+
+                {/* AI Explainability Section (Por que vai vender essa quantidade?) */}
+                {forecast && forecast.explanation && (
+                    <div className="ai-explainability-card">
+                        <div className="ai-explain-header">
+                            <div className="ai-badge-group">
+                                <span className="ai-badge-robot">🤖 IA EXPLICABILIDADE</span>
+                                <span className="ai-badge-driver">Fator Principal: {forecast.explanation.primary_driver}</span>
+                            </div>
+                            <h3 className="ai-explain-title">Por que este produto vai vender {forecast.total_predicted_units} unidades nos próximos {horizonDays} dias?</h3>
+                        </div>
+
+                        <p className="ai-explain-summary">
+                            {forecast.explanation.summary}
+                        </p>
+
+                        <div className="ai-factors-grid">
+                            {forecast.explanation.factors && forecast.explanation.factors.map((factor, idx) => (
+                                <div key={idx} className="ai-factor-card">
+                                    <div className="ai-factor-header">
+                                        <span className="ai-factor-name">{factor.name}</span>
+                                        <span className={`ai-factor-impact impact-${factor.impact}`}>
+                                            {factor.impact.toUpperCase()} ({factor.weight_pct}%)
+                                        </span>
+                                    </div>
+                                    <div className="ai-factor-bar-bg">
+                                        <div
+                                            className={`ai-factor-bar-fill fill-${factor.impact}`}
+                                            style={{ width: `${factor.weight_pct}%` }}
+                                        ></div>
+                                    </div>
+                                    <p className="ai-factor-desc">{factor.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
+
+            {/* Comparador Preditivo de Produtos (Recurso 4) */}
+            <PredictiveComparator products={products} showToast={showToast} />
         </section>
+    );
+}
+
+/**
+ * Subcomponente: Comparador Preditivo de Produtos (A vs B)
+ */
+function PredictiveComparator({ products, showToast }) {
+    const [productAId, setProductAId] = React.useState('');
+    const [productBId, setProductBId] = React.useState('');
+    const [compareHorizon, setCompareHorizon] = React.useState(30);
+    const [comparing, setComparing] = React.useState(false);
+    const [compareResult, setCompareResult] = React.useState(null);
+
+    React.useEffect(() => {
+        if (products && products.length >= 2 && !productAId && !productBId) {
+            setProductAId(products[0].id.toString());
+            setProductBId(products[1].id.toString());
+        }
+    }, [products]);
+
+    const handleCompare = async () => {
+        if (!productAId || !productBId) {
+            showToast('Selecione dois produtos para comparar.', 'warning');
+            return;
+        }
+        if (productAId === productBId) {
+            showToast('Selecione dois produtos diferentes para a comparação.', 'warning');
+            return;
+        }
+
+        setComparing(true);
+        try {
+            showToast('Calculando projeção comparativa com IA...', 'info', 2000);
+            const data = await window.apiService.forecast.compare(productAId, productBId, compareHorizon);
+            setCompareResult(data);
+            showToast('Comparação preditiva concluída!', 'success');
+        } catch (err) {
+            showToast('Erro ao comparar: ' + err.message, 'error');
+        } finally {
+            setComparing(false);
+        }
+    };
+
+    return (
+        <div className="dash-card comparator-card" style={{ marginTop: '24px' }}>
+            <div className="comparator-header">
+                <div className="comparator-badge">⚡ RECURSO PREDITIVO</div>
+                <h2 className="comparator-title">COMPARADOR PREDITIVO DE PRODUTOS (A vs B)</h2>
+                <p className="comparator-subtitle">
+                    Compare projeções de demanda e receita lado a lado para tomar decisões estratégicas de estoque e compra.
+                </p>
+            </div>
+
+            <div className="comparator-selectors-grid">
+                <div className="comparator-select-box">
+                    <label className="comparator-label">PRODUTO A:</label>
+                    <select
+                        className="comparator-select"
+                        value={productAId}
+                        onChange={(e) => setProductAId(e.target.value)}
+                    >
+                        {(products || []).map((p) => (
+                            <option key={`a-${p.id}`} value={p.id}>
+                                {p.title} - R$ {p.price.toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="comparator-vs-badge">VS</div>
+
+                <div className="comparator-select-box">
+                    <label className="comparator-label">PRODUTO B:</label>
+                    <select
+                        className="comparator-select"
+                        value={productBId}
+                        onChange={(e) => setProductBId(e.target.value)}
+                    >
+                        {(products || []).map((p) => (
+                            <option key={`b-${p.id}`} value={p.id}>
+                                {p.title} - R$ {p.price.toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="comparator-action-box">
+                    <div className="comparator-horizon-btns">
+                        {[7, 14, 30].map((d) => (
+                            <button
+                                key={d}
+                                type="button"
+                                className={`comparator-hbtn ${compareHorizon === d ? 'active' : ''}`}
+                                onClick={() => setCompareHorizon(d)}
+                            >
+                                {d}d
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        type="button"
+                        className="btn-run-compare"
+                        onClick={handleCompare}
+                        disabled={comparing}
+                    >
+                        {comparing ? 'Analisando...' : 'Comparar com IA'}
+                    </button>
+                </div>
+            </div>
+
+            {compareResult && (
+                <div className="compare-results-area">
+                    {/* Verdict Banner */}
+                    <div className="compare-verdict-banner">
+                        <span className="verdict-icon">🏆</span>
+                        <div className="verdict-text">
+                            <strong>Veredito da IA ({compareResult.horizon_days} dias):</strong> {compareResult.verdict}
+                        </div>
+                    </div>
+
+                    {/* Side-by-side Cards */}
+                    <div className="compare-side-by-side">
+                        {/* Product A */}
+                        <div className={`compare-prod-card ${compareResult.product_a.is_volume_leader ? 'is-winner' : ''}`}>
+                            {compareResult.product_a.is_volume_leader && (
+                                <div className="winner-tag">👑 Maior Volume</div>
+                            )}
+                            <h3 className="compare-prod-title">{compareResult.product_a.title}</h3>
+                            <div className="compare-prod-category">{compareResult.product_a.category}</div>
+
+                            <div className="compare-metrics-list">
+                                <div className="compare-metric">
+                                    <span className="c-label">Preço Unitário:</span>
+                                    <span className="c-val">R$ {compareResult.product_a.price.toFixed(2)}</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Demanda Prevista:</span>
+                                    <span className="c-val text-cyan">{compareResult.product_a.predicted_units} un</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Faturamento Projetado:</span>
+                                    <span className="c-val text-emerald">
+                                        R$ {compareResult.product_a.projected_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <div className="compare-metric">
+                                    <span className="c-label">Média Diária:</span>
+                                    <span className="c-val">{compareResult.product_a.daily_average} un/dia</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Product B */}
+                        <div className={`compare-prod-card ${compareResult.product_b.is_volume_leader ? 'is-winner' : ''}`}>
+                            {compareResult.product_b.is_volume_leader && (
+                                <div className="winner-tag">👑 Maior Volume</div>
+                            )}
+                            <h3 className="compare-prod-title">{compareResult.product_b.title}</h3>
+                            <div className="compare-prod-category">{compareResult.product_b.category}</div>
+
+                            <div className="compare-metrics-list">
+                                <div className="compare-metric">
+                                    <span className="c-label">Preço Unitário:</span>
+                                    <span className="c-val">R$ {compareResult.product_b.price.toFixed(2)}</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Demanda Prevista:</span>
+                                    <span className="c-val text-cyan">{compareResult.product_b.predicted_units} un</span>
+                                </div>
+                                <div className="compare-metric highlight">
+                                    <span className="c-label">Faturamento Projetado:</span>
+                                    <span className="c-val text-emerald">
+                                        R$ {compareResult.product_b.projected_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <div className="compare-metric">
+                                    <span className="c-label">Média Diária:</span>
+                                    <span className="c-val">{compareResult.product_b.daily_average} un/dia</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
