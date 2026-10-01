@@ -184,3 +184,56 @@ def test_discover_live_products(client):
     assert len(data["products"]) > 0
     assert "Monitor" in data["products"][0]["title"] or "Gamer" in data["products"][0]["title"]
 
+
+def test_send_otp_email_service(monkeypatch):
+    """Testa geração de e-mail OTP com logo, remetente oficial e aviso de segurança."""
+    import email
+    from src.api.services.email_service import send_otp_email
+    import smtplib
+
+    # Sem senha configurada deve retornar mensagem de configuração
+    monkeypatch.delenv("SMTP_PASSWORD", raising=False)
+    monkeypatch.setenv("SMTP_USER", "trendeccomerceai@gmail.com")
+    success, msg = send_otp_email("user@example.com", "9842")
+    assert success is False
+    assert "SMTP_PASSWORD" in msg
+
+    # Com senha mockada deve tentar envio via SMTP
+    monkeypatch.setenv("SMTP_PASSWORD", "mockapppassword123")
+    monkeypatch.setenv("SMTP_USER", "trendeccomerceai@gmail.com")
+
+    sent_messages = []
+    class MockSMTP:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+        def login(self, user, pwd):
+            assert user == "trendeccomerceai@gmail.com"
+        def sendmail(self, sender, recipients, msg_str):
+            sent_messages.append((sender, recipients, msg_str))
+
+    monkeypatch.setattr(smtplib, "SMTP_SSL", MockSMTP)
+    success, msg = send_otp_email("testuser@gmail.com", "7412")
+    assert success is True
+    assert len(sent_messages) == 1
+    sender, recipients, msg_str = sent_messages[0]
+    assert sender == "trendeccomerceai@gmail.com"
+    assert "testuser@gmail.com" in recipients
+
+    parsed_msg = email.message_from_string(msg_str)
+    decoded_body = ""
+    for part in parsed_msg.walk():
+        if part.get_content_type() in ("text/plain", "text/html"):
+            payload = part.get_payload(decode=True)
+            if payload:
+                decoded_body += payload.decode("utf-8")
+
+    assert "NUNCA COMPARTILHE ESTE CÓDIGO COM NINGUÉM" in decoded_body
+    assert "7412" in decoded_body
+    assert "trendecommerce_logo" in msg_str
+
+
+
