@@ -3,10 +3,30 @@
  * Container unificado da tela de Autenticação (Login / Cadastro / Recuperação de Senha).
  */
 
-function AuthContainer({ onLoginSuccess, showToast }) {
-    const [view, setView] = React.useState('login'); // 'login' | 'register' | 'recovery-1' | 'recovery-2' | 'recovery-3'
+function AuthContainer({ onLoginSuccess, showToast, currentView, onSwitchView }) {
+    const [internalView, setInternalView] = React.useState(currentView || 'login');
+    const view = currentView || internalView;
     const [recoveryEmail, setRecoveryEmail] = React.useState('');
     const [recoveryCode, setRecoveryCode] = React.useState('');
+
+    React.useEffect(() => {
+        if (currentView) {
+            // Se o usuário acessar recovery-2 ou recovery-3 diretamente sem ter email em memória, faz fallback seguro
+            if ((currentView === 'recovery-2' || currentView === 'recovery-3') && !recoveryEmail) {
+                setInternalView('recovery-1');
+                if (onSwitchView) onSwitchView('recovery-1');
+            } else {
+                setInternalView(currentView);
+            }
+        }
+    }, [currentView, recoveryEmail]);
+
+    const setView = (nextView) => {
+        setInternalView(nextView);
+        if (onSwitchView) {
+            onSwitchView(nextView);
+        }
+    };
 
     return (
         <main className="main-wrapper" id="authSection">

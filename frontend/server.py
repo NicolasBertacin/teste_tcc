@@ -17,10 +17,29 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    def do_GET(self):
+        # Redirecionamento amigável para rotas diretas de SPA (ex: /ranking -> /#/ranking)
+        clean_path = self.path.split('?')[0].split('#')[0].strip('/')
+        if clean_path:
+            target_file = os.path.join(DIRECTORY, clean_path)
+            # Se não for um arquivo/diretório existente e não possuir extensão (.css, .js, .png, etc.)
+            if not os.path.exists(target_file) and '.' not in os.path.basename(clean_path):
+                self.send_response(302)
+                self.send_header('Location', f"/#/{clean_path}")
+                self.end_headers()
+                return
+        return super().do_GET()
+
     def log_message(self, format, *args):
         print(f"[TrendEcommerce Server] {self.address_string()} - {format % args}")
 
 def run_server():
+    if sys.platform == "win32":
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     os.chdir(DIRECTORY)
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         url = f"http://localhost:{PORT}"

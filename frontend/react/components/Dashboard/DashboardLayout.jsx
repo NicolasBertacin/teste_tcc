@@ -3,14 +3,28 @@
  * Layout principal do Dashboard TrendCommerce AI em React.
  */
 
-function DashboardLayout({ user, onLogout, showToast }) {
-    const [activeTab, setActiveTab] = React.useState('ia-preditiva');
+function DashboardLayout({ user, onLogout, showToast, activeTab: propActiveTab, onSelectTab: propOnSelectTab }) {
+    const [internalActiveTab, setInternalActiveTab] = React.useState(propActiveTab || 'ia-preditiva');
+    const activeTab = propActiveTab !== undefined ? propActiveTab : internalActiveTab;
     const [categories, setCategories] = React.useState([]);
     const [products, setProducts] = React.useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(() => {
         const saved = localStorage.getItem('trend_sidebar_open');
         return saved !== null ? saved === 'true' : true;
     });
+
+    React.useEffect(() => {
+        if (propActiveTab) {
+            setInternalActiveTab(propActiveTab);
+        }
+    }, [propActiveTab]);
+
+    const handleSelectTab = (tabId) => {
+        setInternalActiveTab(tabId);
+        if (propOnSelectTab) {
+            propOnSelectTab(tabId);
+        }
+    };
 
     const toggleSidebar = () => {
         setIsSidebarOpen(prev => {
@@ -42,7 +56,7 @@ function DashboardLayout({ user, onLogout, showToast }) {
             <Sidebar
                 user={user}
                 activeTab={activeTab}
-                onSelectTab={setActiveTab}
+                onSelectTab={handleSelectTab}
                 onLogout={onLogout}
                 isOpen={isSidebarOpen}
             />
