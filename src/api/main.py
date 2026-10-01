@@ -89,7 +89,7 @@ if frontend_dir.exists():
 def root():
     """Redireciona para o frontend ou retorna status da API."""
     if frontend_dir.exists():
-        return RedirectResponse(url="/app/index.html")
+        return RedirectResponse(url="/app/#/ia-preditiva")
     return {
         "system": "TrendCommerce AI API",
         "status": "online",

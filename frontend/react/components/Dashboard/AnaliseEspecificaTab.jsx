@@ -3,7 +3,7 @@
  * Aba Análise Específica: Busca preditiva de produto e projeções com XGBoost (7/14/30 dias).
  */
 
-function AnaliseEspecificaTab({ products, showToast }) {
+function AnaliseEspecificaTab({ products = [], showToast }) {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [searchResults, setSearchResults] = React.useState([]);
     const [showDropdown, setShowDropdown] = React.useState(false);
@@ -11,14 +11,48 @@ function AnaliseEspecificaTab({ products, showToast }) {
     const [horizonDays, setHorizonDays] = React.useState(7);
     const [forecast, setForecast] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
+    const [tooltipData, setTooltipData] = React.useState({
+        visible: false,
+        title: '',
+        price: '',
+        sold: '',
+        x: 0,
+        y: 0
+    });
+
     const canvasRef = React.useRef(null);
-    const [tooltipPos, setTooltipPos] = React.useState({ x: 180, y: 70, label: 'AUMENTO DE 107 VENDAS' });
+    const pointsRef = React.useRef([]);
+    const hoveredIndexRef = React.useRef(null);
+    const forecastRef = React.useRef(null);
+    const selectedProductRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (products.length > 0 && !selectedProduct) {
+        if (products && products.length > 0 && !selectedProduct) {
             setSelectedProduct(products[0]);
+            selectedProductRef.current = products[0];
+        } else if ((!products || products.length === 0) && !selectedProduct) {
+            window.apiService?.products?.list({ limit: 20 }).then(res => {
+                if (res && res.items && res.items.length > 0 && !selectedProductRef.current) {
+                    setSelectedProduct(res.items[0]);
+                    selectedProductRef.current = res.items[0];
+                }
+            }).catch(() => {});
         }
     }, [products]);
+
+    React.useEffect(() => {
+        selectedProductRef.current = selectedProduct;
+    }, [selectedProduct]);
+
+    React.useEffect(() => {
+        forecastRef.current = forecast;
+        if (forecast) {
+            // Garantir desenho imediato ao receber novos dados de previsão
+            requestAnimationFrame(() => {
+                drawSpecificChart(forecast, hoveredIndexRef.current, selectedProductRef.current);
+            });
+        }
+    }, [forecast]);
 
     React.useEffect(() => {
         if (selectedProduct) {
@@ -32,8 +66,8 @@ function AnaliseEspecificaTab({ products, showToast }) {
         const handleResize = () => {
             cancelAnimationFrame(animFrame);
             animFrame = requestAnimationFrame(() => {
-                if (canvasRef.current && forecast) {
-                    drawSpecificChart(forecast);
+                if (canvasRef.current && (forecastRef.current || forecast)) {
+                    drawSpecificChart(forecastRef.current || forecast, hoveredIndexRef.current, selectedProductRef.current);
                 }
             });
         };
@@ -47,6 +81,9 @@ function AnaliseEspecificaTab({ products, showToast }) {
             });
             observer.observe(canvasRef.current.parentElement);
         }
+
+        // Desenhar imediatamente se já houver dados
+        handleResize();
 
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -93,6 +130,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
     const handleSelectProduct = (prod) => {
         setSelectedProduct(prod);
+        selectedProductRef.current = prod;
         setSearchQuery(prod.title);
         setShowDropdown(false);
     };
@@ -125,10 +163,13 @@ function AnaliseEspecificaTab({ products, showToast }) {
     const runForecast = async (productId, days) => {
         setLoading(true);
         try {
-            showToast('Calculando projeção com XGBoost...', 'info', 1800);
+            showToast('Calculando projeção com XGBoost...', 'info', 1500);
             const data = await window.apiService.forecast.predict(productId, days);
             setForecast(data);
-            drawSpecificChart(data);
+            forecastRef.current = data;
+            hoveredIndexRef.current = null;
+            setTooltipData(prev => ({ ...prev, visible: false }));
+            drawSpecificChart(data, null, selectedProductRef.current);
         } catch (err) {
             showToast('Erro na previsão: ' + err.message, 'error');
         } finally {
@@ -136,7 +177,11 @@ function AnaliseEspecificaTab({ products, showToast }) {
         }
     };
 
-    const drawSpecificChart = (data) => {
+    const drawSpecificChart = (
+        data = forecastRef.current,
+        activeHoverIdx = hoveredIndexRef.current,
+        activeProd = selectedProductRef.current
+    ) => {
         const canvas = canvasRef.current;
         if (!canvas || !data || !data.days || !canvas.parentElement) return;
 
@@ -151,7 +196,9 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
         const days = data.days;
         const values = days.map((d) => d.predicted_demand);
-        const maxVal = Math.max(400, ...values.map((v) => v * 1.3));
+        const highestVal = Math.max(10, ...values);
+        const roundedMax = Math.ceil((highestVal * 1.25) / 50) * 50;
+        const maxVal = Math.max(50, roundedMax);
 
         const padLeft = 45;
         const padRight = 30;
@@ -168,27 +215,50 @@ function AnaliseEspecificaTab({ products, showToast }) {
         ctx.font = '12px Plus Jakarta Sans';
         ctx.textAlign = 'right';
 
-        [0, 100, 200, 300, 400].forEach((lvl) => {
+        const step = maxVal / 4;
+        [0, step, step * 2, step * 3, maxVal].forEach((lvl) => {
             const y = padTop + chartH - (lvl / maxVal) * chartH;
             ctx.beginPath();
             ctx.moveTo(padLeft, y);
             ctx.lineTo(width - padRight, y);
             ctx.stroke();
-            ctx.fillText(lvl.toString(), padLeft - 10, y + 4);
+            ctx.fillText(Math.round(lvl).toString(), padLeft - 10, y + 4);
         });
 
         // Pontos X, Y
         const points = days.map((d, i) => {
             const x = padLeft + (i / Math.max(1, days.length - 1)) * chartW;
             const y = padTop + chartH - (d.predicted_demand / maxVal) * chartH;
-            return { x, y, d };
+            return { x, y, d, index: i };
         });
+        pointsRef.current = points;
 
-        // Labels X
+        // Labels X: espaçamento inteligente para 7, 14 ou 30 pontos
         ctx.textAlign = 'center';
-        points.forEach((p) => {
-            const label = days.length <= 7 ? p.d.day_name.substring(0, 3) : p.d.date.substring(0, 5);
-            ctx.fillText(label, p.x, height - 12);
+        const totalPoints = points.length;
+        points.forEach((p, i) => {
+            let showLabel = true;
+            if (totalPoints > 20) {
+                showLabel = (i % 5 === 0) || (i === totalPoints - 1);
+            } else if (totalPoints > 10) {
+                showLabel = (i % 2 === 0) || (i === totalPoints - 1);
+            }
+
+            if (showLabel || activeHoverIdx === i) {
+                ctx.fillStyle = (activeHoverIdx === i) ? '#00f0ff' : '#8da2bd';
+                ctx.font = (activeHoverIdx === i) ? 'bold 11px Plus Jakarta Sans' : '11px Plus Jakarta Sans';
+                
+                let label = '';
+                if (totalPoints <= 7) {
+                    const rawDay = p.d.day_name || '';
+                    const dayClean = rawDay.split('-')[0].substring(0, 3);
+                    const dateShort = p.d.date ? p.d.date.substring(0, 5) : '';
+                    label = dayClean || dateShort;
+                } else {
+                    label = p.d.date ? p.d.date.substring(0, 5) : `${i + 1}`;
+                }
+                ctx.fillText(label, p.x, height - 12);
+            }
         });
 
         // Área Preenchida com Gradiente
@@ -203,7 +273,7 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
         const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
         grad.addColorStop(0, 'rgba(0, 180, 216, 0.35)');
-        grad.addColorStop(1, 'rgba(0, 180, 216, 0.02)');
+        grad.addColorStop(1, 'rgba(0, 180, 216, 0.01)');
         ctx.fillStyle = grad;
         ctx.fill();
 
@@ -214,30 +284,162 @@ function AnaliseEspecificaTab({ products, showToast }) {
             ctx.lineTo(points[i].x, points[i].y);
         }
         ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = totalPoints > 20 ? 2.5 : 3.5;
         ctx.stroke();
 
-        // Círculos
-        points.forEach((p) => {
+        // Linha guia vertical quando em hover
+        if (activeHoverIdx !== null && points[activeHoverIdx]) {
+            const hp = points[activeHoverIdx];
+            ctx.save();
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.45)';
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.shadowBlur = 12;
+            ctx.moveTo(hp.x, padTop);
+            ctx.lineTo(hp.x, padTop + chartH);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Círculos
+        const dotRadius = totalPoints > 20 ? 3.5 : 5.5;
+        const hoverRadius = totalPoints > 20 ? 5.5 : 7.5;
+        const haloRadius = totalPoints > 20 ? 9 : 12;
+
+        points.forEach((p, i) => {
+            const isHovered = (activeHoverIdx === i);
+
+            // Halo externo se hovered
+            if (isHovered) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, haloRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.25)';
+                ctx.fill();
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, isHovered ? hoverRadius : dotRadius, 0, Math.PI * 2);
+            ctx.fillStyle = isHovered ? '#ffffff' : '#00f0ff';
+            ctx.shadowBlur = isHovered ? 16 : 10;
             ctx.shadowColor = '#00d4ff';
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            ctx.strokeStyle = '#07172b';
-            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = isHovered ? '#00f0ff' : '#07172b';
+            ctx.lineWidth = isHovered ? 2.5 : 2;
             ctx.stroke();
         });
+    };
 
-        const peak = points[1] || points[0];
-        setTooltipPos({
-            x: peak.x - 75,
-            y: peak.y - 65,
-            label: `AUMENTO DE ${peak.d.predicted_demand} VENDAS`
-        });
+    const updateHoverAt = (clientX, clientY) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = clientX - rect.left;
+        const mouseY = clientY - rect.top;
+
+        const points = pointsRef.current || [];
+        if (!points || points.length === 0) return;
+
+        const padLeft = 45;
+        const padRight = 30;
+        const padTop = 40;
+        const padBottom = 40;
+        const width = canvas.width || rect.width;
+        const height = canvas.height || 300;
+
+        // Limites da área do gráfico para ativação
+        const inBounds = mouseX >= (padLeft - 25) &&
+                         mouseX <= (width - padRight + 25) &&
+                         mouseY >= (padTop - 30) &&
+                         mouseY <= (height - padBottom + 30);
+
+        let matchedPoint = null;
+
+        if (inBounds) {
+            const totalPoints = points.length;
+            const colWidth = (width - padLeft - padRight) / Math.max(1, totalPoints - 1);
+            const xThreshold = Math.max(28, colWidth * 0.52);
+
+            let minDistance = Infinity;
+
+            for (const p of points) {
+                const xDist = Math.abs(mouseX - p.x);
+                const directDist = Math.hypot(mouseX - p.x, mouseY - p.y);
+
+                // Se o mouse estiver muito próximo ao ponto (raio 35px), prioriza-o
+                if (directDist < 35) {
+                    if (directDist < minDistance) {
+                        minDistance = directDist;
+                        matchedPoint = p;
+                    }
+                } else if (xDist < xThreshold && xDist < minDistance) {
+                    // Senão, detecta por aproximação da coluna horizontal daquele dia
+                    minDistance = xDist;
+                    matchedPoint = p;
+                }
+            }
+        }
+
+        if (matchedPoint) {
+            canvas.style.cursor = 'pointer';
+            if (hoveredIndexRef.current !== matchedPoint.index) {
+                hoveredIndexRef.current = matchedPoint.index;
+                drawSpecificChart(forecastRef.current, matchedPoint.index, selectedProductRef.current);
+
+                const currentProd = selectedProductRef.current;
+                const bubbleHalfW = 95;
+                const canvasW = canvas.width || 600;
+                const clampedX = Math.max(bubbleHalfW + 8, Math.min(canvasW - bubbleHalfW - 8, matchedPoint.x));
+
+                const rawDay = matchedPoint.d?.day_name || '';
+                const dayAbbr = rawDay ? rawDay.split('-')[0].toUpperCase().slice(0, 3) : '';
+                const dateShort = matchedPoint.d?.date ? matchedPoint.d.date.slice(0, 5) : '';
+                const dateInfo = dayAbbr && dateShort ? `${dayAbbr} (${dateShort})` : (dayAbbr || dateShort);
+                const dateSuffix = dateInfo ? ` • ${dateInfo}` : '';
+
+                const prodTitle = currentProd?.title || forecastRef.current?.product_title || 'PRODUTO';
+                const prodPrice = currentProd?.price ?? forecastRef.current?.unit_price;
+                const demand = matchedPoint.d?.predicted_demand ?? matchedPoint.val ?? 0;
+
+                setTooltipData({
+                    visible: true,
+                    title: prodTitle.toUpperCase().slice(0, 26),
+                    price: prodPrice !== undefined ? `R$ ${Number(prodPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '',
+                    sold: `${demand.toLocaleString('pt-BR')} VENDAS PREVISTAS${dateSuffix}`,
+                    x: clampedX,
+                    y: Math.max(70, matchedPoint.y - 12)
+                });
+            }
+        } else {
+            canvas.style.cursor = 'default';
+            if (hoveredIndexRef.current !== null) {
+                hoveredIndexRef.current = null;
+                drawSpecificChart(forecastRef.current, null, selectedProductRef.current);
+                setTooltipData(prev => ({ ...prev, visible: false }));
+            }
+        }
+    };
+
+    const handleMouseMove = (e) => {
+        updateHoverAt(e.clientX, e.clientY);
+    };
+
+    const handleMouseLeave = () => {
+        const canvas = canvasRef.current;
+        if (canvas) canvas.style.cursor = 'default';
+        if (hoveredIndexRef.current !== null) {
+            hoveredIndexRef.current = null;
+            drawSpecificChart(forecastRef.current, null, selectedProductRef.current);
+        }
+        setTooltipData(prev => ({ ...prev, visible: false }));
+    };
+
+    const handleTouchMove = (e) => {
+        if (e.touches && e.touches[0]) {
+            updateHoverAt(e.touches[0].clientX, e.touches[0].clientY);
+        }
     };
 
     return (
@@ -338,14 +540,24 @@ function AnaliseEspecificaTab({ products, showToast }) {
 
                 {/* Chart Container */}
                 <div className="specific-chart-wrap">
-                    <canvas ref={canvasRef}></canvas>
-                    <div
-                        className="specific-chart-tooltip"
-                        style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y}px` }}
-                    >
-                        <div className="tooltip-badge">+5%</div>
-                        <div className="tooltip-main-text">{tooltipPos.label}</div>
-                    </div>
+                    <canvas
+                        ref={canvasRef}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                        onTouchStart={handleTouchMove}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleMouseLeave}
+                    ></canvas>
+                    {tooltipData.visible && (
+                        <div
+                            className="chart-tooltip-bubble"
+                            style={{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }}
+                        >
+                            <div className="tooltip-title">{tooltipData.title}</div>
+                            <div className="tooltip-price">{tooltipData.price}</div>
+                            <div className="tooltip-sold">{tooltipData.sold}</div>
+                        </div>
+                    )}
                 </div>
 
                 {/* AI Confidence & Buffer Indicators */}
