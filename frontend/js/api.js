@@ -81,14 +81,25 @@ class ApiClient {
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = data.detail || (Array.isArray(data.detail) ? data.detail[0].msg : 'Erro na requisição.');
+                let errorMsg = 'Erro na requisição.';
+                if (data && data.detail) {
+                    errorMsg = Array.isArray(data.detail) ? data.detail[0].msg : data.detail;
+                } else if (response.status === 404) {
+                    errorMsg = 'Servidor ou rota da API não encontrada (404). Verifique se o backend FastAPI está ativo.';
+                } else if (response.status === 500) {
+                    errorMsg = 'Erro interno do servidor (500). Tente novamente em instantes.';
+                }
                 throw new Error(errorMsg);
             }
 
             return data;
         } catch (error) {
-            console.error(`[API Error] ${endpoint}:`, error.message);
-            throw error;
+            let readableMsg = error.message;
+            if (error.name === 'TypeError' || error.message.includes('fetch') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                readableMsg = 'Não foi possível conectar ao servidor backend. Certifique-se de iniciar a API com: python -m uvicorn src.api.main:app --port 8000';
+            }
+            console.error(`[API Error] ${endpoint}:`, readableMsg);
+            throw new Error(readableMsg);
         }
     }
 
