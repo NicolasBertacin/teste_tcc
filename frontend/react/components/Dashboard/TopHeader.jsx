@@ -25,11 +25,7 @@ function TopHeader({ isSidebarOpen = true, onToggleSidebar }) {
             </div>
             <div className="dash-header-right">
                 <div className="dash-brand-logo">
-                    <img src="img/logo.png" alt="TrendEcommerce Logo" className="dash-brand-img" />
-                    <span className="dash-brand-title">
-                        <span className="logo-accent">Trend</span>
-                        <span className="logo-main">Ecommerce</span>
-                    </span>
+                    <img src="assets/logo.png" alt="TrendEcommerce Logo" className="dash-brand-img" />
                 </div>
             </div>
         </header>

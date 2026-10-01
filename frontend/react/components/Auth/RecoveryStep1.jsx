@@ -31,31 +31,23 @@ function RecoveryStep1({ onNext, showToast }) {
     };
 
     return (
-        <form className="auth-form active" onSubmit={handleSubmit} noValidate>
-            <h3 className="form-banner-text">ENVIAREMOS UM CÓDIGO<br />PARA SEU EMAIL</h3>
+        <form className="login-form-content" onSubmit={handleSubmit} noValidate>
+            <h1 className="login-title">ENVIAREMOS UM CÓDIGO<br />PARA SEU EMAIL</h1>
+            <h1>EMAIL:</h1>
+            <input
+                type="email"
+                className="login-input"
+                placeholder="Digite seu email..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+            />
+            {error && <span className="login-field-error">{error}</span>}
 
-            <div className="form-group mt-large">
-                <label htmlFor="recoveryEmail" className="form-label">EMAIL:</label>
-                <div className="input-wrapper">
-                    <input
-                        type="email"
-                        id="recoveryEmail"
-                        className="form-input"
-                        placeholder="Digite seu email..."
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        autoComplete="email"
-                    />
-                </div>
-                {error && <span className="field-error">{error}</span>}
-            </div>
-
-            <div className="form-actions mt-xlarge">
-                <button type="submit" className="btn-primary" disabled={loading}>
-                    {loading ? <span className="btn-spinner"></span> : <span className="btn-text">ENVIAR</span>}
-                </button>
-            </div>
+            <button type="submit" className="button-right" disabled={loading}>
+                {loading ? <span className="login-spinner"></span> : 'ENVIAR'}
+            </button>
         </form>
     );
 }

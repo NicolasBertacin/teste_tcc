@@ -70,10 +70,10 @@ function RecoveryStep2({ recoveryEmail, onNext, showToast }) {
     };
 
     return (
-        <form className="auth-form active" onSubmit={handleSubmit} noValidate>
-            <h3 className="form-banner-text-subtle">DIGITE SEU CÓDIGO:</h3>
+        <form className="login-form-content" onSubmit={handleSubmit} noValidate>
+            <h1 className="login-title">DIGITE SEU CÓDIGO:</h1>
 
-            <div className="otp-container">
+            <div className="codigo-container">
                 {otp.map((digit, idx) => (
                     <input
                         key={idx}
@@ -81,7 +81,7 @@ function RecoveryStep2({ recoveryEmail, onNext, showToast }) {
                         type="text"
                         maxLength="1"
                         inputMode="numeric"
-                        className="otp-input"
+                        className="codigo-input"
                         value={digit}
                         onChange={(e) => handleChange(idx, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(idx, e)}
@@ -91,20 +91,18 @@ function RecoveryStep2({ recoveryEmail, onNext, showToast }) {
                 ))}
             </div>
 
-            {error && <span className="field-error text-center">{error}</span>}
+            {error && <span className="login-field-error center">{error}</span>}
 
-            <div className="otp-resend">
-                <span className="otp-info">Não recebeu o código? </span>
-                <button type="button" className="btn-link" onClick={handleResend}>
+            <div className="codigo-resend">
+                <span>Não recebeu o código? </span>
+                <button type="button" onClick={handleResend}>
                     Reenviar código
                 </button>
             </div>
 
-            <div className="form-actions mt-large">
-                <button type="submit" className="btn-primary">
-                    <span className="btn-text">ENVIAR</span>
-                </button>
-            </div>
+            <button type="submit" className="button-right">
+                ENVIAR
+            </button>
         </form>
     );
 }

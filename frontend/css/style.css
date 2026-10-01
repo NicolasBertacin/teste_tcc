@@ -802,8 +802,9 @@ body {
 
 .dash-brand-svg,
 .dash-brand-img {
-    width: 30px;
-    height: 30px;
+    height: 34px;
+    width: auto;
+    max-width: 140px;
     object-fit: contain;
     filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.45));
     display: block;

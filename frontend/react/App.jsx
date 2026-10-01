@@ -199,9 +199,28 @@ function App() {
         showToast('Sessão encerrada com sucesso.', 'info');
     };
 
+    React.useEffect(() => {
+        if (user) {
+            document.body.classList.remove('auth-mode');
+            document.body.classList.add('dashboard-mode');
+        } else {
+            document.body.classList.add('auth-mode');
+            document.body.classList.remove('dashboard-mode');
+        }
+
+        const handleWheel = (e) => {
+            if (!user) {
+                e.preventDefault();
+            }
+        };
+
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        return () => window.removeEventListener('wheel', handleWheel);
+    }, [user]);
+
     return (
-        <div className="app-root">
-            <BackgroundEffects />
+        <div className={`app-root ${user ? 'dashboard-view' : 'auth-view'}`}>
+            {user && <BackgroundEffects />}
             <ToastContainer toasts={toasts} />
 
             {user ? (
