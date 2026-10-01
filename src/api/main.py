@@ -20,22 +20,30 @@ async def lifespan(app: FastAPI):
     db_manager = get_db_instance()
     Base.metadata.create_all(db_manager.engine)
 
-    # Garantir usuário administrador padrão e dados iniciais
+    # Garantir dados iniciais e usuário administrador
     with db_manager.session() as session:
-        admin_user = session.query(User).filter(User.email == "admin@trendecommerce.com").first()
-        if not admin_user:
-            admin_user = User(
-                email="admin@trendecommerce.com",
-                hashed_password=get_password_hash("admin123"),
-                name="Administrador Master",
-                is_active=True
-            )
-            session.add(admin_user)
-            print("[TrendCommerce AI] Usuário administrador padrão (admin@trendecommerce.com) criado com sucesso.")
+        # 1. Injetar catálogo de produtos e histórico caso o banco esteja vazio
+        try:
+            from src.database.seed_loader import seed_database_if_empty
+            seed_database_if_empty(session)
+        except Exception as err:
+            print(f"[TrendCommerce AI] Erro ao carregar seed inicial: {err}")
 
-        # Injetar catálogo de produtos e histórico caso o banco esteja vazio
-        from src.database.seed_loader import seed_database_if_empty
-        seed_database_if_empty(session)
+        # 2. Garantir usuário administrador padrão
+        try:
+            admin_user = session.query(User).filter(User.email == "admin@trendecommerce.com").first()
+            if not admin_user:
+                admin_user = User(
+                    email="admin@trendecommerce.com",
+                    hashed_password=get_password_hash("admin123"),
+                    name="Administrador Master",
+                    is_active=True
+                )
+                session.add(admin_user)
+                session.commit()
+                print("[TrendCommerce AI] Usuário administrador padrão criado com sucesso.")
+        except Exception as err:
+            print(f"[TrendCommerce AI] Erro ao criar admin padrão: {err}")
     yield
 
 
@@ -133,3 +141,16 @@ def reseed_database():
         "total_products": prod_count,
         "total_sales_history": sales_count
     }
+
+
+@app.get("/api/v1/debug/status", tags=["Admin"], summary="Status detalhado do banco de dados")
+def debug_status():
+    from src.database.models import Product, SalesHistory, User
+    db_manager = get_db_instance()
+    with db_manager.session() as session:
+        return {
+            "db_type": "postgresql" if "postgres" in db_manager._database_url else "sqlite",
+            "products_count": session.query(Product).count(),
+            "sales_history_count": session.query(SalesHistory).count(),
+            "users_count": session.query(User).count()
+        }
