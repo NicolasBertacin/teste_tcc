@@ -65,12 +65,29 @@ function AnaliseEspecificaTab({ products, showToast }) {
             return;
         }
 
-        const matches = (products || []).filter((p) =>
-            p.title.toLowerCase().includes(val.toLowerCase()) ||
-            (p.category && p.category.toLowerCase().includes(val.toLowerCase()))
-        ).slice(0, 6);
+        const rawTokens = val.toLowerCase().trim().split(/\s+/).filter((t) => t.length >= 2);
 
-        setSearchResults(matches);
+        const scoredMatches = (products || []).map((p) => {
+            const titleLower = p.title.toLowerCase();
+            const catLower = (p.category || '').toLowerCase();
+            let score = 0;
+
+            if (titleLower.includes(val.toLowerCase().trim())) {
+                score += 10;
+            }
+
+            rawTokens.forEach((token) => {
+                if (titleLower.includes(token)) score += 3;
+                if (catLower.includes(token)) score += 1;
+            });
+
+            return { product: p, score };
+        }).filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.product)
+          .slice(0, 6);
+
+        setSearchResults(scoredMatches);
         setShowDropdown(true);
     };
 
