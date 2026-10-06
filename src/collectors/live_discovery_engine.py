@@ -46,57 +46,129 @@ COMMON_TYPO_CORRECTIONS = {
     "azul": "azul",
 }
 
-# Tabela detalhada de faixas de preço e volume médio diário por nicho de mercado
+# Tabela calibrada de faixas de preço e volume médio diário por nicho de mercado brasileiro (BRL)
 NICHE_PRICE_ESTIMATES = {
-    "havaianas": {"category": "Moda & Calçados", "price_min": 29.90, "price_max": 79.90, "avg_daily": 45},
-    "chinelo": {"category": "Moda & Calçados", "price_min": 25.00, "price_max": 99.00, "avg_daily": 40},
-    "sandalia": {"category": "Moda & Calçados", "price_min": 35.00, "price_max": 140.00, "avg_daily": 30},
-    "sapato": {"category": "Moda & Calçados", "price_min": 90.00, "price_max": 390.00, "avg_daily": 20},
-    "tenis": {"category": "Moda & Calçados", "price_min": 150.00, "price_max": 890.00, "avg_daily": 35},
-    "camiseta": {"category": "Moda & Vestuário", "price_min": 35.00, "price_max": 149.00, "avg_daily": 45},
-    "camisa": {"category": "Moda & Vestuário", "price_min": 49.00, "price_max": 199.00, "avg_daily": 30},
-    "calca": {"category": "Moda & Vestuário", "price_min": 69.00, "price_max": 249.00, "avg_daily": 25},
-    "vestido": {"category": "Moda & Vestuário", "price_min": 59.00, "price_max": 289.00, "avg_daily": 25},
-    "mochila": {"category": "Acessórios", "price_min": 60.00, "price_max": 320.00, "avg_daily": 28},
-    "relogio": {"category": "Acessórios", "price_min": 90.00, "price_max": 1200.00, "avg_daily": 22},
-    "celulares": {"category": "Celulares", "price_min": 1200, "price_max": 8500, "avg_daily": 15},
-    "smartphone": {"category": "Celulares", "price_min": 1100, "price_max": 7900, "avg_daily": 16},
-    "iphone": {"category": "Celulares", "price_min": 3800, "price_max": 9900, "avg_daily": 18},
-    "samsung": {"category": "Celulares", "price_min": 890, "price_max": 7500, "avg_daily": 20},
-    "xiaomi": {"category": "Celulares", "price_min": 790, "price_max": 3200, "avg_daily": 22},
-    "games": {"category": "Games", "price_min": 150, "price_max": 4800, "avg_daily": 18},
-    "playstation": {"category": "Games", "price_min": 2400, "price_max": 4800, "avg_daily": 14},
-    "xbox": {"category": "Games", "price_min": 2100, "price_max": 4600, "avg_daily": 12},
-    "nintendo": {"category": "Games", "price_min": 1800, "price_max": 2800, "avg_daily": 15},
-    "consoles": {"category": "Games", "price_min": 2200, "price_max": 4999, "avg_daily": 12},
-    "notebook": {"category": "Informática", "price_min": 2100, "price_max": 12000, "avg_daily": 10},
-    "computador": {"category": "Informática", "price_min": 1800, "price_max": 9500, "avg_daily": 8},
-    "monitor": {"category": "Informática", "price_min": 500, "price_max": 3200, "avg_daily": 14},
-    "teclado": {"category": "Informática", "price_min": 80, "price_max": 650, "avg_daily": 25},
-    "mouse": {"category": "Informática", "price_min": 50, "price_max": 480, "avg_daily": 30},
-    "ssd": {"category": "Informática", "price_min": 140, "price_max": 850, "avg_daily": 35},
-    "air fryer": {"category": "Eletroportáteis", "price_min": 240, "price_max": 890, "avg_daily": 28},
-    "fritadeira": {"category": "Eletroportáteis", "price_min": 240, "price_max": 890, "avg_daily": 26},
-    "cafeteira": {"category": "Eletroportáteis", "price_min": 120, "price_max": 950, "avg_daily": 22},
-    "aspirador": {"category": "Eletroportáteis", "price_min": 180, "price_max": 1900, "avg_daily": 19},
-    "liquidificador": {"category": "Eletroportáteis", "price_min": 90, "price_max": 420, "avg_daily": 25},
-    "batedeira": {"category": "Eletroportáteis", "price_min": 110, "price_max": 650, "avg_daily": 18},
-    "fone": {"category": "Áudio", "price_min": 80, "price_max": 1890, "avg_daily": 35},
-    "headset": {"category": "Áudio", "price_min": 120, "price_max": 1450, "avg_daily": 25},
-    "caixa de som": {"category": "Áudio", "price_min": 150, "price_max": 2200, "avg_daily": 20},
-    "alexa": {"category": "Casa Inteligente", "price_min": 250, "price_max": 990, "avg_daily": 32},
-    "lampada": {"category": "Casa Inteligente", "price_min": 40, "price_max": 180, "avg_daily": 35},
-    "smart": {"category": "Eletrônicos", "price_min": 150, "price_max": 4200, "avg_daily": 18},
-    "tv": {"category": "Eletrônicos", "price_min": 1200, "price_max": 6500, "avg_daily": 12},
-    "suplemento": {"category": "Esportes & Fitness", "price_min": 60, "price_max": 280, "avg_daily": 40},
-    "creatina": {"category": "Esportes & Fitness", "price_min": 70, "price_max": 220, "avg_daily": 55},
-    "whey": {"category": "Esportes & Fitness", "price_min": 90, "price_max": 310, "avg_daily": 50},
-    "perfume": {"category": "Beleza & Cosméticos", "price_min": 120, "price_max": 780, "avg_daily": 22},
-    "maquiagem": {"category": "Beleza & Cosméticos", "price_min": 35, "price_max": 250, "avg_daily": 38},
-    "furadeira": {"category": "Ferramentas", "price_min": 160, "price_max": 850, "avg_daily": 16},
-    "parafusadeira": {"category": "Ferramentas", "price_min": 140, "price_max": 920, "avg_daily": 18},
-    "livro": {"category": "Livros", "price_min": 35, "price_max": 150, "avg_daily": 25},
+    # Acessórios de Celular & Informática (Precedência alta contra smartphones)
+    "carregador iphone": {"category": "Acessórios para Celulares", "price_min": 69.90, "price_max": 149.90, "avg_daily": 60},
+    "fonte carregador": {"category": "Acessórios para Celulares", "price_min": 59.90, "price_max": 129.90, "avg_daily": 55},
+    "carregador": {"category": "Acessórios para Celulares", "price_min": 49.90, "price_max": 149.90, "avg_daily": 50},
+    "cabo lightning": {"category": "Cabos e Adaptadores", "price_min": 29.90, "price_max": 89.90, "avg_daily": 65},
+    "cabo usb-c": {"category": "Cabos e Adaptadores", "price_min": 24.90, "price_max": 79.90, "avg_daily": 70},
+    "cabo": {"category": "Cabos e Adaptadores", "price_min": 20.00, "price_max": 79.90, "avg_daily": 60},
+    "capinha": {"category": "Capas para Celulares", "price_min": 25.00, "price_max": 89.00, "avg_daily": 80},
+    "capa": {"category": "Capas para Celulares", "price_min": 25.00, "price_max": 99.00, "avg_daily": 70},
+    "pelicula": {"category": "Protetores de Tela", "price_min": 19.90, "price_max": 59.90, "avg_daily": 75},
+    "suporte celular": {"category": "Acessórios para Veículos", "price_min": 35.00, "price_max": 79.90, "avg_daily": 40},
+
+    # Suplementos com faixas reais de mercado
+    "creatina 300g": {"category": "Esportes & Fitness", "price_min": 59.90, "price_max": 79.90, "avg_daily": 85},
+    "creatina max titanium": {"category": "Esportes & Fitness", "price_min": 59.90, "price_max": 79.90, "avg_daily": 85},
+    "creatina monohidratada": {"category": "Esportes & Fitness", "price_min": 59.90, "price_max": 84.90, "avg_daily": 80},
+    "creatina 1kg": {"category": "Esportes & Fitness", "price_min": 159.90, "price_max": 249.90, "avg_daily": 30},
+    "kit creatina": {"category": "Esportes & Fitness", "price_min": 119.90, "price_max": 189.90, "avg_daily": 35},
+    "creatina": {"category": "Esportes & Fitness", "price_min": 59.90, "price_max": 79.90, "avg_daily": 80},
+    "whey protein 900g": {"category": "Esportes & Fitness", "price_min": 89.90, "price_max": 139.90, "avg_daily": 50},
+    "whey protein": {"category": "Esportes & Fitness", "price_min": 89.90, "price_max": 149.90, "avg_daily": 50},
+    "whey": {"category": "Esportes & Fitness", "price_min": 89.90, "price_max": 149.90, "avg_daily": 50},
+    "suplemento": {"category": "Esportes & Fitness", "price_min": 49.90, "price_max": 149.90, "avg_daily": 45},
+
+    # Monitores e periféricos
+    "monitor 24": {"category": "Monitores", "price_min": 649.00, "price_max": 899.00, "avg_daily": 18},
+    "monitor 27": {"category": "Monitores", "price_min": 899.00, "price_max": 1499.00, "avg_daily": 15},
+    "monitor 144hz": {"category": "Monitores", "price_min": 799.00, "price_max": 1299.00, "avg_daily": 20},
+    "monitor gamer": {"category": "Monitores", "price_min": 799.00, "price_max": 1399.00, "avg_daily": 18},
+    "monitor": {"category": "Monitores", "price_min": 599.00, "price_max": 1299.00, "avg_daily": 16},
+    "teclado mecanico": {"category": "Periféricos", "price_min": 149.00, "price_max": 299.00, "avg_daily": 28},
+    "teclado": {"category": "Periféricos", "price_min": 69.00, "price_max": 249.00, "avg_daily": 30},
+    "mouse gamer": {"category": "Periféricos", "price_min": 79.00, "price_max": 249.00, "avg_daily": 35},
+    "mouse": {"category": "Periféricos", "price_min": 39.00, "price_max": 179.00, "avg_daily": 40},
+    "headset gamer": {"category": "Áudio", "price_min": 149.00, "price_max": 459.00, "avg_daily": 25},
+    "headset": {"category": "Áudio", "price_min": 99.00, "price_max": 399.00, "avg_daily": 25},
+    "ssd 1tb": {"category": "Armazenamento", "price_min": 349.00, "price_max": 449.00, "avg_daily": 35},
+    "ssd 512gb": {"category": "Armazenamento", "price_min": 189.00, "price_max": 269.00, "avg_daily": 40},
+    "ssd": {"category": "Armazenamento", "price_min": 149.00, "price_max": 449.00, "avg_daily": 35},
+
+    # Smartphones
+    "iphone 15 pro max": {"category": "Celulares", "price_min": 6999.00, "price_max": 7999.00, "avg_daily": 12},
+    "iphone 15 pro": {"category": "Celulares", "price_min": 6199.00, "price_max": 7299.00, "avg_daily": 14},
+    "iphone 15": {"category": "Celulares", "price_min": 4599.00, "price_max": 5299.00, "avg_daily": 18},
+    "iphone 13": {"category": "Celulares", "price_min": 3299.00, "price_max": 3799.00, "avg_daily": 22},
+    "iphone 14": {"category": "Celulares", "price_min": 3799.00, "price_max": 4399.00, "avg_daily": 18},
+    "iphone": {"category": "Celulares", "price_min": 3299.00, "price_max": 7999.00, "avg_daily": 18},
+    "galaxy s24 ultra": {"category": "Celulares", "price_min": 5899.00, "price_max": 6999.00, "avg_daily": 12},
+    "galaxy s24": {"category": "Celulares", "price_min": 3899.00, "price_max": 4799.00, "avg_daily": 16},
+    "motorola edge": {"category": "Celulares", "price_min": 1899.00, "price_max": 2499.00, "avg_daily": 18},
+    "samsung": {"category": "Celulares", "price_min": 890.00, "price_max": 3990.00, "avg_daily": 25},
+    "xiaomi": {"category": "Celulares", "price_min": 890.00, "price_max": 2299.00, "avg_daily": 25},
+    "smartphone": {"category": "Celulares", "price_min": 890.00, "price_max": 3990.00, "avg_daily": 20},
+    "celular": {"category": "Celulares", "price_min": 790.00, "price_max": 3990.00, "avg_daily": 20},
+
+    # Consoles & Games
+    "playstation 5 slim": {"category": "Games", "price_min": 3499.00, "price_max": 3899.00, "avg_daily": 15},
+    "playstation 5": {"category": "Games", "price_min": 3499.00, "price_max": 3999.00, "avg_daily": 15},
+    "ps5": {"category": "Games", "price_min": 3499.00, "price_max": 3999.00, "avg_daily": 15},
+    "xbox series x": {"category": "Games", "price_min": 3799.00, "price_max": 4299.00, "avg_daily": 10},
+    "xbox series s": {"category": "Games", "price_min": 2299.00, "price_max": 2699.00, "avg_daily": 16},
+    "nintendo switch": {"category": "Games", "price_min": 1799.00, "price_max": 2199.00, "avg_daily": 15},
+    "controle ps5": {"category": "Acessórios Gamer", "price_min": 369.00, "price_max": 429.00, "avg_daily": 30},
+    "controle xbox": {"category": "Acessórios Gamer", "price_min": 349.00, "price_max": 419.00, "avg_daily": 28},
+    "controle": {"category": "Acessórios Gamer", "price_min": 149.00, "price_max": 429.00, "avg_daily": 30},
+
+    # Eletroportáteis & Casa
+    "air fryer": {"category": "Eletroportáteis", "price_min": 269.00, "price_max": 469.00, "avg_daily": 28},
+    "fritadeira": {"category": "Eletroportáteis", "price_min": 269.00, "price_max": 469.00, "avg_daily": 26},
+    "aspirador robo": {"category": "Eletroportáteis", "price_min": 499.00, "price_max": 899.00, "avg_daily": 18},
+    "aspirador": {"category": "Eletroportáteis", "price_min": 149.00, "price_max": 499.00, "avg_daily": 25},
+    "cafeteira nespresso": {"category": "Eletroportáteis", "price_min": 349.00, "price_max": 499.00, "avg_daily": 22},
+    "cafeteira": {"category": "Eletroportáteis", "price_min": 119.00, "price_max": 449.00, "avg_daily": 22},
+    "liquidificador": {"category": "Eletroportáteis", "price_min": 99.00, "price_max": 299.00, "avg_daily": 25},
+    "fechadura digital": {"category": "Casa Inteligente", "price_min": 399.00, "price_max": 699.00, "avg_daily": 16},
+    "camera de seguranca": {"category": "Casa Inteligente", "price_min": 139.00, "price_max": 249.00, "avg_daily": 25},
+    "echo dot": {"category": "Casa Inteligente", "price_min": 299.00, "price_max": 379.00, "avg_daily": 35},
+    "alexa": {"category": "Casa Inteligente", "price_min": 299.00, "price_max": 449.00, "avg_daily": 32},
+    "lampada inteligente": {"category": "Casa Inteligente", "price_min": 39.90, "price_max": 69.90, "avg_daily": 45},
+
+    # Cuidados, Beleza & Áudio
+    "protetor solar": {"category": "Beleza & Cosméticos", "price_min": 64.90, "price_max": 94.90, "avg_daily": 40},
+    "perfume sauvage": {"category": "Beleza & Cosméticos", "price_min": 549.00, "price_max": 749.00, "avg_daily": 15},
+    "perfume": {"category": "Beleza & Cosméticos", "price_min": 149.00, "price_max": 499.00, "avg_daily": 22},
+    "secador de cabelo": {"category": "Beleza & Cosméticos", "price_min": 149.00, "price_max": 349.00, "avg_daily": 20},
+    "secador": {"category": "Beleza & Cosméticos", "price_min": 149.00, "price_max": 349.00, "avg_daily": 20},
+    "caixa de som jbl": {"category": "Áudio", "price_min": 499.00, "price_max": 799.00, "avg_daily": 20},
+    "caixa de som": {"category": "Áudio", "price_min": 149.00, "price_max": 799.00, "avg_daily": 20},
+    "fone bluetooth": {"category": "Áudio", "price_min": 99.00, "price_max": 349.00, "avg_daily": 35},
+    "fone": {"category": "Áudio", "price_min": 79.00, "price_max": 349.00, "avg_daily": 35},
+
+    # Ferramentas
+    "parafusadeira": {"category": "Ferramentas", "price_min": 199.00, "price_max": 429.00, "avg_daily": 20},
+    "furadeira": {"category": "Ferramentas", "price_min": 179.00, "price_max": 399.00, "avg_daily": 18},
+    "jogo de ferramentas": {"category": "Ferramentas", "price_min": 139.00, "price_max": 249.00, "avg_daily": 25},
+    "maleta de ferramentas": {"category": "Ferramentas", "price_min": 139.00, "price_max": 249.00, "avg_daily": 25},
+    "lavadora de alta pressao": {"category": "Ferramentas & Casa", "price_min": 449.00, "price_max": 699.00, "avg_daily": 16},
+
+    # Calçados & Moda
+    "havaianas": {"category": "Moda & Calçados", "price_min": 29.90, "price_max": 64.90, "avg_daily": 50},
+    "chinelo": {"category": "Moda & Calçados", "price_min": 25.00, "price_max": 64.90, "avg_daily": 45},
+    "tenis nike": {"category": "Moda & Calçados", "price_min": 229.00, "price_max": 349.00, "avg_daily": 30},
+    "tenis": {"category": "Moda & Calçados", "price_min": 149.00, "price_max": 399.00, "avg_daily": 30},
+    "smartwatch": {"category": "Eletrônicos", "price_min": 299.00, "price_max": 1499.00, "avg_daily": 20},
+    "livro": {"category": "Livros", "price_min": 35.00, "price_max": 89.00, "avg_daily": 25},
 }
+
+
+def resolve_niche_pricing(text: str, default_category: str = "Geral") -> Dict[str, Any]:
+    """Retorna a estimativa de preço e categoria com precedência de frases mais específicas."""
+    norm = text.lower().strip()
+    sorted_niches = sorted(NICHE_PRICE_ESTIMATES.items(), key=lambda x: len(x[0]), reverse=True)
+    for key, val in sorted_niches:
+        if key in norm:
+            return val
+    return {
+        "price_min": 49.90,
+        "price_max": 199.90,
+        "avg_daily": 20,
+        "category": default_category if default_category != "Geral" else "Outros"
+    }
 
 
 class LiveDiscoveryEngine:
@@ -197,16 +269,6 @@ class LiveDiscoveryEngine:
             if sug_title and sug_title not in candidate_titles:
                 candidate_titles.append(sug_title)
 
-        # Determinar categoria base e estimativa de preço
-        category = ml_domain.get("domain_name") or ml_domain.get("category_name") or "Geral"
-        price_range = {"price_min": 49.90, "price_max": 299.90, "avg_daily": 20, "category": category}
-
-        for key, val in NICHE_PRICE_ESTIMATES.items():
-            if key in norm_query:
-                price_range = val
-                category = val["category"]
-                break
-
         imported_products = list(existing)
         existing_titles = {p.title.lower() for p in db.query(Product.title).all()}
 
@@ -217,7 +279,12 @@ class LiveDiscoveryEngine:
                     imported_products.append(prod)
                 continue
 
-            price = round(random.uniform(price_range["price_min"], price_range["price_max"]), 2)
+            # Determinar faixa de preço e categoria específica para o título do produto
+            default_cat = ml_domain.get("domain_name") or ml_domain.get("category_name") or "Geral"
+            niche_info = resolve_niche_pricing(title, default_category=default_cat)
+            
+            price = round(random.uniform(niche_info["price_min"], niche_info["price_max"]), 2)
+            category = niche_info["category"]
             platform = random.choice(["mercadolivre", "amazon", "mercadolivre"])
 
             new_prod = Product(
@@ -233,13 +300,13 @@ class LiveDiscoveryEngine:
             db.add(new_prod)
             db.flush()
 
-            # Gerar série histórica diária de 90 dias
-            self._generate_sales_history(new_prod, db, price_range["avg_daily"])
+            # Gerar série histórica diária de 90 dias com volume proporcional ao nicho
+            self._generate_sales_history(new_prod, db, niche_info["avg_daily"])
 
             db.commit()
             existing_titles.add(title.lower())
             imported_products.append(new_prod)
-            logger.info(f"✓ Novo produto importado em tempo real: {new_prod.title} (ID: {new_prod.id})")
+            logger.info(f"✓ Novo produto importado em tempo real: {new_prod.title} - R$ {price:.2f} (ID: {new_prod.id})")
 
         return imported_products
 
