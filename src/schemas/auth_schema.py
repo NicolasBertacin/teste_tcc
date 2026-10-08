@@ -23,6 +23,18 @@ class GoogleAuthRequest(BaseModel):
     picture: Optional[str] = Field(None, description="URL do avatar do Google")
 
 
+class GoogleRequestCodeRequest(BaseModel):
+    email: EmailStr = Field(..., description="Email da conta Google selecionada")
+    name: Optional[str] = Field(None, description="Nome de exibição da conta Google")
+
+
+class GoogleVerifyCodeRequest(BaseModel):
+    email: EmailStr = Field(..., description="Email da conta Google")
+    code: str = Field(..., min_length=4, max_length=4, description="Código de 4 dígitos enviado ao e-mail")
+    name: Optional[str] = Field(None, description="Nome da conta Google")
+
+
+
 
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
