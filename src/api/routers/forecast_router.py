@@ -279,30 +279,57 @@ def get_forecast_ranking(
     # Ordenar por demanda e faturamento projetado
     sorted_by_demand = sorted(forecasts, key=lambda x: x.total_predicted_units, reverse=True)
 
+    # Top 7 produtos gerais: Líderes Top 1 de cada nicho/categoria
+    seen_cats_overall = set()
     top_overall = []
-    for i, f in enumerate(sorted_by_demand[:7]):
-        rank_num = i + 1
-        if rank_num == 1:
-            reason = f"Líder absoluto de demanda com {f.total_predicted_units} un e faturamento projetado de R$ {f.total_projected_revenue:,.2f} no horizonte de {horizon_days} dias."
-            driver = "Giro Máximo de Estoque e Tração de Mercado"
-        elif rank_num in [2, 3]:
-            reason = f"Altíssima velocidade de saída (~{f.daily_average:.1f} un/dia) com picos expressivos nos finais de semana (+35%)."
-            driver = "Sazonalidade Cíclica e Demanda Acelerada"
-        else:
-            reason = f"Performance consistente de vendas no nicho '{f.category}' com margem de segurança estável."
-            driver = "Estabilidade Contínua de Vendas"
+    for f in sorted_by_demand:
+        cat = f.category or "Geral"
+        if cat not in seen_cats_overall:
+            seen_cats_overall.add(cat)
+            rank_num = len(top_overall) + 1
+            if rank_num == 1:
+                reason = f"Líder absoluto de demanda com {f.total_predicted_units} un e faturamento projetado de R$ {f.total_projected_revenue:,.2f} no horizonte de {horizon_days} dias."
+                driver = f"Líder Geral & Tração Máxima em {cat}"
+            elif rank_num in [2, 3]:
+                reason = f"Líder no nicho '{cat}' com altíssima velocidade de saída (~{f.daily_average:.1f} un/dia) e picos nos finais de semana."
+                driver = f"Líder no segmento de {cat}"
+            else:
+                reason = f"Produto #1 no nicho '{cat}' com performance consistente e margem de segurança estável."
+                driver = f"Destaque em {cat}"
 
-        top_overall.append(RankingForecastItem(
-            rank=rank_num,
-            product_id=f.product_id,
-            title=f.product_title,
-            category=f.category,
-            price=f.unit_price,
-            projected_units=f.total_predicted_units,
-            projected_revenue=f.total_projected_revenue,
-            rank_reason=reason,
-            key_driver=driver
-        ))
+            top_overall.append(RankingForecastItem(
+                rank=rank_num,
+                product_id=f.product_id,
+                title=f.product_title,
+                category=f.category,
+                price=f.unit_price,
+                projected_units=f.total_predicted_units,
+                projected_revenue=f.total_projected_revenue,
+                rank_reason=reason,
+                key_driver=driver
+            ))
+            if len(top_overall) >= 7:
+                break
+
+    # Se ainda houver vagas para 7 e poucas categorias distintas, preenche com os próximos melhores
+    if len(top_overall) < 7:
+        seen_pids = {item.product_id for item in top_overall}
+        for f in sorted_by_demand:
+            if f.product_id not in seen_pids:
+                seen_pids.add(f.product_id)
+                top_overall.append(RankingForecastItem(
+                    rank=len(top_overall) + 1,
+                    product_id=f.product_id,
+                    title=f.product_title,
+                    category=f.category,
+                    price=f.unit_price,
+                    projected_units=f.total_predicted_units,
+                    projected_revenue=f.total_projected_revenue,
+                    rank_reason=f"Top performer com {f.total_predicted_units} unidades projetadas.",
+                    key_driver="Alta Tração de Demanda"
+                ))
+                if len(top_overall) >= 7:
+                    break
 
     # Agrupar por categoria e pegar top 5 com justificativas
     by_cat_dict = {}
@@ -313,6 +340,8 @@ def get_forecast_ranking(
         by_cat_dict[cat].append(f)
 
     top_by_category = {}
+    top_by_category["GERAIS"] = top_overall[:5]
+
     for cat, list_items in by_cat_dict.items():
         sorted_cat = sorted(list_items, key=lambda x: x.total_predicted_units, reverse=True)
         top_by_category[cat] = [

@@ -598,7 +598,7 @@ function IaPreditivaTab({ categories, showToast }) {
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                         >
-                            <option value="">CATEGORIAS</option>
+                            <option value="">GERAIS</option>
                             {categories.map((c) => (
                                 <option key={c} value={c}>{c}</option>
                             ))}

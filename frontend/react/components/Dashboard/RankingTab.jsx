@@ -6,7 +6,7 @@
 
 function RankingTab({ categories }) {
     const [rankingData, setRankingData] = React.useState({ top_overall: [], top_by_category: {} });
-    const [selectedCategory, setSelectedCategory] = React.useState('Tecnologia');
+    const [selectedCategory, setSelectedCategory] = React.useState('GERAIS');
     const [loading, setLoading] = React.useState(true);
     const [selectedItemModal, setSelectedItemModal] = React.useState(null);
 
@@ -19,12 +19,6 @@ function RankingTab({ categories }) {
         try {
             const data = await window.apiService.forecast.ranking(30);
             setRankingData(data);
-            if (data.top_by_category) {
-                const available = Object.keys(data.top_by_category);
-                if (available.length > 0 && !data.top_by_category[selectedCategory]) {
-                    setSelectedCategory(available[0]);
-                }
-            }
         } catch (err) {
             console.error('Erro ao carregar ranking:', err);
         } finally {
@@ -34,7 +28,9 @@ function RankingTab({ categories }) {
 
     const categoryItems = (rankingData.top_by_category && rankingData.top_by_category[selectedCategory])
         ? rankingData.top_by_category[selectedCategory]
-        : (Object.values(rankingData.top_by_category || {})[0] || []);
+        : (selectedCategory === 'GERAIS' && rankingData.top_overall)
+            ? rankingData.top_overall.slice(0, 5)
+            : (Object.values(rankingData.top_by_category || {})[0] || []);
 
     return (
         <section className="dash-tab-content active">
@@ -123,6 +119,7 @@ function RankingTab({ categories }) {
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                         >
+                            <option value="GERAIS">GERAIS</option>
                             {categories.map((c) => (
                                 <option key={c} value={c}>{c.toUpperCase()}</option>
                             ))}

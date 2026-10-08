@@ -138,7 +138,10 @@ def get_top_selling_products(
     days: int = Query(30, ge=1, le=365, description="Janela de dias para apuração de vendas (padrão: 30 dias)"),
     db: Session = Depends(get_db)
 ):
-    """Retorna os produtos com maior volume de vendas apuradas no período (mês/30 dias)."""
+    """Retorna os produtos com maior volume de vendas apuradas no período.
+    Se nenhuma categoria for especificada (Modo GERAIS), retorna os produtos TOP 1 líderes de cada nicho/categoria.
+    Se uma categoria específica for informada, retorna os Top N produtos mais vendidos daquela categoria.
+    """
     latest_date = db.query(func.max(SalesHistory.date)).scalar()
 
     query = db.query(
@@ -154,25 +157,51 @@ def get_top_selling_products(
         start_date = latest_date - timedelta(days=days)
         query = query.filter(SalesHistory.date >= start_date)
 
-    if category:
-        query = query.filter(Product.category == category)
+    if category and category.strip().upper() not in ["GERAIS", "GERAL", "TODAS", "TODOS"]:
+        query = query.filter(Product.category == category.strip())
+        results = query.group_by(Product.id, Product.title, Product.category, Product.price)\
+                       .order_by(desc("total_sold"))\
+                       .limit(limit)\
+                       .all()
 
-    results = query.group_by(Product.id, Product.title, Product.category, Product.price)\
-                   .order_by(desc("total_sold"))\
-                   .limit(limit)\
-                   .all()
+        items = []
+        for rank, (p_id, title, cat, price, total_sold, total_rev) in enumerate(results, start=1):
+            items.append(TopProductItem(
+                rank=rank,
+                id=p_id,
+                title=title,
+                category=cat or "Geral",
+                price=float(price or 0.0),
+                quantity_sold=int(total_sold or 0),
+                revenue=round(float(total_rev or 0.0), 2)
+            ))
+        return items
 
+    # Modo GERAIS: Seleciona o Top 1 mais vendido de cada nicho/categoria distinto
+    all_results = query.group_by(Product.id, Product.title, Product.category, Product.price)\
+                       .order_by(desc("total_sold"))\
+                       .all()
+
+    seen_cats = set()
     items = []
-    for rank, (p_id, title, cat, price, total_sold, total_rev) in enumerate(results, start=1):
-        items.append(TopProductItem(
-            rank=rank,
-            id=p_id,
-            title=title,
-            category=cat or "Geral",
-            price=float(price or 0.0),
-            quantity_sold=int(total_sold or 0),
-            revenue=round(float(total_rev or 0.0), 2)
-        ))
+    rank = 1
+    for p_id, title, cat, price, total_sold, total_rev in all_results:
+        clean_cat = cat or "Geral"
+        if clean_cat not in seen_cats:
+            seen_cats.add(clean_cat)
+            items.append(TopProductItem(
+                rank=rank,
+                id=p_id,
+                title=title,
+                category=clean_cat,
+                price=float(price or 0.0),
+                quantity_sold=int(total_sold or 0),
+                revenue=round(float(total_rev or 0.0), 2)
+            ))
+            rank += 1
+            if len(items) >= limit:
+                break
+
     return items
 
 
