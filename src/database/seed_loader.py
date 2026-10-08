@@ -85,62 +85,41 @@ def seed_database_if_empty(session: Session):
                     if ratio > 1.4 or ratio < 0.6:
                         s.price_at_date = float(p_price)
 
+        # 3. Sincronizar Search Trends se tabela vazia
+        if session.query(SearchTrend).count() == 0:
+            trends_records = []
+            for t_data in data.get("search_trends", []):
+                trends_records.append(SearchTrend(
+                    id=t_data.get("id"),
+                    keyword=t_data.get("keyword") or "trend",
+                    date=_parse_dt(t_data.get("date")),
+                    interest_score=int(t_data.get("interest_score") or 50),
+                    source=t_data.get("source") or "google_trends",
+                    is_mock=bool(t_data.get("is_mock", False)),
+                    collected_at=_parse_dt(t_data.get("collected_at"))
+                ))
+            session.bulk_save_objects(trends_records)
+            session.flush()
+
+        # 4. Sincronizar Indicadores Macro se tabela vazia
+        if session.query(MacroIndicator).count() == 0:
+            macro_records = []
+            for m_data in data.get("macro_indicators", []):
+                macro_records.append(MacroIndicator(
+                    id=m_data.get("id"),
+                    date=_parse_dt(m_data.get("date")),
+                    indicator_type=m_data.get("indicator_type") or "SELIC",
+                    value=float(m_data.get("value") or 0.0),
+                    label=m_data.get("label") or "Macro",
+                    source=m_data.get("source") or "BCB",
+                    details=m_data.get("details"),
+                    collected_at=_parse_dt(m_data.get("collected_at"))
+                ))
+            session.bulk_save_objects(macro_records)
+            session.flush()
+
         session.commit()
         print(f"[SeedLoader] Sincronização e calibração de {len(products_data)} produtos concluída com sucesso.")
     except Exception as e:
         session.rollback()
         print(f"[SeedLoader] Erro ao sincronizar seed: {e}")
-
-
-        # 2. Inserir Histórico de Vendas
-        sales_records = []
-        for s_data in data.get("sales_history", []):
-            sales_records.append(SalesHistory(
-                id=s_data.get("id"),
-                product_id=s_data.get("product_id"),
-                date=_parse_dt(s_data.get("date")),
-                quantity_sold=int(s_data.get("quantity_sold") or 0),
-                price_at_date=float(s_data.get("price_at_date") or 0.0),
-                available_quantity=int(s_data.get("available_quantity") or 50),
-                platform=s_data.get("platform") or "mercadolivre",
-                collected_at=_parse_dt(s_data.get("collected_at"))
-            ))
-        session.bulk_save_objects(sales_records)
-        session.flush()
-
-        # 3. Inserir Search Trends
-        trends_records = []
-        for t_data in data.get("search_trends", []):
-            trends_records.append(SearchTrend(
-                id=t_data.get("id"),
-                keyword=t_data.get("keyword") or "trend",
-                date=_parse_dt(t_data.get("date")),
-                interest_score=int(t_data.get("interest_score") or 50),
-                source=t_data.get("source") or "google_trends",
-                is_mock=bool(t_data.get("is_mock", False)),
-                collected_at=_parse_dt(t_data.get("collected_at"))
-            ))
-        session.bulk_save_objects(trends_records)
-        session.flush()
-
-        # 4. Inserir Indicadores Macro
-        macro_records = []
-        for m_data in data.get("macro_indicators", []):
-            macro_records.append(MacroIndicator(
-                id=m_data.get("id"),
-                date=_parse_dt(m_data.get("date")),
-                indicator_type=m_data.get("indicator_type") or "SELIC",
-                value=float(m_data.get("value") or 0.0),
-                label=m_data.get("label") or "Macro",
-                source=m_data.get("source") or "BCB",
-                details=m_data.get("details"),
-                collected_at=_parse_dt(m_data.get("collected_at"))
-            ))
-        session.bulk_save_objects(macro_records)
-        session.flush()
-
-        session.commit()
-        print(f"[SeedLoader] Sucesso! {len(data.get('products', []))} produtos e {len(sales_records)} historicos carregados.")
-    except Exception as e:
-        session.rollback()
-        print(f"[SeedLoader] Erro ao popular banco: {e}")
