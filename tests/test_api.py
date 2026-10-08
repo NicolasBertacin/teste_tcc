@@ -236,4 +236,32 @@ def test_send_otp_email_service(monkeypatch):
     assert "trendecommerce_logo" in msg_str
 
 
+def test_products_autocomplete(client):
+    """Testa endpoint de autocompletar e recomendações em tempo real."""
+    # Busca de produto existente ou sugestões ao digitar
+    resp = client.get("/api/v1/products/autocomplete?q=creatina&limit=5")
+    assert resp.status_code == 200
+    items = resp.json()
+    assert isinstance(items, list)
+    assert len(items) > 0
+    first = items[0]
+    assert "title" in first
+    assert "price" in first
+    assert "category" in first
+
+    # Busca de camisa corinthians (recomendações de modelos)
+    resp_cor = client.get("/api/v1/products/autocomplete?q=camisa%20corinthians&limit=5")
+    assert resp_cor.status_code == 200
+    cor_items = resp_cor.json()
+    assert isinstance(cor_items, list)
+    assert len(cor_items) > 0
+    assert any("corinthians" in item["title"].lower() for item in cor_items)
+
+    # Termo proibido deve retornar lista vazia
+    resp_prohibited = client.get("/api/v1/products/autocomplete?q=cocaina&limit=5")
+    assert resp_prohibited.status_code == 200
+    assert resp_prohibited.json() == []
+
+
+
 

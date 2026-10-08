@@ -147,6 +147,28 @@ def get_top_selling_products(
     return items
 
 
+from pydantic import BaseModel
+
+class AutocompleteItem(BaseModel):
+    id: Optional[int] = None
+    title: str
+    category: str
+    price: float
+    platform: str = "mercadolivre"
+    is_live_suggestion: bool = False
+
+
+@router.get("/autocomplete", response_model=List[AutocompleteItem], summary="Autocompletar e recomendações de modelos em tempo real")
+def autocomplete_products(
+    q: str = Query(..., min_length=1, description="Termo de pesquisa"),
+    limit: int = Query(8, ge=1, le=20, description="Quantidade máxima de recomendações"),
+    db: Session = Depends(get_db)
+):
+    """Retorna recomendações inteligentes e modelos de produtos em tempo real para a busca preditiva."""
+    from src.collectors.live_discovery_engine import live_discovery
+    return live_discovery.get_autocomplete_suggestions(q, db, limit=limit)
+
+
 @router.get("/{product_id}", response_model=ProductDetailResponse, summary="Obter detalhes de um produto específico")
 def get_product(product_id: int, db: Session = Depends(get_db)):
     """Retorna as informações completas de um produto e seu histórico recente."""
@@ -232,8 +254,6 @@ def get_product_sales_history(
         ))
     return history
 
-
-from pydantic import BaseModel
 
 class DiscoverLiveRequest(BaseModel):
     query: str

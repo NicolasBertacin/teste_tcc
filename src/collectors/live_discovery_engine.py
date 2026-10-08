@@ -349,6 +349,19 @@ class LiveDiscoveryEngine:
             logger.warning(f"Erro ao buscar sugestões na Amazon: {e}")
         return []
 
+    def fetch_suggestions_google(self, query: str) -> List[str]:
+        """Consulta sugestões complementares de mercado em tempo real."""
+        try:
+            url = f"https://suggestqueries.google.com/complete/search?client=firefox&hl=pt-BR&q={requests.utils.quote(query)}"
+            r = requests.get(url, headers=self.session_headers, timeout=4)
+            if r.status_code == 200:
+                data = r.json()
+                if isinstance(data, list) and len(data) > 1 and isinstance(data[1], list):
+                    return [str(s) for s in data[1] if s]
+        except Exception as e:
+            logger.warning(f"Erro ao buscar sugestões complementares: {e}")
+        return []
+
     def fetch_domain_mercadolivre(self, query: str) -> Dict[str, Any]:
         """Consulta o classificador e catálogo do Mercado Livre Brasil em tempo real."""
         try:
@@ -368,6 +381,84 @@ class LiveDiscoveryEngine:
         except Exception as e:
             logger.warning(f"Erro ao consultar Mercado Livre Domain Discovery: {e}")
         return {}
+
+    def get_autocomplete_suggestions(self, query: str, db: Session, limit: int = 8) -> List[Dict[str, Any]]:
+        """Gera recomendações de autocompletar e variações de modelos de produtos em tempo real."""
+        raw_query = query.strip()
+        if not raw_query:
+            return []
+
+        norm_query = self.normalize_query(raw_query)
+
+        # 1. Filtro estrito de termos proibidos (drogas, armas, remédios controlados)
+        if check_prohibited_product(raw_query) or check_prohibited_product(norm_query):
+            return []
+
+        tokens = [t for t in norm_query.split() if len(t) >= 2]
+        results: List[Dict[str, Any]] = []
+        seen_titles = set()
+
+        # 2. Prioridade 1: Produtos já cadastrados no banco de dados
+        all_prods = db.query(Product).filter(Product.is_active == True).all()
+        matched_db = []
+        for p in all_prods:
+            p_title_lower = p.title.lower()
+            score = sum(3 for t in tokens if t in p_title_lower)
+            if norm_query in p_title_lower:
+                score += 10
+            if score > 0:
+                matched_db.append((score, p))
+
+        matched_db.sort(key=lambda x: x[0], reverse=True)
+        for _, p in matched_db[:limit]:
+            results.append({
+                "id": p.id,
+                "title": p.title,
+                "category": p.category or "Geral",
+                "price": float(p.price or 0.0),
+                "platform": p.platform or "mercadolivre",
+                "is_live_suggestion": False
+            })
+            seen_titles.add(p.title.lower().strip())
+
+        # 3. Prioridade 2: Sugestões e modelos em tempo real (Amazon & Google)
+        if len(results) < limit:
+            raw_sugs = self.fetch_suggestions_amazon(norm_query)
+            if len(raw_sugs) < limit - len(results):
+                raw_sugs.extend(self.fetch_suggestions_google(norm_query))
+
+            # Consultar domínio oficial do Mercado Livre para categoria precisa
+            ml_domain = self.fetch_domain_mercadolivre(norm_query) if raw_sugs else {}
+
+            for sug in raw_sugs:
+                if len(results) >= limit:
+                    break
+
+                sug_clean = sug.strip()
+                if not sug_clean or sug_clean.lower() in seen_titles:
+                    continue
+
+                # Validar termo da sugestão contra catálogo de proibições
+                if check_prohibited_product(sug_clean):
+                    continue
+
+                # Formatar em Title Case legível
+                title_fmt = sug_clean.title()
+
+                # Resolver preço dinâmico e categoria calibrada
+                niche = resolve_dynamic_market_pricing(title_fmt, domain_info=ml_domain)
+
+                results.append({
+                    "id": None,
+                    "title": title_fmt,
+                    "category": niche["category"],
+                    "price": float(niche["median"]),
+                    "platform": "mercadolivre",
+                    "is_live_suggestion": True
+                })
+                seen_titles.add(sug_clean.lower())
+
+        return results
 
     def discover_and_import(self, query: str, db: Session, max_items: int = 5) -> List[Product]:
         """Descobre produtos em tempo real com Mediana Estatística e Validação Estrita de Catálogo."""

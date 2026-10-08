@@ -25,6 +25,18 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
     const hoveredIndexRef = React.useRef(null);
     const forecastRef = React.useRef(null);
     const selectedProductRef = React.useRef(null);
+    const debounceTimerRef = React.useRef(null);
+    const dropdownContainerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownContainerRef.current && !dropdownContainerRef.current.contains(e.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     React.useEffect(() => {
         if (products && products.length > 0 && !selectedProduct) {
@@ -99,11 +111,12 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         if (!val.trim()) {
             setSearchResults([]);
             setShowDropdown(false);
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             return;
         }
 
+        // 1. Filtro instantâneo nos produtos locais para exibição imediata
         const rawTokens = val.toLowerCase().trim().split(/\s+/).filter((t) => t.length >= 2);
-
         const scoredMatches = (products || []).map((p) => {
             const titleLower = p.title.toLowerCase();
             const catLower = (p.category || '').toLowerCase();
@@ -118,21 +131,46 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                 if (catLower.includes(token)) score += 1;
             });
 
-            return { product: p, score };
+            return { ...p, score, is_live_suggestion: false };
         }).filter((item) => item.score > 0)
           .sort((a, b) => b.score - a.score)
-          .map((item) => item.product)
-          .slice(0, 6);
+          .slice(0, 8);
 
-        setSearchResults(scoredMatches);
-        setShowDropdown(true);
+        if (scoredMatches.length > 0) {
+            setSearchResults(scoredMatches);
+            setShowDropdown(true);
+        }
+
+        // 2. Consulta de Autocompletar e Modelos em Tempo Real (Amazon & Google APIs)
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(async () => {
+            try {
+                if (window.apiService?.products?.autocomplete) {
+                    const sugs = await window.apiService.products.autocomplete(val.trim(), 8);
+                    if (sugs && Array.isArray(sugs) && sugs.length > 0) {
+                        setSearchResults(sugs);
+                        setShowDropdown(true);
+                    }
+                }
+            } catch (err) {
+                // Mantém os resultados locais em caso de indisponibilidade
+            }
+        }, 150);
     };
 
     const handleSelectProduct = (prod) => {
-        setSelectedProduct(prod);
-        selectedProductRef.current = prod;
-        setSearchQuery(prod.title);
         setShowDropdown(false);
+        setSearchQuery(prod.title);
+
+        if (prod.id) {
+            // Produto já existente no banco de dados
+            setSelectedProduct(prod);
+            selectedProductRef.current = prod;
+            runForecast(prod.id, horizonDays);
+        } else {
+            // Modelo ou variação sugerida em tempo real: importa e prevê na hora!
+            handleLiveDiscovery(prod.title);
+        }
     };
 
     const handleLiveDiscovery = async (term) => {
@@ -450,7 +488,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
     return (
         <section className="dash-tab-content active">
             {/* Search Bar */}
-            <div className="specific-search-wrap">
+            <div className="specific-search-wrap" ref={dropdownContainerRef}>
                 <div className="search-input-box">
                     <input
                         type="text"
@@ -482,13 +520,13 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <div className="search-results-dropdown">
                         {searchResults.map((prod) => (
                             <div
-                                key={prod.id}
+                                key={prod.id ? `db-${prod.id}` : `sug-${prod.title}`}
                                 className="search-item"
                                 onClick={() => handleSelectProduct(prod)}
                             >
                                 <span className="search-item-title">{prod.title}</span>
                                 <span className="search-item-price">
-                                    R$ {prod.price ? prod.price.toFixed(2) : '0.00'}
+                                    R$ {Number(prod.price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                             </div>
                         ))}

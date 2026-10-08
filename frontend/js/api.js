@@ -167,6 +167,17 @@ class ApiClient {
             return await this.request(endpoint);
         },
 
+        discoverLive: async (query, limit = 5) => {
+            return await this.request('/products/discover-live', {
+                method: 'POST',
+                body: JSON.stringify({ query, limit })
+            });
+        },
+
+        autocomplete: async (query, limit = 8) => {
+            return await this.request(`/products/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
+        },
+
         getById: async (id) => {
             return await this.request(`/products/${id}`);
         },

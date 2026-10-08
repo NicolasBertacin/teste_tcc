@@ -171,6 +171,10 @@ class ApiService {
             });
         },
 
+        autocomplete: async (query, limit = 8) => {
+            return await this.request(`/products/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
+        },
+
         getById: async (id) => {
             return await this.request(`/products/${id}`);
         },
