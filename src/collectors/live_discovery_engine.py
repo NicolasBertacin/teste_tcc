@@ -237,6 +237,15 @@ def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, An
     }
 
 
+# Termos restritos pela ANVISA / proibidos em marketplaces abertos (Mercado Livre e Amazon)
+RESTRICTED_OR_PROHIBITED_TERMS = [
+    "caneta emagrecedora", "ozempic", "saxenda", "wegovy", "mounjaro", "semaglutida",
+    "tirzepatida", "sibutramina", "anabolizante", "esteroide", "medicamento controlado",
+    "remedio controlado", "tarja preta", "tarja vermelha", "arma de fogo", "municao",
+    "entorpecente", "droga", "coca", "erva", "veneno", "fentanil", "morfina"
+]
+
+
 class LiveDiscoveryEngine:
     """Motor que descobre novos produtos em tempo real com Mediana Estatística e Filtro Anti-Outlier."""
 
@@ -286,12 +295,18 @@ class LiveDiscoveryEngine:
         return {}
 
     def discover_and_import(self, query: str, db: Session, max_items: int = 5) -> List[Product]:
-        """Descobre produtos em tempo real com Mediana Estatística e Filtro Anti-Outlier."""
+        """Descobre produtos em tempo real com Mediana Estatística e Validação Estrita de Catálogo."""
         raw_query = query.strip()
         if not raw_query:
             return []
 
         norm_query = self.normalize_query(raw_query)
+
+        # 0. Validação de Produtos Restritos ou Proibidos nos Marketplaces (ANVISA / Políticas de Venda)
+        if any(banned in norm_query for banned in RESTRICTED_OR_PROHIBITED_TERMS):
+            logger.warning(f"Busca rejeitada para termo restrito/proibido por regulação ou sem venda aberta no e-commerce: '{raw_query}'")
+            return []
+
         tokens = [t for t in norm_query.split() if len(t) > 2]
 
         # 1. Verificar se já existem produtos correspondentes no banco
@@ -315,11 +330,23 @@ class LiveDiscoveryEngine:
             az_suggestions = self.fetch_suggestions_amazon(" ".join(tokens[:2]))
 
         ml_domain = self.fetch_domain_mercadolivre(norm_query)
+        domain_id = ml_domain.get("domain_id", "")
 
-        # 3. Montar lista de títulos candidatos
+        # Validação Rígida: se não há sugestões na Amazon e o Mercado Livre retornou vazio ou domínio incoerente
+        if not az_suggestions:
+            if not ml_domain or not domain_id or domain_id == "MLB-STYLUSES":
+                logger.warning(f"Produto não localizado ou sem catálogo ativo no Mercado Livre / Amazon: '{raw_query}'")
+                return existing  # Não inventa produto; retorna apenas se já existia algo prévio legítimo
+
+        # 3. Montar lista de títulos candidatos com base no catálogo oficial confirmado
         candidate_titles = []
-        primary_title = norm_query.title()
-        candidate_titles.append(primary_title)
+        if az_suggestions:
+            for sug in az_suggestions:
+                sug_title = sug.strip().title()
+                if sug_title and sug_title not in candidate_titles:
+                    candidate_titles.append(sug_title)
+        elif ml_domain and domain_id:
+            candidate_titles.append(norm_query.title())
 
         if "havaianas" in norm_query or "chinelo" in norm_query:
             color = "Branca" if "branc" in norm_query else ("Preta" if "pret" in norm_query else "Original")
@@ -327,11 +354,6 @@ class LiveDiscoveryEngine:
             candidate_titles.append(f"Sandália Havaianas Tradicional {color} Clássica")
             candidate_titles.append(f"Chinelo Havaianas Slim {color} Feminino")
             candidate_titles.append(f"Chinelo Havaianas Brasil Logo {color}")
-
-        for sug in az_suggestions:
-            sug_title = sug.strip().title()
-            if sug_title and sug_title not in candidate_titles:
-                candidate_titles.append(sug_title)
 
         imported_products = list(existing)
         existing_titles = {p.title.lower() for p in db.query(Product.title).all()}

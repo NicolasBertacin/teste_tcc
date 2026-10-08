@@ -259,7 +259,13 @@ def discover_live_products(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Informe um termo de busca.")
 
     imported_prods = live_discovery.discover_and_import(query_str, db, max_items=request.limit)
-    
+
+    if not imported_prods:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon (itens restritos pela ANVISA, medicamentos controlados ou termos sem catálogo oficial)."
+        )
+
     items = []
     for prod in imported_prods:
         sales_agg = db.query(

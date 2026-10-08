@@ -151,10 +151,15 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                 showToast(`${res.total_found} produto(s) sincronizados com sucesso!`, 'success', 5000);
                 runForecast(first.id, horizonDays);
             } else {
-                showToast('Nenhum produto novo encontrado para este termo.', 'warning');
+                showToast('Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon.', 'warning', 6000);
             }
         } catch (err) {
-            showToast('Erro na busca em tempo real: ' + err.message, 'error');
+            const msg = err.message || '';
+            if (msg.includes('não localizado') || msg.includes('restritos') || msg.includes('404')) {
+                showToast('⚠️ Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon (itens proibidos ou sem catálogo oficial).', 'warning', 7000);
+            } else {
+                showToast('Erro na busca em tempo real: ' + msg, 'error');
+            }
         } finally {
             setDiscovering(false);
         }
