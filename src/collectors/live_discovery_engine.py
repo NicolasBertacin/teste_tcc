@@ -152,6 +152,12 @@ NICHE_PRICE_ESTIMATES = {
     "lavadora de alta pressao": {"category": "Ferramentas & Casa", "median": 589.00, "q1": 449.00, "q3": 689.00, "avg_daily": 16},
 
     # Calçados & Moda
+    "camisa da jamaica": {"category": "Moda Esportiva", "median": 139.90, "q1": 99.90, "q3": 179.90, "avg_daily": 15},
+    "camisa de time": {"category": "Moda Esportiva", "median": 149.90, "q1": 99.90, "q3": 229.90, "avg_daily": 20},
+    "camisa futebol": {"category": "Moda Esportiva", "median": 139.90, "q1": 89.90, "q3": 199.90, "avg_daily": 20},
+    "camisa social": {"category": "Moda & Vestuário", "median": 119.90, "q1": 89.90, "q3": 159.90, "avg_daily": 18},
+    "camisa": {"category": "Moda & Vestuário", "median": 89.90, "q1": 59.90, "q3": 139.90, "avg_daily": 16},
+    "camiseta": {"category": "Moda & Vestuário", "median": 59.90, "q1": 39.90, "q3": 89.90, "avg_daily": 22},
     "havaianas": {"category": "Moda & Calçados", "median": 44.90, "q1": 29.90, "q3": 59.90, "avg_daily": 50},
     "chinelo": {"category": "Moda & Calçados", "median": 44.90, "q1": 25.00, "q3": 59.90, "avg_daily": 45},
     "tenis nike": {"category": "Moda & Calçados", "median": 279.90, "q1": 229.00, "q3": 349.00, "avg_daily": 30},
