@@ -17,6 +17,10 @@ function IaPreditivaTab({ categories, showToast }) {
     const selectedProductRef = React.useRef(null);
     const hoveredIndexRef = React.useRef(null);
     const dateDropdownRef = React.useRef(null);
+    const [chartData, setChartData] = React.useState({
+        daysLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        values: [185, 290, 230, 80, 205, 210, 175]
+    });
     const currentChartDataRef = React.useRef({
         daysLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         values: [185, 290, 230, 80, 205, 210, 175]
@@ -160,6 +164,7 @@ function IaPreditivaTab({ categories, showToast }) {
     const updateChartData = async (product, horizon) => {
         const data = await fetchOrComputeChartData(product, horizon);
         currentChartDataRef.current = data;
+        setChartData(data);
         drawChart(data, null, product);
     };
 
@@ -445,29 +450,94 @@ function IaPreditivaTab({ categories, showToast }) {
         }
     };
 
+    const activeProd = selectedProduct || (topProducts && topProducts[0]);
+    const totalPredictedUnits = (chartData?.values || []).reduce((acc, curr) => acc + curr, 0);
+    const activePrice = activeProd?.price || 0;
+    const projectedRevenue = totalPredictedUnits * activePrice;
+
     return (
         <section className="dash-tab-content active">
             {/* Top Chart Card */}
             <div className="dash-card main-chart-card">
-                <div className="chart-container-wrap">
-                    <canvas
-                        ref={canvasRef}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
-                        onTouchStart={handleTouchMove}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleMouseLeave}
-                    ></canvas>
-                    {tooltipData.visible && (
-                        <div
-                            className="chart-tooltip-bubble"
-                            style={{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }}
-                        >
-                            <div className="tooltip-title">{tooltipData.title}</div>
-                            <div className="tooltip-price">{tooltipData.price}</div>
-                            <div className="tooltip-sold">{tooltipData.sold}</div>
+                <div className="chart-main-area-col" style={{ display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
+                    {/* Active Product Projection Header */}
+                    <div className="chart-active-prod-banner" style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                        padding: '10px 14px',
+                        marginBottom: '8px',
+                        background: 'rgba(0, 180, 216, 0.07)',
+                        border: '1px solid rgba(0, 212, 255, 0.22)',
+                        borderRadius: '10px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '200px' }}>
+                            <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '8px',
+                                background: 'rgba(0, 212, 255, 0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#00f0ff',
+                                fontSize: '16px'
+                            }}>
+                                <i className="ph ph-chart-line-up"></i>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', letterSpacing: '0.5px' }}>
+                                    {activeProd ? activeProd.title.toUpperCase() : 'PROJEÇÃO DE VENDAS'}
+                                </div>
+                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                    Preço: <strong style={{ color: '#00e5ff' }}>R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong> • Categoria: {activeProd?.category || 'Geral'}
+                                </div>
+                            </div>
                         </div>
-                    )}
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Demanda ({horizonDays}d)
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#ffffff' }}>
+                                    {totalPredictedUnits.toLocaleString('pt-BR')} un
+                                </div>
+                            </div>
+
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Faturamento Projetado
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#00f0ff' }}>
+                                    R$ {projectedRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="chart-container-wrap">
+                        <canvas
+                            ref={canvasRef}
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
+                            onTouchStart={handleTouchMove}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleMouseLeave}
+                        ></canvas>
+                        {tooltipData.visible && (
+                            <div
+                                className="chart-tooltip-bubble"
+                                style={{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }}
+                            >
+                                <div className="tooltip-title">{tooltipData.title}</div>
+                                <div className="tooltip-price">{tooltipData.price}</div>
+                                <div className="tooltip-sold">{tooltipData.sold}</div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Controles Laterais */}

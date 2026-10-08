@@ -20,43 +20,77 @@ def _parse_dt(val):
 
 
 def seed_database_if_empty(session: Session):
-    """Verifica se a base de dados está vazia e injeta os produtos e histórico automaticamente."""
-    try:
-        product_count = session.query(Product).count()
-        if product_count > 0:
-            return
-    except Exception:
-        product_count = 0
-
+    """Sincroniza e calibra produtos e histórico do initial_seed.json no startup."""
     seed_file = Path(__file__).parent.parent.parent / "data" / "initial_seed.json"
     if not seed_file.exists():
         print(f"[SeedLoader] Arquivo de seed nao encontrado: {seed_file}")
         return
 
-    print("[SeedLoader] Base de dados vazia detectada. Inicializando catalogo e historico...")
     try:
         with open(seed_file, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # 1. Inserir Produtos
-        for p_data in data.get("products", []):
-            product = Product(
-                id=p_data.get("id"),
-                external_id=p_data.get("external_id") or f"PROD_{p_data.get('id')}",
-                platform=p_data.get("platform") or "mercadolivre",
-                title=p_data.get("title") or "Produto",
-                category=p_data.get("category") or "Geral",
-                price=float(p_data.get("price") or 100.0),
-                currency=p_data.get("currency") or "BRL",
-                condition=p_data.get("condition") or "new",
-                url=p_data.get("url") or "",
-                attributes=p_data.get("attributes"),
-                is_active=bool(p_data.get("is_active", True)),
-                created_at=_parse_dt(p_data.get("created_at")),
-                updated_at=_parse_dt(p_data.get("updated_at"))
-            )
-            session.merge(product)
+        products_data = data.get("products", [])
+        sales_data = data.get("sales_history", [])
+
+        # 1. Inserir ou Atualizar Produtos para garantir preços calibrados
+        for p_data in products_data:
+            p_id = p_data.get("id")
+            existing = session.query(Product).filter(Product.id == p_id).first()
+            if existing:
+                existing.price = float(p_data.get("price", existing.price))
+                existing.title = p_data.get("title", existing.title)
+                existing.category = p_data.get("category", existing.category)
+                existing.platform = p_data.get("platform", existing.platform)
+            else:
+                product = Product(
+                    id=p_id,
+                    external_id=p_data.get("external_id") or f"PROD_{p_id}",
+                    platform=p_data.get("platform") or "mercadolivre",
+                    title=p_data.get("title") or "Produto",
+                    category=p_data.get("category") or "Geral",
+                    price=float(p_data.get("price") or 100.0),
+                    currency=p_data.get("currency") or "BRL",
+                    condition=p_data.get("condition") or "new",
+                    url=p_data.get("url") or "",
+                    attributes=p_data.get("attributes"),
+                    is_active=bool(p_data.get("is_active", True)),
+                    created_at=_parse_dt(p_data.get("created_at")),
+                    updated_at=_parse_dt(p_data.get("updated_at"))
+                )
+                session.add(product)
         session.flush()
+
+        # 2. Sincronizar preços do histórico se discrepantes
+        sales_count = session.query(SalesHistory).count()
+        if sales_count == 0:
+            for s_data in sales_data:
+                sales_entry = SalesHistory(
+                    id=s_data.get("id"),
+                    product_id=s_data.get("product_id"),
+                    date=_parse_dt(s_data.get("date")),
+                    quantity_sold=int(s_data.get("quantity_sold", 10)),
+                    price_at_date=float(s_data.get("price_at_date", 100.0)),
+                    available_quantity=int(s_data.get("available_quantity", 50)),
+                    platform=s_data.get("platform", "mercadolivre"),
+                    collected_at=_parse_dt(s_data.get("collected_at"))
+                )
+                session.add(sales_entry)
+        else:
+            prods_map = {p.get("id"): p.get("price") for p in products_data}
+            for s in session.query(SalesHistory).all():
+                p_price = prods_map.get(s.product_id)
+                if p_price and s.price_at_date:
+                    ratio = s.price_at_date / (p_price if p_price > 0 else 1)
+                    if ratio > 1.4 or ratio < 0.6:
+                        s.price_at_date = float(p_price)
+
+        session.commit()
+        print(f"[SeedLoader] Sincronização e calibração de {len(products_data)} produtos concluída com sucesso.")
+    except Exception as e:
+        session.rollback()
+        print(f"[SeedLoader] Erro ao sincronizar seed: {e}")
+
 
         # 2. Inserir Histórico de Vendas
         sales_records = []
