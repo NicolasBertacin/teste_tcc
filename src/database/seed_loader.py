@@ -33,14 +33,17 @@ def seed_database_if_empty(session: Session):
         products_data = data.get("products", [])
         sales_data = data.get("sales_history", [])
 
-        # 1. Inserir ou Atualizar Produtos para garantir preços calibrados
+        from src.collectors.live_discovery_engine import normalize_category
+
+        # 1. Inserir ou Atualizar Produtos para garantir preços calibrados e categorias Mercado Livre
         for p_data in products_data:
             p_id = p_data.get("id")
+            norm_cat = normalize_category(p_data.get("category"))
             existing = session.query(Product).filter(Product.id == p_id).first()
             if existing:
                 existing.price = float(p_data.get("price", existing.price))
                 existing.title = p_data.get("title", existing.title)
-                existing.category = p_data.get("category", existing.category)
+                existing.category = norm_cat
                 existing.platform = p_data.get("platform", existing.platform)
             else:
                 product = Product(
@@ -48,7 +51,7 @@ def seed_database_if_empty(session: Session):
                     external_id=p_data.get("external_id") or f"PROD_{p_id}",
                     platform=p_data.get("platform") or "mercadolivre",
                     title=p_data.get("title") or "Produto",
-                    category=p_data.get("category") or "Geral",
+                    category=norm_cat,
                     price=float(p_data.get("price") or 100.0),
                     currency=p_data.get("currency") or "BRL",
                     condition=p_data.get("condition") or "new",
@@ -59,6 +62,9 @@ def seed_database_if_empty(session: Session):
                     updated_at=_parse_dt(p_data.get("updated_at"))
                 )
                 session.add(product)
+
+        for p in session.query(Product).all():
+            p.category = normalize_category(p.category)
         session.flush()
 
         # 2. Sincronizar preços do histórico e ancorar datas para 'hoje' (rolagem 24h em 24h)

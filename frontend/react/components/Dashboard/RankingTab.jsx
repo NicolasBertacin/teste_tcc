@@ -6,7 +6,7 @@
 
 function RankingTab({ categories }) {
     const [rankingData, setRankingData] = React.useState({ top_overall: [], top_by_category: {} });
-    const [selectedCategory, setSelectedCategory] = React.useState('Celulares');
+    const [selectedCategory, setSelectedCategory] = React.useState('Tecnologia');
     const [loading, setLoading] = React.useState(true);
     const [selectedItemModal, setSelectedItemModal] = React.useState(null);
 
@@ -19,9 +19,11 @@ function RankingTab({ categories }) {
         try {
             const data = await window.apiService.forecast.ranking(30);
             setRankingData(data);
-            if (categories.length > 0 && !data.top_by_category[selectedCategory]) {
-                const firstAvailable = Object.keys(data.top_by_category)[0];
-                if (firstAvailable) setSelectedCategory(firstAvailable);
+            if (data.top_by_category) {
+                const available = Object.keys(data.top_by_category);
+                if (available.length > 0 && !data.top_by_category[selectedCategory]) {
+                    setSelectedCategory(available[0]);
+                }
             }
         } catch (err) {
             console.error('Erro ao carregar ranking:', err);

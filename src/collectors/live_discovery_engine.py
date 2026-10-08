@@ -52,140 +52,301 @@ COMMON_TYPO_CORRECTIONS = {
 }
 
 # Tabela calibrada de Mediana e Quartis (IQR) por nicho de mercado brasileiro (BRL)
+# Lista Oficial de Categorias do Mercado Livre Brasil
+OFFICIAL_MERCADOLIVRE_CATEGORIES = [
+    "Tecnologia",
+    "Eletrodomésticos",
+    "Esportes e Fitness",
+    "Casa e Móveis",
+    "Ferramentas",
+    "Construção",
+    "Beleza e Cuidado Pessoal",
+    "Moda",
+    "Saúde",
+    "Acessórios para Veículos",
+    "Supermercado",
+    "Bebês",
+    "Brinquedos",
+    "Livros",
+    "Pet Shop",
+    "Indústria e Comércio",
+    "Para seu Negócio",
+    "Veículos"
+]
+
+CATEGORY_NORMALIZE_MAP = {
+    # Tecnologia
+    "informática": "Tecnologia",
+    "informatica": "Tecnologia",
+    "celulares": "Tecnologia",
+    "celulares e telefones": "Tecnologia",
+    "games": "Tecnologia",
+    "consoles de videogames": "Tecnologia",
+    "gamepads e joysticks": "Tecnologia",
+    "áudio": "Tecnologia",
+    "audio": "Tecnologia",
+    "eletrônicos": "Tecnologia",
+    "eletronicos": "Tecnologia",
+    "eletrônicos, áudio e vídeo": "Tecnologia",
+    "casa inteligente": "Tecnologia",
+    "câmeras de segurança": "Tecnologia",
+    "cameras de seguranca": "Tecnologia",
+    "câmeras e acessórios": "Tecnologia",
+    "hds e ssds": "Tecnologia",
+    "teclados para computadores": "Tecnologia",
+    "monitores": "Tecnologia",
+    "periféricos": "Tecnologia",
+    "perifericos": "Tecnologia",
+    "armazenamento": "Tecnologia",
+    "acessórios para celulares": "Tecnologia",
+    "cabos e adaptadores": "Tecnologia",
+    "capas para celulares": "Tecnologia",
+    "protetores de tela": "Tecnologia",
+    "acessórios gamer": "Tecnologia",
+    "televisores": "Tecnologia",
+    "lâmpadas": "Tecnologia",
+    "lampadas": "Tecnologia",
+    "carregadores": "Tecnologia",
+
+    # Eletrodomésticos
+    "eletroportáteis": "Eletrodomésticos",
+    "eletroportateis": "Eletrodomésticos",
+    "eletrodomésticos": "Eletrodomésticos",
+    "eletrodomesticos": "Eletrodomésticos",
+    "liquidificadores": "Eletrodomésticos",
+
+    # Esportes e Fitness
+    "esportes & fitness": "Esportes e Fitness",
+    "esportes e fitness": "Esportes e Fitness",
+    "suplementos": "Esportes e Fitness",
+    "moda esportiva": "Esportes e Fitness",
+
+    # Moda
+    "moda & vestuário": "Moda",
+    "moda & vestuario": "Moda",
+    "moda & calçados": "Moda",
+    "moda & calcados": "Moda",
+    "moda": "Moda",
+    "calçados": "Moda",
+    "calcados": "Moda",
+
+    # Beleza e Cuidado Pessoal
+    "beleza & cosméticos": "Beleza e Cuidado Pessoal",
+    "beleza & cosmeticos": "Beleza e Cuidado Pessoal",
+    "beleza e cuidado pessoal": "Beleza e Cuidado Pessoal",
+    "protetores solares": "Beleza e Cuidado Pessoal",
+    "secadores de cabelo": "Beleza e Cuidado Pessoal",
+
+    # Casa e Móveis
+    "móveis & casa": "Casa e Móveis",
+    "moveis & casa": "Casa e Móveis",
+    "casa e móveis": "Casa e Móveis",
+    "casa e moveis": "Casa e Móveis",
+    "fechaduras elétricas": "Casa e Móveis",
+    "fechaduras eletricas": "Casa e Móveis",
+    "acessórios e suportes": "Casa e Móveis",
+
+    # Ferramentas
+    "ferramentas": "Ferramentas",
+    "ferramentas & casa": "Ferramentas",
+    "kits de ferramentas combinadas": "Ferramentas",
+    "lavadoras de alta pressão": "Ferramentas",
+    "lavadoras de alta pressao": "Ferramentas",
+
+    # Supermercado
+    "alimentos & bebidas": "Supermercado",
+    "alimentos e bebidas": "Supermercado",
+    "supermercado": "Supermercado",
+
+    # Acessórios para Veículos
+    "automotivo": "Acessórios para Veículos",
+    "acessórios para veículos": "Acessórios para Veículos",
+    "acessorios para veiculos": "Acessórios para Veículos",
+
+    # Livros
+    "livros": "Livros",
+
+    # Saúde
+    "saúde": "Saúde",
+    "saude": "Saúde",
+
+    # Pet Shop
+    "pet shop": "Pet Shop",
+
+    # Construção
+    "construção": "Construção",
+    "construcao": "Construção",
+
+    # Bebês
+    "bebês": "Bebês",
+    "bebes": "Bebês",
+
+    # Brinquedos
+    "brinquedos": "Brinquedos",
+
+    # Indústria e Comércio
+    "indústria e comércio": "Indústria e Comércio",
+    "industria e comercio": "Indústria e Comércio",
+
+    # Para seu Negócio
+    "para seu negócio": "Para seu Negócio",
+    "para seu negocio": "Para seu Negócio",
+
+    # Veículos
+    "veículos": "Veículos",
+    "veiculos": "Veículos"
+}
+
+def normalize_category(raw: Optional[str]) -> str:
+    """Normaliza qualquer termo de categoria para a árvore oficial do Mercado Livre."""
+    if not raw:
+        return "Tecnologia"
+    cleaned = raw.strip().lower()
+    return CATEGORY_NORMALIZE_MAP.get(cleaned, raw.strip().title())
+
+
+# Tabela calibrada de Mediana e Quartis (IQR) por nicho de mercado brasileiro (BRL)
 NICHE_PRICE_ESTIMATES = {
-    # Acessórios de Celular & Informática (Precedência alta contra smartphones)
-    "carregador iphone": {"category": "Acessórios para Celulares", "median": 89.90, "q1": 69.90, "q3": 129.90, "avg_daily": 60},
-    "fonte carregador": {"category": "Acessórios para Celulares", "median": 79.90, "q1": 59.90, "q3": 119.90, "avg_daily": 55},
-    "carregador": {"category": "Acessórios para Celulares", "median": 79.90, "q1": 49.90, "q3": 119.90, "avg_daily": 50},
-    "cabo lightning": {"category": "Cabos e Adaptadores", "median": 49.90, "q1": 29.90, "q3": 79.90, "avg_daily": 65},
-    "cabo usb-c": {"category": "Cabos e Adaptadores", "median": 39.90, "q1": 24.90, "q3": 69.90, "avg_daily": 70},
-    "cabo": {"category": "Cabos e Adaptadores", "median": 39.90, "q1": 20.00, "q3": 69.90, "avg_daily": 60},
-    "capinha": {"category": "Capas para Celulares", "median": 39.90, "q1": 25.00, "q3": 69.00, "avg_daily": 80},
-    "capa": {"category": "Capas para Celulares", "median": 45.00, "q1": 25.00, "q3": 79.00, "avg_daily": 70},
-    "pelicula": {"category": "Protetores de Tela", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 75},
+    # Acessórios de Celular & Informática
+    "carregador iphone": {"category": "Tecnologia", "median": 89.90, "q1": 69.90, "q3": 129.90, "avg_daily": 60},
+    "fonte carregador": {"category": "Tecnologia", "median": 79.90, "q1": 59.90, "q3": 119.90, "avg_daily": 55},
+    "carregador": {"category": "Tecnologia", "median": 79.90, "q1": 49.90, "q3": 119.90, "avg_daily": 50},
+    "cabo lightning": {"category": "Tecnologia", "median": 49.90, "q1": 29.90, "q3": 79.90, "avg_daily": 65},
+    "cabo usb-c": {"category": "Tecnologia", "median": 39.90, "q1": 24.90, "q3": 69.90, "avg_daily": 70},
+    "cabo": {"category": "Tecnologia", "median": 39.90, "q1": 20.00, "q3": 69.90, "avg_daily": 60},
+    "capinha": {"category": "Tecnologia", "median": 39.90, "q1": 25.00, "q3": 69.00, "avg_daily": 80},
+    "capa": {"category": "Tecnologia", "median": 45.00, "q1": 25.00, "q3": 79.00, "avg_daily": 70},
+    "pelicula": {"category": "Tecnologia", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 75},
     "suporte celular": {"category": "Acessórios para Veículos", "median": 45.90, "q1": 35.00, "q3": 69.90, "avg_daily": 40},
 
-    # Suplementos com faixas reais de mercado
-    "creatina 300g": {"category": "Esportes & Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 85},
-    "creatina max titanium": {"category": "Esportes & Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 85},
-    "creatina monohidratada": {"category": "Esportes & Fitness", "median": 69.90, "q1": 59.90, "q3": 84.90, "avg_daily": 80},
-    "creatina 1kg": {"category": "Esportes & Fitness", "median": 189.90, "q1": 159.90, "q3": 229.90, "avg_daily": 30},
-    "kit creatina": {"category": "Esportes & Fitness", "median": 139.90, "q1": 119.90, "q3": 179.90, "avg_daily": 35},
-    "creatina": {"category": "Esportes & Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 80},
-    "whey protein 900g": {"category": "Esportes & Fitness", "median": 109.90, "q1": 89.90, "q3": 139.90, "avg_daily": 50},
-    "whey protein": {"category": "Esportes & Fitness", "median": 109.90, "q1": 89.90, "q3": 149.90, "avg_daily": 50},
-    "whey": {"category": "Esportes & Fitness", "median": 109.90, "q1": 89.90, "q3": 149.90, "avg_daily": 50},
-    "suplemento": {"category": "Esportes & Fitness", "median": 79.90, "q1": 49.90, "q3": 129.90, "avg_daily": 45},
+    # Suplementos
+    "creatina 300g": {"category": "Esportes e Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 85},
+    "creatina max titanium": {"category": "Esportes e Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 85},
+    "creatina monohidratada": {"category": "Esportes e Fitness", "median": 69.90, "q1": 59.90, "q3": 84.90, "avg_daily": 80},
+    "creatina 1kg": {"category": "Esportes e Fitness", "median": 189.90, "q1": 159.90, "q3": 229.90, "avg_daily": 30},
+    "kit creatina": {"category": "Esportes e Fitness", "median": 139.90, "q1": 119.90, "q3": 179.90, "avg_daily": 35},
+    "creatina": {"category": "Esportes e Fitness", "median": 69.90, "q1": 59.90, "q3": 79.90, "avg_daily": 80},
+    "whey protein 900g": {"category": "Esportes e Fitness", "median": 109.90, "q1": 89.90, "q3": 139.90, "avg_daily": 50},
+    "whey protein": {"category": "Esportes e Fitness", "median": 109.90, "q1": 89.90, "q3": 149.90, "avg_daily": 50},
+    "whey": {"category": "Esportes e Fitness", "median": 109.90, "q1": 89.90, "q3": 149.90, "avg_daily": 50},
+    "suplemento": {"category": "Esportes e Fitness", "median": 79.90, "q1": 49.90, "q3": 129.90, "avg_daily": 45},
 
-    # Monitores e periféricos
-    "monitor 24": {"category": "Monitores", "median": 799.00, "q1": 699.00, "q3": 899.00, "avg_daily": 18},
-    "monitor 27": {"category": "Monitores", "median": 1099.00, "q1": 899.00, "q3": 1399.00, "avg_daily": 15},
-    "monitor 144hz": {"category": "Monitores", "median": 899.00, "q1": 799.00, "q3": 1199.00, "avg_daily": 20},
-    "monitor gamer": {"category": "Monitores", "median": 899.00, "q1": 799.00, "q3": 1299.00, "avg_daily": 18},
-    "monitor": {"category": "Monitores", "median": 799.00, "q1": 599.00, "q3": 1199.00, "avg_daily": 16},
-    "teclado mecanico": {"category": "Periféricos", "median": 199.90, "q1": 149.00, "q3": 279.00, "avg_daily": 28},
-    "teclado": {"category": "Periféricos", "median": 129.90, "q1": 69.00, "q3": 199.00, "avg_daily": 30},
-    "mouse gamer": {"category": "Periféricos", "median": 129.90, "q1": 79.00, "q3": 219.00, "avg_daily": 35},
-    "mouse": {"category": "Periféricos", "median": 79.90, "q1": 39.00, "q3": 149.00, "avg_daily": 40},
-    "headset gamer": {"category": "Áudio", "median": 249.00, "q1": 149.00, "q3": 399.00, "avg_daily": 25},
-    "headset": {"category": "Áudio", "median": 189.00, "q1": 99.00, "q3": 349.00, "avg_daily": 25},
-    "ssd 1tb": {"category": "Armazenamento", "median": 389.00, "q1": 349.00, "q3": 449.00, "avg_daily": 35},
-    "ssd 512gb": {"category": "Armazenamento", "median": 229.00, "q1": 189.00, "q3": 269.00, "avg_daily": 40},
-    "ssd": {"category": "Armazenamento", "median": 289.00, "q1": 149.00, "q3": 429.00, "avg_daily": 35},
+    # Monitores e periféricos (Tecnologia)
+    "monitor 24": {"category": "Tecnologia", "median": 799.00, "q1": 699.00, "q3": 899.00, "avg_daily": 18},
+    "monitor 27": {"category": "Tecnologia", "median": 1099.00, "q1": 899.00, "q3": 1399.00, "avg_daily": 15},
+    "monitor 144hz": {"category": "Tecnologia", "median": 899.00, "q1": 799.00, "q3": 1199.00, "avg_daily": 20},
+    "monitor gamer": {"category": "Tecnologia", "median": 899.00, "q1": 799.00, "q3": 1299.00, "avg_daily": 18},
+    "monitor": {"category": "Tecnologia", "median": 799.00, "q1": 599.00, "q3": 1199.00, "avg_daily": 16},
+    "teclado mecanico": {"category": "Tecnologia", "median": 199.90, "q1": 149.00, "q3": 279.00, "avg_daily": 28},
+    "teclado": {"category": "Tecnologia", "median": 129.90, "q1": 69.00, "q3": 199.00, "avg_daily": 30},
+    "mouse gamer": {"category": "Tecnologia", "median": 129.90, "q1": 79.00, "q3": 219.00, "avg_daily": 35},
+    "mouse": {"category": "Tecnologia", "median": 79.90, "q1": 39.00, "q3": 149.00, "avg_daily": 40},
+    "headset gamer": {"category": "Tecnologia", "median": 249.00, "q1": 149.00, "q3": 399.00, "avg_daily": 25},
+    "headset": {"category": "Tecnologia", "median": 189.00, "q1": 99.00, "q3": 349.00, "avg_daily": 25},
+    "ssd 1tb": {"category": "Tecnologia", "median": 389.00, "q1": 349.00, "q3": 449.00, "avg_daily": 35},
+    "ssd 512gb": {"category": "Tecnologia", "median": 229.00, "q1": 189.00, "q3": 269.00, "avg_daily": 40},
+    "ssd": {"category": "Tecnologia", "median": 289.00, "q1": 149.00, "q3": 429.00, "avg_daily": 35},
 
-    # Smartphones
-    "iphone 15 pro max": {"category": "Celulares", "median": 7499.00, "q1": 6999.00, "q3": 7999.00, "avg_daily": 12},
-    "iphone 15 pro": {"category": "Celulares", "median": 6499.00, "q1": 6199.00, "q3": 7199.00, "avg_daily": 14},
-    "iphone 15": {"category": "Celulares", "median": 4899.00, "q1": 4599.00, "q3": 5199.00, "avg_daily": 18},
-    "iphone 13": {"category": "Celulares", "median": 3599.00, "q1": 3299.00, "q3": 3799.00, "avg_daily": 22},
-    "iphone 14": {"category": "Celulares", "median": 3999.00, "q1": 3799.00, "q3": 4299.00, "avg_daily": 18},
-    "iphone": {"category": "Celulares", "median": 4899.00, "q1": 3299.00, "q3": 7499.00, "avg_daily": 18},
-    "galaxy s24 ultra": {"category": "Celulares", "median": 6499.00, "q1": 5899.00, "q3": 6999.00, "avg_daily": 12},
-    "galaxy s24": {"category": "Celulares", "median": 4299.00, "q1": 3899.00, "q3": 4699.00, "avg_daily": 16},
-    "motorola edge": {"category": "Celulares", "median": 2199.00, "q1": 1899.00, "q3": 2399.00, "avg_daily": 18},
-    "samsung": {"category": "Celulares", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 25},
-    "xiaomi": {"category": "Celulares", "median": 1499.00, "q1": 890.00, "q3": 1999.00, "avg_daily": 25},
-    "smartphone": {"category": "Celulares", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 20},
-    "celular": {"category": "Celulares", "median": 1899.00, "q1": 790.00, "q3": 3490.00, "avg_daily": 20},
+    # Smartphones & Informática (Tecnologia)
+    "iphone 15 pro max": {"category": "Tecnologia", "median": 7499.00, "q1": 6999.00, "q3": 7999.00, "avg_daily": 12},
+    "iphone 15 pro": {"category": "Tecnologia", "median": 6499.00, "q1": 6199.00, "q3": 7199.00, "avg_daily": 14},
+    "iphone 15": {"category": "Tecnologia", "median": 4899.00, "q1": 4599.00, "q3": 5199.00, "avg_daily": 18},
+    "iphone 13": {"category": "Tecnologia", "median": 3599.00, "q1": 3299.00, "q3": 3799.00, "avg_daily": 22},
+    "iphone 14": {"category": "Tecnologia", "median": 3999.00, "q1": 3799.00, "q3": 4299.00, "avg_daily": 18},
+    "iphone": {"category": "Tecnologia", "median": 4899.00, "q1": 3299.00, "q3": 7499.00, "avg_daily": 18},
+    "galaxy s24 ultra": {"category": "Tecnologia", "median": 6499.00, "q1": 5899.00, "q3": 6999.00, "avg_daily": 12},
+    "galaxy s24": {"category": "Tecnologia", "median": 4299.00, "q1": 3899.00, "q3": 4699.00, "avg_daily": 16},
+    "motorola edge": {"category": "Tecnologia", "median": 2199.00, "q1": 1899.00, "q3": 2399.00, "avg_daily": 18},
+    "samsung": {"category": "Tecnologia", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 25},
+    "xiaomi": {"category": "Tecnologia", "median": 1499.00, "q1": 890.00, "q3": 1999.00, "avg_daily": 25},
+    "smartphone": {"category": "Tecnologia", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 20},
+    "celular": {"category": "Tecnologia", "median": 1899.00, "q1": 790.00, "q3": 3490.00, "avg_daily": 20},
 
-    # Consoles & Games
-    "playstation 5 slim": {"category": "Games", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
-    "playstation 5": {"category": "Games", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
-    "ps5": {"category": "Games", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
-    "xbox series x": {"category": "Games", "median": 3999.00, "q1": 3799.00, "q3": 4299.00, "avg_daily": 10},
-    "xbox series s": {"category": "Games", "median": 2499.00, "q1": 2299.00, "q3": 2599.00, "avg_daily": 16},
-    "nintendo switch": {"category": "Games", "median": 1999.00, "q1": 1799.00, "q3": 2149.00, "avg_daily": 15},
-    "controle ps5": {"category": "Acessórios Gamer", "median": 399.00, "q1": 369.00, "q3": 429.00, "avg_daily": 30},
-    "controle xbox": {"category": "Acessórios Gamer", "median": 389.00, "q1": 349.00, "q3": 419.00, "avg_daily": 28},
-    "controle": {"category": "Acessórios Gamer", "median": 299.00, "q1": 149.00, "q3": 419.00, "avg_daily": 30},
+    # Consoles & Games (Tecnologia)
+    "playstation 5 slim": {"category": "Tecnologia", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
+    "playstation 5": {"category": "Tecnologia", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
+    "ps5": {"category": "Tecnologia", "median": 3699.00, "q1": 3499.00, "q3": 3899.00, "avg_daily": 15},
+    "xbox series x": {"category": "Tecnologia", "median": 3999.00, "q1": 3799.00, "q3": 4299.00, "avg_daily": 10},
+    "xbox series s": {"category": "Tecnologia", "median": 2499.00, "q1": 2299.00, "q3": 2599.00, "avg_daily": 16},
+    "nintendo switch": {"category": "Tecnologia", "median": 1999.00, "q1": 1799.00, "q3": 2149.00, "avg_daily": 15},
+    "controle ps5": {"category": "Tecnologia", "median": 399.00, "q1": 369.00, "q3": 429.00, "avg_daily": 30},
+    "controle xbox": {"category": "Tecnologia", "median": 389.00, "q1": 349.00, "q3": 419.00, "avg_daily": 28},
+    "controle": {"category": "Tecnologia", "median": 299.00, "q1": 149.00, "q3": 419.00, "avg_daily": 30},
 
-    # Eletroportáteis & Casa
-    "air fryer": {"category": "Eletroportáteis", "median": 349.00, "q1": 269.00, "q3": 429.00, "avg_daily": 28},
-    "fritadeira": {"category": "Eletroportáteis", "median": 349.00, "q1": 269.00, "q3": 429.00, "avg_daily": 26},
-    "aspirador robo": {"category": "Eletroportáteis", "median": 699.00, "q1": 499.00, "q3": 899.00, "avg_daily": 18},
-    "aspirador": {"category": "Eletroportáteis", "median": 299.00, "q1": 149.00, "q3": 499.00, "avg_daily": 25},
-    "cafeteira nespresso": {"category": "Eletroportáteis", "median": 389.00, "q1": 349.00, "q3": 469.00, "avg_daily": 22},
-    "cafeteira": {"category": "Eletroportáteis", "median": 249.00, "q1": 119.00, "q3": 399.00, "avg_daily": 22},
-    "liquidificador": {"category": "Eletroportáteis", "median": 189.00, "q1": 99.00, "q3": 289.00, "avg_daily": 25},
-    "fechadura digital": {"category": "Casa Inteligente", "median": 499.00, "q1": 399.00, "q3": 649.00, "avg_daily": 16},
-    "camera de seguranca": {"category": "Casa Inteligente", "median": 179.90, "q1": 139.00, "q3": 239.00, "avg_daily": 25},
-    "echo dot": {"category": "Casa Inteligente", "median": 349.00, "q1": 299.00, "q3": 379.00, "avg_daily": 35},
-    "alexa": {"category": "Casa Inteligente", "median": 349.00, "q1": 299.00, "q3": 429.00, "avg_daily": 32},
-    "lampada inteligente": {"category": "Casa Inteligente", "median": 49.90, "q1": 39.90, "q3": 69.90, "avg_daily": 45},
+    # Eletrodomésticos
+    "air fryer": {"category": "Eletrodomésticos", "median": 349.00, "q1": 269.00, "q3": 429.00, "avg_daily": 28},
+    "fritadeira": {"category": "Eletrodomésticos", "median": 349.00, "q1": 269.00, "q3": 429.00, "avg_daily": 26},
+    "aspirador robo": {"category": "Eletrodomésticos", "median": 699.00, "q1": 499.00, "q3": 899.00, "avg_daily": 18},
+    "aspirador": {"category": "Eletrodomésticos", "median": 299.00, "q1": 149.00, "q3": 499.00, "avg_daily": 25},
+    "cafeteira nespresso": {"category": "Eletrodomésticos", "median": 389.00, "q1": 349.00, "q3": 469.00, "avg_daily": 22},
+    "cafeteira": {"category": "Eletrodomésticos", "median": 249.00, "q1": 119.00, "q3": 399.00, "avg_daily": 22},
+    "liquidificador": {"category": "Eletrodomésticos", "median": 189.00, "q1": 99.00, "q3": 289.00, "avg_daily": 25},
 
-    # Cuidados, Beleza & Áudio
-    "protetor solar": {"category": "Beleza & Cosméticos", "median": 84.90, "q1": 69.90, "q3": 94.90, "avg_daily": 40},
-    "perfume sauvage": {"category": "Beleza & Cosméticos", "median": 649.00, "q1": 549.00, "q3": 749.00, "avg_daily": 15},
-    "perfume": {"category": "Beleza & Cosméticos", "median": 289.00, "q1": 149.00, "q3": 449.00, "avg_daily": 22},
-    "secador de cabelo": {"category": "Beleza & Cosméticos", "median": 249.00, "q1": 149.00, "q3": 349.00, "avg_daily": 20},
-    "secador": {"category": "Beleza & Cosméticos", "median": 249.00, "q1": 149.00, "q3": 349.00, "avg_daily": 20},
-    "caixa de som jbl": {"category": "Áudio", "median": 599.00, "q1": 499.00, "q3": 749.00, "avg_daily": 20},
-    "caixa de som": {"category": "Áudio", "median": 299.00, "q1": 149.00, "q3": 699.00, "avg_daily": 20},
-    "fone bluetooth": {"category": "Áudio", "median": 179.00, "q1": 99.00, "q3": 299.00, "avg_daily": 35},
-    "fone": {"category": "Áudio", "median": 149.00, "q1": 79.00, "q3": 279.00, "avg_daily": 35},
+    # Casa e Móveis
+    "fechadura digital": {"category": "Casa e Móveis", "median": 499.00, "q1": 399.00, "q3": 649.00, "avg_daily": 16},
+    "cadeira de escritorio": {"category": "Casa e Móveis", "median": 499.00, "q1": 349.00, "q3": 799.00, "avg_daily": 15},
+    "mesa escrivaninha": {"category": "Casa e Móveis", "median": 299.00, "q1": 199.00, "q3": 499.00, "avg_daily": 18},
+    "camera de seguranca": {"category": "Tecnologia", "median": 179.90, "q1": 139.00, "q3": 239.00, "avg_daily": 25},
+    "echo dot": {"category": "Tecnologia", "median": 349.00, "q1": 299.00, "q3": 379.00, "avg_daily": 35},
+    "alexa": {"category": "Tecnologia", "median": 349.00, "q1": 299.00, "q3": 429.00, "avg_daily": 32},
+    "lampada inteligente": {"category": "Tecnologia", "median": 49.90, "q1": 39.90, "q3": 69.90, "avg_daily": 45},
+
+    # Beleza e Cuidado Pessoal
+    "protetor solar": {"category": "Beleza e Cuidado Pessoal", "median": 84.90, "q1": 69.90, "q3": 94.90, "avg_daily": 40},
+    "perfume sauvage": {"category": "Beleza e Cuidado Pessoal", "median": 649.00, "q1": 549.00, "q3": 749.00, "avg_daily": 15},
+    "perfume": {"category": "Beleza e Cuidado Pessoal", "median": 289.00, "q1": 149.00, "q3": 449.00, "avg_daily": 22},
+    "secador de cabelo": {"category": "Beleza e Cuidado Pessoal", "median": 249.00, "q1": 149.00, "q3": 349.00, "avg_daily": 20},
+    "secador": {"category": "Beleza e Cuidado Pessoal", "median": 249.00, "q1": 149.00, "q3": 349.00, "avg_daily": 20},
+
+    # Áudio (Tecnologia)
+    "caixa de som jbl": {"category": "Tecnologia", "median": 599.00, "q1": 499.00, "q3": 749.00, "avg_daily": 20},
+    "caixa de som": {"category": "Tecnologia", "median": 299.00, "q1": 149.00, "q3": 699.00, "avg_daily": 20},
+    "fone bluetooth": {"category": "Tecnologia", "median": 179.00, "q1": 99.00, "q3": 299.00, "avg_daily": 35},
+    "fone": {"category": "Tecnologia", "median": 149.00, "q1": 79.00, "q3": 279.00, "avg_daily": 35},
 
     # Ferramentas
     "parafusadeira": {"category": "Ferramentas", "median": 299.00, "q1": 199.00, "q3": 399.00, "avg_daily": 20},
     "furadeira": {"category": "Ferramentas", "median": 249.00, "q1": 179.00, "q3": 349.00, "avg_daily": 18},
     "jogo de ferramentas": {"category": "Ferramentas", "median": 199.90, "q1": 139.00, "q3": 249.00, "avg_daily": 25},
     "maleta de ferramentas": {"category": "Ferramentas", "median": 199.90, "q1": 139.00, "q3": 249.00, "avg_daily": 25},
-    "lavadora de alta pressao": {"category": "Ferramentas & Casa", "median": 589.00, "q1": 449.00, "q3": 689.00, "avg_daily": 16},
+    "lavadora de alta pressao": {"category": "Ferramentas", "median": 589.00, "q1": 449.00, "q3": 689.00, "avg_daily": 16},
 
-    # Calçados & Moda
-    "camisa da jamaica": {"category": "Moda Esportiva", "median": 139.90, "q1": 99.90, "q3": 179.90, "avg_daily": 15},
-    "camisa de time": {"category": "Moda Esportiva", "median": 149.90, "q1": 99.90, "q3": 229.90, "avg_daily": 20},
-    "camisa futebol": {"category": "Moda Esportiva", "median": 139.90, "q1": 89.90, "q3": 199.90, "avg_daily": 20},
-    "camisa social": {"category": "Moda & Vestuário", "median": 119.90, "q1": 89.90, "q3": 159.90, "avg_daily": 18},
-    "camisa": {"category": "Moda & Vestuário", "median": 89.90, "q1": 59.90, "q3": 139.90, "avg_daily": 16},
-    "camiseta": {"category": "Moda & Vestuário", "median": 59.90, "q1": 39.90, "q3": 89.90, "avg_daily": 22},
-    "havaianas": {"category": "Moda & Calçados", "median": 44.90, "q1": 29.90, "q3": 59.90, "avg_daily": 50},
-    "chinelo": {"category": "Moda & Calçados", "median": 44.90, "q1": 25.00, "q3": 59.90, "avg_daily": 45},
-    "tenis nike": {"category": "Moda & Calçados", "median": 279.90, "q1": 229.00, "q3": 349.00, "avg_daily": 30},
-    "tenis": {"category": "Moda & Calçados", "median": 249.90, "q1": 149.00, "q3": 369.00, "avg_daily": 30},
-    "smartwatch": {"category": "Eletrônicos", "median": 599.00, "q1": 299.00, "q3": 1399.00, "avg_daily": 20},
+    # Moda
+    "camisa da jamaica": {"category": "Moda", "median": 139.90, "q1": 99.90, "q3": 179.90, "avg_daily": 15},
+    "camisa de time": {"category": "Moda", "median": 149.90, "q1": 99.90, "q3": 229.90, "avg_daily": 20},
+    "camisa futebol": {"category": "Moda", "median": 139.90, "q1": 89.90, "q3": 199.90, "avg_daily": 20},
+    "camisa social": {"category": "Moda", "median": 119.90, "q1": 89.90, "q3": 159.90, "avg_daily": 18},
+    "camisa": {"category": "Moda", "median": 89.90, "q1": 59.90, "q3": 139.90, "avg_daily": 16},
+    "camiseta": {"category": "Moda", "median": 59.90, "q1": 39.90, "q3": 89.90, "avg_daily": 22},
+    "havaianas": {"category": "Moda", "median": 44.90, "q1": 29.90, "q3": 59.90, "avg_daily": 50},
+    "chinelo": {"category": "Moda", "median": 44.90, "q1": 25.00, "q3": 59.90, "avg_daily": 45},
+    "tenis nike": {"category": "Moda", "median": 279.90, "q1": 229.00, "q3": 349.00, "avg_daily": 30},
+    "tenis": {"category": "Moda", "median": 249.90, "q1": 149.00, "q3": 369.00, "avg_daily": 30},
+    "smartwatch": {"category": "Tecnologia", "median": 599.00, "q1": 299.00, "q3": 1399.00, "avg_daily": 20},
     "livro": {"category": "Livros", "median": 49.90, "q1": 35.00, "q3": 79.90, "avg_daily": 25},
 }
 
 # Mapeamento oficial de Domínios do Mercado Livre para Benchmarks Estatísticos
 DOMAIN_BENCHMARKS = {
-    "MLB-SUPPLEMENTS": {"category": "Suplementos", "median": 69.90, "q1": 59.90, "q3": 89.90, "avg_daily": 75},
-    "MLB-MOBILE_DEVICE_CHARGERS": {"category": "Carregadores", "median": 89.90, "q1": 59.90, "q3": 139.90, "avg_daily": 55},
-    "MLB-CELL_PHONE_CABLES": {"category": "Cabos e Adaptadores", "median": 39.90, "q1": 24.90, "q3": 69.90, "avg_daily": 65},
-    "MLB-CELL_PHONE_COVERS": {"category": "Capas para Celulares", "median": 39.90, "q1": 25.00, "q3": 69.90, "avg_daily": 75},
-    "MLB-SCREEN_PROTECTORS": {"category": "Protetores de Tela", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 70},
-    "MLB-CELLPHONES": {"category": "Celulares", "median": 3599.00, "q1": 1899.00, "q3": 6499.00, "avg_daily": 20},
-    "MLB-NOTEBOOKS": {"category": "Informática", "median": 3499.00, "q1": 2399.00, "q3": 5499.00, "avg_daily": 12},
-    "MLB-MONITORS": {"category": "Monitores", "median": 899.00, "q1": 699.00, "q3": 1299.00, "avg_daily": 18},
-    "MLB-HEADPHONES": {"category": "Áudio", "median": 189.00, "q1": 99.00, "q3": 349.00, "avg_daily": 30},
-    "MLB-DEEP_FRYERS": {"category": "Eletroportáteis", "median": 349.00, "q1": 269.00, "q3": 449.00, "avg_daily": 28},
-    "MLB-VACUUM_CLEANERS": {"category": "Eletroportáteis", "median": 699.00, "q1": 299.00, "q3": 899.00, "avg_daily": 20},
-    "MLB-VIDEO_GAME_CONSOLES": {"category": "Games", "median": 3699.00, "q1": 2299.00, "q3": 3999.00, "avg_daily": 15},
-    "MLB-GAME_CONTROLLERS": {"category": "Acessórios Gamer", "median": 389.00, "q1": 199.00, "q3": 429.00, "avg_daily": 28},
-    "MLB-FOOTWEAR": {"category": "Moda & Calçados", "median": 149.90, "q1": 44.90, "q3": 289.00, "avg_daily": 40},
+    "MLB-SUPPLEMENTS": {"category": "Esportes e Fitness", "median": 69.90, "q1": 59.90, "q3": 89.90, "avg_daily": 75},
+    "MLB-MOBILE_DEVICE_CHARGERS": {"category": "Tecnologia", "median": 89.90, "q1": 59.90, "q3": 139.90, "avg_daily": 55},
+    "MLB-CELL_PHONE_CABLES": {"category": "Tecnologia", "median": 39.90, "q1": 24.90, "q3": 69.90, "avg_daily": 65},
+    "MLB-CELL_PHONE_COVERS": {"category": "Tecnologia", "median": 39.90, "q1": 25.00, "q3": 69.90, "avg_daily": 75},
+    "MLB-SCREEN_PROTECTORS": {"category": "Tecnologia", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 70},
+    "MLB-CELLPHONES": {"category": "Tecnologia", "median": 3599.00, "q1": 1899.00, "q3": 6499.00, "avg_daily": 20},
+    "MLB-NOTEBOOKS": {"category": "Tecnologia", "median": 3499.00, "q1": 2399.00, "q3": 5499.00, "avg_daily": 12},
+    "MLB-MONITORS": {"category": "Tecnologia", "median": 899.00, "q1": 699.00, "q3": 1299.00, "avg_daily": 18},
+    "MLB-HEADPHONES": {"category": "Tecnologia", "median": 189.00, "q1": 99.00, "q3": 349.00, "avg_daily": 30},
+    "MLB-DEEP_FRYERS": {"category": "Eletrodomésticos", "median": 349.00, "q1": 269.00, "q3": 449.00, "avg_daily": 28},
+    "MLB-VACUUM_CLEANERS": {"category": "Eletrodomésticos", "median": 699.00, "q1": 299.00, "q3": 899.00, "avg_daily": 20},
+    "MLB-VIDEO_GAME_CONSOLES": {"category": "Tecnologia", "median": 3699.00, "q1": 2299.00, "q3": 3999.00, "avg_daily": 15},
+    "MLB-GAME_CONTROLLERS": {"category": "Tecnologia", "median": 389.00, "q1": 199.00, "q3": 429.00, "avg_daily": 28},
+    "MLB-FOOTWEAR": {"category": "Moda", "median": 149.90, "q1": 44.90, "q3": 289.00, "avg_daily": 40},
+    "MLB-FOOTBALL_SHIRTS": {"category": "Moda", "median": 149.90, "q1": 99.90, "q3": 229.90, "avg_daily": 20},
 }
 
 
-def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, Any]] = None, default_category: str = "Geral") -> Dict[str, Any]:
+def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, Any]] = None, default_category: str = "Tecnologia") -> Dict[str, Any]:
     """Calcula o Preço de Mediana Estatística e limites anti-outlier com PLN e Classificação de Domínio.
     
     Aplica o algoritmo IQR:
@@ -198,49 +359,53 @@ def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, An
     # 1. Checagem de PLN para detecção de peso líquido (ex: 1kg vs 300g)
     if "creatina" in norm:
         if "1kg" in norm or "1 kg" in norm or "1000g" in norm:
-            return {"median": 189.90, "q1": 159.90, "q3": 229.90, "category": "Esportes & Fitness", "avg_daily": 30}
+            return {"median": 189.90, "q1": 159.90, "q3": 229.90, "category": "Esportes e Fitness", "avg_daily": 30}
         if "kit" in norm or "combo" in norm:
-            return {"median": 139.90, "q1": 119.90, "q3": 179.90, "category": "Esportes & Fitness", "avg_daily": 35}
-        return {"median": 69.90, "q1": 59.90, "q3": 79.90, "category": "Esportes & Fitness", "avg_daily": 85}
+            return {"median": 139.90, "q1": 119.90, "q3": 179.90, "category": "Esportes e Fitness", "avg_daily": 35}
+        return {"median": 69.90, "q1": 59.90, "q3": 79.90, "category": "Esportes e Fitness", "avg_daily": 85}
 
-    # 2. Checagem de PLN para acessórios de smartphones
+    # 2. Checagem de PLN para acessórios de smartphones (Tecnologia)
     is_accessory = any(acc in norm for acc in ["carregador", "fonte", "cabo", "capa", "capinha", "pelicula", "suporte", "adaptador"])
     if is_accessory:
         if "carregador" in norm or "fonte" in norm:
-            return {"median": 89.90, "q1": 59.90, "q3": 139.90, "category": "Acessórios para Celulares", "avg_daily": 55}
+            return {"median": 89.90, "q1": 59.90, "q3": 139.90, "category": "Tecnologia", "avg_daily": 55}
         if "cabo" in norm:
-            return {"median": 39.90, "q1": 24.90, "q3": 69.90, "category": "Cabos e Adaptadores", "avg_daily": 65}
+            return {"median": 39.90, "q1": 24.90, "q3": 69.90, "category": "Tecnologia", "avg_daily": 65}
         if "capa" in norm or "capinha" in norm:
-            return {"median": 39.90, "q1": 25.00, "q3": 69.90, "category": "Capas para Celulares", "avg_daily": 75}
+            return {"median": 39.90, "q1": 25.00, "q3": 69.90, "category": "Tecnologia", "avg_daily": 75}
         if "pelicula" in norm:
-            return {"median": 29.90, "q1": 19.90, "q3": 49.90, "category": "Protetores de Tela", "avg_daily": 70}
+            return {"median": 29.90, "q1": 19.90, "q3": 49.90, "category": "Tecnologia", "avg_daily": 70}
         if "suporte" in norm:
             if "monitor" in norm:
-                return {"median": 189.90, "q1": 139.90, "q3": 249.90, "category": "Acessórios e Suportes", "avg_daily": 35}
+                return {"median": 189.90, "q1": 139.90, "q3": 249.90, "category": "Tecnologia", "avg_daily": 35}
             if "tv" in norm:
-                return {"median": 129.90, "q1": 79.90, "q3": 189.90, "category": "Acessórios e Suportes", "avg_daily": 30}
+                return {"median": 129.90, "q1": 79.90, "q3": 189.90, "category": "Tecnologia", "avg_daily": 30}
             if "celular" in norm or "veicular" in norm:
                 return {"median": 45.90, "q1": 35.00, "q3": 69.90, "category": "Acessórios para Veículos", "avg_daily": 40}
-            return {"median": 79.90, "q1": 39.90, "q3": 139.90, "category": "Acessórios e Suportes", "avg_daily": 35}
+            return {"median": 79.90, "q1": 39.90, "q3": 139.90, "category": "Tecnologia", "avg_daily": 35}
 
 
     # 3. Consultar domínio oficial retornado pela API do Mercado Livre
     if domain_info and domain_info.get("domain_id") in DOMAIN_BENCHMARKS:
-        bench = DOMAIN_BENCHMARKS[domain_info["domain_id"]]
+        bench = DOMAIN_BENCHMARKS[domain_info["domain_id"]].copy()
+        bench["category"] = normalize_category(bench["category"])
         return bench
 
     # 4. Busca por frases específicas calibradas
     sorted_niches = sorted(NICHE_PRICE_ESTIMATES.items(), key=lambda x: len(x[0]), reverse=True)
     for key, val in sorted_niches:
         if key in norm:
-            return val
+            res = val.copy()
+            res["category"] = normalize_category(res["category"])
+            return res
 
     # 5. Fallback Seguro
+    fallback_cat = normalize_category(default_category)
     return {
         "median": 89.90,
         "q1": 49.90,
         "q3": 149.90,
-        "category": default_category if default_category != "Geral" else "Outros",
+        "category": fallback_cat if fallback_cat != "Geral" else "Tecnologia",
         "avg_daily": 20
     }
 

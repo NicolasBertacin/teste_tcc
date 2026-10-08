@@ -95,11 +95,40 @@ def list_products(
     )
 
 
-@router.get("/categories", response_model=List[str], summary="Listar todas as categorias distintas")
+OFFICIAL_MERCADOLIVRE_CATEGORIES = [
+    "Tecnologia",
+    "Eletrodomésticos",
+    "Esportes e Fitness",
+    "Casa e Móveis",
+    "Ferramentas",
+    "Construção",
+    "Beleza e Cuidado Pessoal",
+    "Moda",
+    "Saúde",
+    "Acessórios para Veículos",
+    "Supermercado",
+    "Bebês",
+    "Brinquedos",
+    "Livros",
+    "Pet Shop",
+    "Indústria e Comércio",
+    "Para seu Negócio",
+    "Veículos"
+]
+
+
+@router.get("/categories", response_model=List[str], summary="Listar todas as categorias oficiais do Mercado Livre")
 def get_categories(db: Session = Depends(get_db)):
-    """Retorna lista única de categorias presentes na base de produtos."""
+    """Retorna lista de categorias oficiais do Mercado Livre presentes na base."""
     categories = db.query(Product.category).filter(Product.category.isnot(None)).distinct().all()
-    return [c[0] for c in categories if c[0]]
+    present_cats = {c[0] for c in categories if c[0]}
+
+    ordered = [c for c in OFFICIAL_MERCADOLIVRE_CATEGORIES if c in present_cats]
+    for c in present_cats:
+        if c not in ordered:
+            ordered.append(c)
+
+    return ordered if ordered else OFFICIAL_MERCADOLIVRE_CATEGORIES
 
 
 @router.get("/top-sales", response_model=List[TopProductItem], summary="Ranking dos produtos mais vendidos no mês")
