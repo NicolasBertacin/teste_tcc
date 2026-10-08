@@ -11,7 +11,9 @@ function RegisterForm({ onSwitchView, onLoginSuccess, showToast }) {
     const [showConfirm, setShowConfirm] = React.useState(false);
     const [errors, setErrors] = React.useState({});
     const [loading, setLoading] = React.useState(false);
-    const [isGoogleModalOpen, setIsGoogleModalOpen] = React.useState(false);
+    const [googleLoading, setGoogleLoading] = React.useState(false);
+    const [googleAccount, setGoogleAccount] = React.useState(null);
+    const [is2FAModalOpen, setIs2FAModalOpen] = React.useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,8 +43,36 @@ function RegisterForm({ onSwitchView, onLoginSuccess, showToast }) {
         }
     };
 
-    const handleOpenGoogle = () => {
-        setIsGoogleModalOpen(true);
+    // Abre diretamente a janela oficial do Google (pop-up nativo)
+    const handleGoogleRegister = () => {
+        if (typeof window.launchGoogleAuth !== 'function') {
+            showToast('Inicializando serviço do Google...', 'info');
+            return;
+        }
+
+        window.launchGoogleAuth({
+            setLoading: setGoogleLoading,
+            onError: (msg) => {
+                showToast(msg, 'error');
+            },
+            onAccountSelected: async (account) => {
+                if (account.directLoginSuccess) {
+                    showToast(`Bem-vindo, ${account.data.user.email}!`, 'success');
+                    onLoginSuccess(account.data.user);
+                    return;
+                }
+
+                try {
+                    showToast(`Enviando código de verificação para ${account.email}...`, 'info');
+                    await window.apiService.auth.requestGoogleCode(account.email, account.name);
+                    showToast(`Código 2FA enviado para ${account.email}!`, 'success');
+                    setGoogleAccount(account);
+                    setIs2FAModalOpen(true);
+                } catch (err) {
+                    showToast(err.message || 'Falha ao enviar código 2FA para o e-mail selecionado.', 'error');
+                }
+            }
+        });
     };
 
     return (
@@ -105,7 +135,7 @@ function RegisterForm({ onSwitchView, onLoginSuccess, showToast }) {
             </div>
             {errors.confirmPassword && <span className="login-field-error">{errors.confirmPassword}</span>}
 
-            <button type="submit" className="button-right" disabled={loading}>
+            <button type="submit" className="button-right" disabled={loading || googleLoading}>
                 {loading ? <span className="login-spinner"></span> : 'CADASTRAR'}
             </button>
 
@@ -116,8 +146,8 @@ function RegisterForm({ onSwitchView, onLoginSuccess, showToast }) {
             <button
                 type="button"
                 className="btn-google-auth"
-                onClick={handleOpenGoogle}
-                disabled={loading}
+                onClick={handleGoogleRegister}
+                disabled={loading || googleLoading}
             >
                 <svg className="google-svg-icon" viewBox="0 0 24 24" width="18" height="18">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -125,16 +155,17 @@ function RegisterForm({ onSwitchView, onLoginSuccess, showToast }) {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span>Cadastrar com o Google</span>
+                <span>{googleLoading ? 'Abrindo Google...' : 'Cadastrar com o Google'}</span>
             </button>
 
-            {/* Modal de Seleção de Conta Google e Validação de E-mail com OTP */}
+            {/* Modal de 2 Fatores exibido após selecionar a conta no Google */}
             <GoogleAuthModal
-                isOpen={isGoogleModalOpen}
-                onClose={() => setIsGoogleModalOpen(false)}
+                isOpen={is2FAModalOpen}
+                account={googleAccount}
+                onClose={() => setIs2FAModalOpen(false)}
                 onLoginSuccess={onLoginSuccess}
                 showToast={showToast}
-                initialEmail={email}
+                onSwitchAccount={handleGoogleRegister}
             />
         </form>
     );
