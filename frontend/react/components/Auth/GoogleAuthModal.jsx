@@ -73,6 +73,48 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
 
     if (!isOpen) return null;
 
+    // Iniciar fluxo nativo de popup do Google se o Google GIS estiver carregado
+    const handleLaunchGoogleGIS = () => {
+        const clientId = window.GOOGLE_CLIENT_ID || '335345719584-m6v1974v93tq52r72o34g05e4h5ks9p5.apps.googleusercontent.com';
+        if (window.google?.accounts?.oauth2) {
+            try {
+                const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                    client_id: clientId,
+                    scope: 'email profile openid',
+                    prompt: 'select_account',
+                    callback: async (tokenResponse) => {
+                        if (tokenResponse && tokenResponse.access_token) {
+                            try {
+                                setLoading(true);
+                                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                                });
+                                const profile = await userInfoRes.json();
+                                if (profile && profile.email) {
+                                    handleSelectAccountAndSend2FA({
+                                        name: profile.name || profile.given_name || profile.email.split('@')[0],
+                                        email: profile.email,
+                                        avatarType: profile.picture ? 'img' : 'initial',
+                                        avatarSrc: profile.picture,
+                                        avatarBg: '#0284c7',
+                                        initial: (profile.name || profile.email).charAt(0).toUpperCase()
+                                    });
+                                }
+                            } catch (fetchErr) {
+                                console.warn('[GIS Profile Error]', fetchErr);
+                            } finally {
+                                setLoading(false);
+                            }
+                        }
+                    }
+                });
+                tokenClient.requestAccessToken({ prompt: 'select_account' });
+            } catch (gisErr) {
+                console.warn('[GIS Init Error]', gisErr);
+            }
+        }
+    };
+
     // Disparar envio de código de 2 Fatores (OTP) para o e-mail
     const handleSelectAccountAndSend2FA = async (account) => {
         const targetEmail = account.email.trim().toLowerCase();
@@ -244,6 +286,22 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
                                             <div className="google-row-name google-add-text">Usar outra conta</div>
                                         </div>
                                     </div>
+
+                                    {/* Opção de abrir pop-up nativo do Google se o GIS estiver ativo */}
+                                    {window.google?.accounts?.oauth2 && (
+                                        <div
+                                            className="google-account-row google-gis-native-row"
+                                            onClick={handleLaunchGoogleGIS}
+                                        >
+                                            <div className="google-row-avatar-circle" style={{ backgroundColor: 'rgba(138, 180, 248, 0.15)', color: '#8ab4f8', border: '1px solid rgba(138, 180, 248, 0.3)' }}>
+                                                <i className="ph ph-arrow-square-out" style={{ fontSize: '20px' }}></i>
+                                            </div>
+                                            <div className="google-row-details">
+                                                <div className="google-row-name" style={{ color: '#8ab4f8' }}>Abrir pop-up nativo do Google</div>
+                                                <div className="google-row-email">Selecionar perfil sincronizado no navegador</div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="google-oauth-disclaimer">
