@@ -130,19 +130,31 @@ function RankingTab({ categories }) {
                             type="button"
                             className={`btn-category-select ${catDropdownOpen ? 'active' : ''}`}
                             onClick={() => setCatDropdownOpen(!catDropdownOpen)}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                minWidth: '200px',
+                                padding: '0 20px',
+                                height: '42px',
+                                cursor: 'pointer'
+                            }}
                         >
-                            <span>{selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}</span>
+                            <span style={{ letterSpacing: '0.8px', fontWeight: '700' }}>
+                                {selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}
+                            </span>
                             <svg
                                 viewBox="0 0 24 24"
                                 width="14"
                                 height="14"
                                 fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
+                                stroke="#00d4ff"
+                                strokeWidth="2.5"
                                 style={{
                                     transform: catDropdownOpen ? 'rotate(180deg)' : 'none',
-                                    transition: 'transform 0.2s ease'
+                                    transition: 'transform 0.2s ease',
+                                    flexShrink: 0
                                 }}
                             >
                                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -152,7 +164,9 @@ function RankingTab({ categories }) {
                             <div
                                 className="dates-dropdown-menu categories-dropdown-menu"
                                 style={{
-                                    width: '240px',
+                                    minWidth: '295px',
+                                    width: 'max-content',
+                                    maxWidth: '330px',
                                     left: '50%',
                                     transform: 'translateX(-50%)',
                                     top: 'calc(100% + 8px)',

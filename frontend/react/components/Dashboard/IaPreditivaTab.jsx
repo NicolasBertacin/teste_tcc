@@ -603,25 +603,40 @@ function IaPreditivaTab({ categories, showToast }) {
                                 type="button"
                                 className={`btn-dropdown-ctrl ${catDropdownOpen ? 'active' : ''}`}
                                 onClick={() => setCatDropdownOpen(!catDropdownOpen)}
+                                style={{ gap: '10px', padding: '0 16px' }}
                             >
-                                <span>{selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}</span>
+                                <span style={{ letterSpacing: '0.8px', fontWeight: '700' }}>
+                                    {selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}
+                                </span>
                                 <svg
                                     viewBox="0 0 24 24"
                                     width="14"
                                     height="14"
                                     fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
+                                    stroke="#00d4ff"
+                                    strokeWidth="2.5"
                                     style={{
                                         transform: catDropdownOpen ? 'rotate(180deg)' : 'none',
-                                        transition: 'transform 0.2s ease'
+                                        transition: 'transform 0.2s ease',
+                                        flexShrink: 0
                                     }}
                                 >
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
                             </button>
                             {catDropdownOpen && (
-                                <div className="dates-dropdown-menu categories-dropdown-menu">
+                                <div
+                                    className="dates-dropdown-menu categories-dropdown-menu"
+                                    style={{
+                                        minWidth: '290px',
+                                        right: '0',
+                                        left: 'auto',
+                                        width: 'max-content',
+                                        maxWidth: '330px',
+                                        top: 'calc(100% + 6px)',
+                                        zIndex: 150
+                                    }}
+                                >
                                     <button
                                         type="button"
                                         className={`dropdown-menu-item ${!selectedCategory || selectedCategory === 'GERAIS' ? 'active' : ''}`}

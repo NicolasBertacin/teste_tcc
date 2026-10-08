@@ -1001,23 +1001,25 @@ canvas {
     top: calc(100% + 6px);
     left: 0;
     width: 100%;
-    background: rgba(7, 24, 46, 0.96);
-    border: 1px solid rgba(0, 180, 216, 0.4);
-    border-radius: 18px;
-    padding: 8px;
+    background: rgba(7, 24, 46, 0.98);
+    border: 1px solid rgba(0, 180, 216, 0.45);
+    border-radius: 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
     z-index: 100;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), 0 0 18px rgba(0, 212, 255, 0.25);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 212, 255, 0.25);
+    backdrop-filter: blur(12px);
     box-sizing: border-box;
     animation: fadeInDropdown 0.18s ease-out;
 }
 
 .categories-dropdown-menu {
-    max-height: 280px;
+    min-width: 290px;
+    max-height: 290px;
     overflow-y: auto;
+    padding: 10px 8px;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 180, 216, 0.4) transparent;
 }
@@ -1044,24 +1046,25 @@ canvas {
 
 .dropdown-menu-item {
     width: 100%;
-    height: 36px;
+    height: 38px;
     border-radius: var(--radius-pill);
     background: #092847;
     border: 1px solid rgba(0, 180, 216, 0.25);
     color: #ffffff;
     font-family: var(--font-main);
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     outline: none;
-    padding: 0 10px;
+    padding: 0 16px;
     box-sizing: border-box;
     white-space: nowrap;
     transition: all 0.2s ease;
+    text-align: center;
 }
 
 .dropdown-menu-item:hover {
