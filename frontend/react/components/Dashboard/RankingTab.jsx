@@ -9,9 +9,21 @@ function RankingTab({ categories }) {
     const [selectedCategory, setSelectedCategory] = React.useState('GERAIS');
     const [loading, setLoading] = React.useState(true);
     const [selectedItemModal, setSelectedItemModal] = React.useState(null);
+    const [catDropdownOpen, setCatDropdownOpen] = React.useState(false);
+    const catDropdownRef = React.useRef(null);
 
     React.useEffect(() => {
         loadRanking();
+    }, []);
+
+    React.useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (catDropdownRef.current && !catDropdownRef.current.contains(e.target)) {
+                setCatDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const loadRanking = async () => {
@@ -113,17 +125,65 @@ function RankingTab({ categories }) {
                             ))
                         )}
                     </div>
-                    <div className="ranking-cat-btn-wrap">
-                        <select
-                            className="btn-category-select"
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
+                    <div className="ranking-cat-btn-wrap" ref={catDropdownRef} style={{ position: 'relative' }}>
+                        <button
+                            type="button"
+                            className={`btn-category-select ${catDropdownOpen ? 'active' : ''}`}
+                            onClick={() => setCatDropdownOpen(!catDropdownOpen)}
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         >
-                            <option value="GERAIS">GERAIS</option>
-                            {categories.map((c) => (
-                                <option key={c} value={c}>{c.toUpperCase()}</option>
-                            ))}
-                        </select>
+                            <span>{selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}</span>
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="14"
+                                height="14"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                style={{
+                                    transform: catDropdownOpen ? 'rotate(180deg)' : 'none',
+                                    transition: 'transform 0.2s ease'
+                                }}
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        {catDropdownOpen && (
+                            <div
+                                className="dates-dropdown-menu categories-dropdown-menu"
+                                style={{
+                                    width: '240px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    top: 'calc(100% + 8px)',
+                                    zIndex: 150
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    className={`dropdown-menu-item ${selectedCategory === 'GERAIS' ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setSelectedCategory('GERAIS');
+                                        setCatDropdownOpen(false);
+                                    }}
+                                >
+                                    GERAIS
+                                </button>
+                                {categories.map((c) => (
+                                    <button
+                                        key={c}
+                                        type="button"
+                                        className={`dropdown-menu-item ${selectedCategory === c ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setSelectedCategory(c);
+                                            setCatDropdownOpen(false);
+                                        }}
+                                    >
+                                        {c.toUpperCase()}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

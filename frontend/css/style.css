@@ -1015,6 +1015,22 @@ canvas {
     animation: fadeInDropdown 0.18s ease-out;
 }
 
+.categories-dropdown-menu {
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 180, 216, 0.4) transparent;
+}
+
+.categories-dropdown-menu::-webkit-scrollbar {
+    width: 5px;
+}
+
+.categories-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(0, 180, 216, 0.4);
+    border-radius: 4px;
+}
+
 @keyframes fadeInDropdown {
     from {
         opacity: 0;

@@ -10,6 +10,7 @@ function IaPreditivaTab({ categories, showToast }) {
     const [loading, setLoading] = React.useState(true);
     const [horizonDays, setHorizonDays] = React.useState(7);
     const [dateDropdownOpen, setDateDropdownOpen] = React.useState(false);
+    const [catDropdownOpen, setCatDropdownOpen] = React.useState(false);
 
     const canvasRef = React.useRef(null);
     const pointsRef = React.useRef([]);
@@ -17,6 +18,7 @@ function IaPreditivaTab({ categories, showToast }) {
     const selectedProductRef = React.useRef(null);
     const hoveredIndexRef = React.useRef(null);
     const dateDropdownRef = React.useRef(null);
+    const catDropdownRef = React.useRef(null);
     const [chartData, setChartData] = React.useState({
         daysLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         values: [185, 290, 230, 80, 205, 210, 175]
@@ -43,6 +45,9 @@ function IaPreditivaTab({ categories, showToast }) {
         const handleClickOutside = (e) => {
             if (dateDropdownRef.current && !dateDropdownRef.current.contains(e.target)) {
                 setDateDropdownOpen(false);
+            }
+            if (catDropdownRef.current && !catDropdownRef.current.contains(e.target)) {
+                setCatDropdownOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -593,16 +598,56 @@ function IaPreditivaTab({ categories, showToast }) {
                             )}
                         </div>
 
-                        <select
-                            className="select-dropdown-ctrl"
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                        >
-                            <option value="">GERAIS</option>
-                            {categories.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                        <div className="dropdown-filter-wrap" ref={catDropdownRef}>
+                            <button
+                                type="button"
+                                className={`btn-dropdown-ctrl ${catDropdownOpen ? 'active' : ''}`}
+                                onClick={() => setCatDropdownOpen(!catDropdownOpen)}
+                            >
+                                <span>{selectedCategory && selectedCategory !== 'GERAIS' ? selectedCategory.toUpperCase() : 'CATEGORIAS'}</span>
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    width="14"
+                                    height="14"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    style={{
+                                        transform: catDropdownOpen ? 'rotate(180deg)' : 'none',
+                                        transition: 'transform 0.2s ease'
+                                    }}
+                                >
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            {catDropdownOpen && (
+                                <div className="dates-dropdown-menu categories-dropdown-menu">
+                                    <button
+                                        type="button"
+                                        className={`dropdown-menu-item ${!selectedCategory || selectedCategory === 'GERAIS' ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setSelectedCategory('');
+                                            setCatDropdownOpen(false);
+                                        }}
+                                    >
+                                        GERAIS
+                                    </button>
+                                    {categories.map((c) => (
+                                        <button
+                                            key={c}
+                                            type="button"
+                                            className={`dropdown-menu-item ${selectedCategory === c ? 'active' : ''}`}
+                                            onClick={() => {
+                                                setSelectedCategory(c);
+                                                setCatDropdownOpen(false);
+                                            }}
+                                        >
+                                            {c.toUpperCase()}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
