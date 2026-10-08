@@ -1,5 +1,4 @@
-"""Router de Produtos, Categorias e Séries Históricas de Vendas."""
-
+from datetime import datetime, timedelta
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, desc
@@ -46,17 +45,21 @@ def list_products(
     offset = (page - 1) * limit
     products = query.order_by(Product.id).offset(offset).limit(limit).all()
 
-    # Agregar totais de venda por produto em 1 única query rápida (elimina N+1)
+    # Agregar totais de venda por produto nos últimos 30 dias (vendas do mês)
     product_ids = [p.id for p in products]
     sales_map = {}
     if product_ids:
-        sales_aggs = db.query(
+        latest_date = db.query(func.max(SalesHistory.date)).scalar()
+        sales_q = db.query(
             SalesHistory.product_id,
             func.sum(SalesHistory.quantity_sold).label("total_units"),
             func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, 100.0)).label("total_rev")
-        ).filter(SalesHistory.product_id.in_(product_ids))\
-         .group_by(SalesHistory.product_id)\
-         .all()
+        ).filter(SalesHistory.product_id.in_(product_ids))
+
+        if latest_date:
+            sales_q = sales_q.filter(SalesHistory.date >= latest_date - timedelta(days=30))
+
+        sales_aggs = sales_q.group_by(SalesHistory.product_id).all()
         for s_pid, s_units, s_rev in sales_aggs:
             sales_map[s_pid] = (int(s_units or 0), float(s_rev or 0.0))
 
@@ -99,13 +102,16 @@ def get_categories(db: Session = Depends(get_db)):
     return [c[0] for c in categories if c[0]]
 
 
-@router.get("/top-sales", response_model=List[TopProductItem], summary="Ranking dos produtos mais vendidos")
+@router.get("/top-sales", response_model=List[TopProductItem], summary="Ranking dos produtos mais vendidos no mês")
 def get_top_selling_products(
     limit: int = Query(10, ge=1, le=50, description="Quantidade de produtos no ranking"),
     category: Optional[str] = Query(None, description="Filtro opcional de categoria"),
+    days: int = Query(30, ge=1, le=365, description="Janela de dias para apuração de vendas (padrão: 30 dias)"),
     db: Session = Depends(get_db)
 ):
-    """Retorna os produtos com maior volume histórico de vendas acumuladas."""
+    """Retorna os produtos com maior volume de vendas apuradas no período (mês/30 dias)."""
+    latest_date = db.query(func.max(SalesHistory.date)).scalar()
+
     query = db.query(
         Product.id,
         Product.title,
@@ -114,6 +120,10 @@ def get_top_selling_products(
         func.sum(SalesHistory.quantity_sold).label("total_sold"),
         func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, Product.price)).label("total_revenue")
     ).join(SalesHistory, Product.id == SalesHistory.product_id)
+
+    if latest_date and days > 0:
+        start_date = latest_date - timedelta(days=days)
+        query = query.filter(SalesHistory.date >= start_date)
 
     if category:
         query = query.filter(Product.category == category)

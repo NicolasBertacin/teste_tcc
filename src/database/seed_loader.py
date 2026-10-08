@@ -1,10 +1,10 @@
 """Módulo de carregamento automático de sementes (Seed) de dados no startup."""
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text, func
 from src.database.models import Product, SalesHistory, SearchTrend, MacroIndicator
 
 
@@ -61,14 +61,20 @@ def seed_database_if_empty(session: Session):
                 session.add(product)
         session.flush()
 
-        # 2. Sincronizar preços do histórico se discrepantes
+        # 2. Sincronizar preços do histórico e ancorar datas para 'hoje' (rolagem 24h em 24h)
+        today_midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        seed_dates = [_parse_dt(s.get("date")) for s in sales_data if s.get("date")]
+        max_seed_date = max(seed_dates) if seed_dates else today_midnight
+        seed_shift = today_midnight - max_seed_date
+
         sales_count = session.query(SalesHistory).count()
         if sales_count == 0:
             for s_data in sales_data:
+                shifted_date = _parse_dt(s_data.get("date")) + seed_shift
                 sales_entry = SalesHistory(
                     id=s_data.get("id"),
                     product_id=s_data.get("product_id"),
-                    date=_parse_dt(s_data.get("date")),
+                    date=shifted_date,
                     quantity_sold=int(s_data.get("quantity_sold", 10)),
                     price_at_date=float(s_data.get("price_at_date", 100.0)),
                     available_quantity=int(s_data.get("available_quantity", 50)),
@@ -78,12 +84,17 @@ def seed_database_if_empty(session: Session):
                 session.add(sales_entry)
         else:
             prods_map = {p.get("id"): p.get("price") for p in products_data}
+            max_db_date = session.query(func.max(SalesHistory.date)).scalar()
+            db_shift = (today_midnight - max_db_date) if max_db_date else None
+
             for s in session.query(SalesHistory).all():
                 p_price = prods_map.get(s.product_id)
                 if p_price and s.price_at_date:
                     ratio = s.price_at_date / (p_price if p_price > 0 else 1)
                     if ratio > 1.4 or ratio < 0.6:
                         s.price_at_date = float(p_price)
+                if db_shift and db_shift.days > 0:
+                    s.date = s.date + db_shift
 
         # 3. Sincronizar Search Trends se tabela vazia
         if session.query(SearchTrend).count() == 0:

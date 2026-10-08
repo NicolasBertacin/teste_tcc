@@ -610,7 +610,7 @@ function IaPreditivaTab({ categories, showToast }) {
             {/* Bottom Two Cards */}
             <div className="dash-bottom-grid">
                 <div className="dash-card mais-vendidos-card">
-                    <h3 className="dash-card-header-title">MAIS VENDIDOS ATUALMENTE</h3>
+                    <h3 className="dash-card-header-title">MAIS VENDIDOS NO MÊS</h3>
                     <div className="ranking-rows-container">
                         {loading ? (
                             <p className="empty-msg">Carregando produtos...</p>
@@ -622,7 +622,7 @@ function IaPreditivaTab({ categories, showToast }) {
                                     onClick={() => handleSelectProduct(item)}
                                     style={{ cursor: 'pointer' }}
                                     title="Clique para destacar no gráfico"
-                                >
+                                    >
                                     <div className="ranking-row-left">
                                         <span className="ranking-num">{item.rank}.</span>
                                         <span className="ranking-title">{item.title}</span>
@@ -632,7 +632,7 @@ function IaPreditivaTab({ categories, showToast }) {
                                             R$ {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                         </span>
                                         <span className="ranking-sold">
-                                            {item.quantity_sold.toLocaleString('pt-BR')} VENDIDOS
+                                            {item.quantity_sold.toLocaleString('pt-BR')} VENDIDOS NO MÊS
                                         </span>
                                     </div>
                                 </div>
