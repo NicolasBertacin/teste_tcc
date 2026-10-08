@@ -17,10 +17,13 @@ class LoginRequest(BaseModel):
 
 
 class GoogleAuthRequest(BaseModel):
-    credential: Optional[str] = Field(None, description="Token JWT ou credencial do Google")
+    token: Optional[str] = Field(None, description="Google ID Token JWT")
+    credential: Optional[str] = Field(None, description="Google ID Token JWT (alias GIS credential)")
     email: Optional[EmailStr] = Field(None, description="Email fornecido pelo Google")
     name: Optional[str] = Field(None, description="Nome do usuário do Google")
     picture: Optional[str] = Field(None, description="URL do avatar do Google")
+    sub: Optional[str] = Field(None, description="Google User ID")
+
 
 
 class GoogleRequestCodeRequest(BaseModel):

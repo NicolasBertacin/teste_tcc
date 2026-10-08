@@ -73,13 +73,14 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
 
     if (!isOpen) return null;
 
+    const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || '33242244365-ubjiqb1h7thh0t6n5hdg3e3ugsuebm6e.apps.googleusercontent.com';
+
     // Iniciar fluxo nativo de popup do Google se o Google GIS estiver carregado
     const handleLaunchGoogleGIS = () => {
-        const clientId = window.GOOGLE_CLIENT_ID || '335345719584-m6v1974v93tq52r72o34g05e4h5ks9p5.apps.googleusercontent.com';
         if (window.google?.accounts?.oauth2) {
             try {
                 const tokenClient = window.google.accounts.oauth2.initTokenClient({
-                    client_id: clientId,
+                    client_id: GOOGLE_CLIENT_ID,
                     scope: 'email profile openid',
                     prompt: 'select_account',
                     callback: async (tokenResponse) => {
@@ -111,6 +112,30 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
                 tokenClient.requestAccessToken({ prompt: 'select_account' });
             } catch (gisErr) {
                 console.warn('[GIS Init Error]', gisErr);
+            }
+        } else if (window.google?.accounts?.id) {
+            try {
+                window.google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: async (response) => {
+                        if (response && response.credential) {
+                            try {
+                                setLoading(true);
+                                const data = await window.apiService.auth.loginWithGoogle({ token: response.credential });
+                                showToast(`Bem-vindo, ${data.user.email}!`, 'success');
+                                onClose();
+                                onLoginSuccess(data.user);
+                            } catch (err) {
+                                showToast(err.message || 'Falha ao autenticar com Google ID Token.', 'error');
+                            } finally {
+                                setLoading(false);
+                            }
+                        }
+                    }
+                });
+                window.google.accounts.id.prompt();
+            } catch (idErr) {
+                console.warn('[GIS ID Prompt Error]', idErr);
             }
         }
     };

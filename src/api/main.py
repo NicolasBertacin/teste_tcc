@@ -97,6 +97,7 @@ app.add_middleware(
 # ==========================================
 API_PREFIX = "/api/v1"
 app.include_router(auth_router, prefix=API_PREFIX)
+app.include_router(auth_router, prefix="/api")
 app.include_router(products_router, prefix=API_PREFIX)
 app.include_router(forecast_router, prefix=API_PREFIX)
 app.include_router(trends_router, prefix=API_PREFIX)

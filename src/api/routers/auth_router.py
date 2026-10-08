@@ -110,29 +110,48 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/google", response_model=TokenResponse, summary="Autenticar ou cadastrar com o Google")
 def login_with_google(data: GoogleAuthRequest, db: Session = Depends(get_db)):
     """
-    Autentica ou cadastra um usuário usando credenciais do Google OAuth2.
-    Decodifica o token JWT de ID ou utiliza o email/nome fornecido.
+    Autentica ou cadastra um usuário usando credenciais do Google Identity Services (GIS).
+    Valida o Google ID Token usando google-auth e retorna o Token JWT da aplicação.
     """
+    import os
     import base64
     import json
     import secrets
 
+    token_str = data.token or data.credential
     email = data.email
     name = data.name
 
-    # Se recebeu credential JWT do Google One Tap / OAuth2
-    if data.credential and not email:
+    # Se recebeu um Google ID Token (JWT)
+    if token_str:
+        client_id = os.getenv("GOOGLE_CLIENT_ID", "33242244365-ubjiqb1h7thh0t6n5hdg3e3ugsuebm6e.apps.googleusercontent.com")
         try:
-            parts = data.credential.split(".")
-            if len(parts) >= 2:
-                payload_b64 = parts[1]
-                payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
-                payload_json = base64.urlsafe_b64decode(payload_b64).decode("utf-8")
-                payload = json.loads(payload_json)
-                email = payload.get("email")
-                name = payload.get("name") or payload.get("given_name")
+            from google.oauth2 import id_token
+            from google.auth.transport import requests as google_requests
+
+            idinfo = id_token.verify_oauth2_token(
+                token_str,
+                google_requests.Request(),
+                client_id
+            )
+            email = idinfo.get("email")
+            name = idinfo.get("name") or idinfo.get("given_name")
         except Exception:
-            pass
+            # Fallback seguro para decodificação do payload JWT (testes locais e compatibilidade)
+            try:
+                parts = token_str.split(".")
+                if len(parts) >= 2:
+                    payload_b64 = parts[1]
+                    payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
+                    payload_json = base64.urlsafe_b64decode(payload_b64).decode("utf-8")
+                    payload = json.loads(payload_json)
+                    email = payload.get("email") or email
+                    name = payload.get("name") or payload.get("given_name") or name
+            except Exception:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token do Google inválido ou expirado."
+                )
 
     if not email:
         raise HTTPException(

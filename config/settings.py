@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     guardian_strict_mode: bool = True
     guardian_log_blocked: bool = True
     
+    # Google OAuth / GIS
+    google_client_id: str = "33242244365-ubjiqb1h7thh0t6n5hdg3e3ugsuebm6e.apps.googleusercontent.com"
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
