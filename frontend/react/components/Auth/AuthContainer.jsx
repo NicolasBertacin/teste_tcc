@@ -89,6 +89,7 @@ function AuthContainer({ onLoginSuccess, showToast, currentView, onSwitchView })
                         {view === 'register' && (
                             <RegisterForm
                                 onSwitchView={setView}
+                                onLoginSuccess={onLoginSuccess}
                                 showToast={showToast}
                             />
                         )}

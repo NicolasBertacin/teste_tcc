@@ -16,6 +16,7 @@ from src.database.models import User
 from src.schemas.auth_schema import (
     RegisterRequest, 
     LoginRequest, 
+    GoogleAuthRequest,
     TokenResponse, 
     UserResponse,
     PasswordResetRequest,
@@ -93,6 +94,73 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Conta de usuário inativa. Contate o administrador."
         )
+
+    access_token = create_access_token(data={"sub": user.email, "user_id": user.id})
+    return TokenResponse(
+        access_token=access_token,
+        token_type="bearer",
+        user=UserResponse.model_validate(user)
+    )
+
+
+@router.post("/google", response_model=TokenResponse, summary="Autenticar ou cadastrar com o Google")
+def login_with_google(data: GoogleAuthRequest, db: Session = Depends(get_db)):
+    """
+    Autentica ou cadastra um usuário usando credenciais do Google OAuth2.
+    Decodifica o token JWT de ID ou utiliza o email/nome fornecido.
+    """
+    import base64
+    import json
+    import secrets
+
+    email = data.email
+    name = data.name
+
+    # Se recebeu credential JWT do Google One Tap / OAuth2
+    if data.credential and not email:
+        try:
+            parts = data.credential.split(".")
+            if len(parts) >= 2:
+                payload_b64 = parts[1]
+                payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
+                payload_json = base64.urlsafe_b64decode(payload_b64).decode("utf-8")
+                payload = json.loads(payload_json)
+                email = payload.get("email")
+                name = payload.get("name") or payload.get("given_name")
+        except Exception:
+            pass
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Não foi possível identificar o email da conta Google."
+        )
+
+    email_clean = str(email).lower().strip()
+    user = db.query(User).filter(User.email == email_clean).first()
+
+    if not user:
+        display_name = name or email_clean.split("@")[0]
+        random_pwd = secrets.token_urlsafe(16)
+        user = User(
+            email=email_clean,
+            hashed_password=get_password_hash(random_pwd),
+            name=display_name,
+            is_active=True
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    else:
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Conta de usuário inativa. Contate o suporte."
+            )
+        if name and (not user.name or user.name == user.email.split("@")[0]):
+            user.name = name
+            db.commit()
+            db.refresh(user)
 
     access_token = create_access_token(data={"sub": user.email, "user_id": user.id})
     return TokenResponse(

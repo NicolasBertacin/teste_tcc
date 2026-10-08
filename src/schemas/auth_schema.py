@@ -16,6 +16,14 @@ class LoginRequest(BaseModel):
     password: str = Field(..., description="Senha do usuário")
 
 
+class GoogleAuthRequest(BaseModel):
+    credential: Optional[str] = Field(None, description="Token JWT ou credencial do Google")
+    email: Optional[EmailStr] = Field(None, description="Email fornecido pelo Google")
+    name: Optional[str] = Field(None, description="Nome do usuário do Google")
+    picture: Optional[str] = Field(None, description="URL do avatar do Google")
+
+
+
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

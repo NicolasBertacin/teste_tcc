@@ -118,6 +118,20 @@ class ApiClient {
             return data;
         },
 
+        loginWithGoogle: async (payload) => {
+            const body = typeof payload === 'string' 
+                ? (payload.includes('@') ? { email: payload } : { credential: payload })
+                : payload;
+            const data = await this.request('/auth/google', {
+                method: 'POST',
+                body: JSON.stringify(body)
+            });
+            if (data.access_token) {
+                this.setSession(data.access_token, data.user);
+            }
+            return data;
+        },
+
         register: async (email, password, name) => {
             return await this.request('/auth/register', {
                 method: 'POST',

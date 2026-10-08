@@ -38,6 +38,28 @@ def test_auth_login_and_me(client):
     assert me_resp.json()["email"] == "admin@trendecommerce.com"
 
 
+def test_auth_google_login_and_register(client):
+    """Testa cadastro e login via Google OAuth2 endpoint."""
+    # 1. Cadastro / Login com novo usuário via Google
+    google_email = "novo.google.user@gmail.com"
+    response = client.post("/api/v1/auth/google", json={
+        "email": google_email,
+        "name": "Google Test User"
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["user"]["email"] == google_email
+    assert data["user"]["name"] == "Google Test User"
+
+    # 2. Login com usuário já existente via Google
+    response_existing = client.post("/api/v1/auth/google", json={
+        "email": "admin@trendecommerce.com"
+    })
+    assert response_existing.status_code == 200
+    assert response_existing.json()["user"]["email"] == "admin@trendecommerce.com"
+
+
 def test_auth_register_duplicate(client):
     """Testa tentativa de cadastro duplicado."""
     response = client.post("/api/v1/auth/register", json={
