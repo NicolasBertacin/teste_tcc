@@ -1,10 +1,11 @@
 /**
  * GoogleAuthModal.jsx
- * Modal oficial e funcional de Seleção de Conta Google e Validação de E-mail via Código OTP de 4 Dígitos.
+ * Modal Oficial Google Dark Mode (OAuth 2.0 & Autenticação de 2 Fatores - 2FA).
+ * Reproduz fielmente a interface "Fazer Login com o Google / Escolha uma conta".
  */
 
 function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEmail = '' }) {
-    const [step, setStep] = React.useState('select'); // 'select' | 'custom' | 'otp'
+    const [step, setStep] = React.useState('select'); // 'select' | 'custom' | '2fa'
     const [selectedAccount, setSelectedAccount] = React.useState(null);
     const [customEmail, setCustomEmail] = React.useState(initialEmail || '');
     const [customName, setCustomName] = React.useState('');
@@ -13,28 +14,44 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
     const [resendCooldown, setResendCooldown] = React.useState(0);
     const [errorMessage, setErrorMessage] = React.useState('');
 
-    // Lista de contas sugeridas/rápidas
+    // Contas Google sugeridas conforme o protótipo real
     const defaultAccounts = React.useMemo(() => {
-        const list = [
+        const base = [
             {
-                name: 'Aluno TCC',
-                email: 'aluno.tcc.projeto@gmail.com',
-                avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+                name: 'kill fn1',
+                email: 'fireace151@gmail.com',
+                avatarType: 'img',
+                avatarSrc: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=faces'
             },
             {
-                name: 'TrendCommerce Admin',
+                name: 'nicolas bertacin',
+                email: 'niicolas.bertacin@gmail.com',
+                avatarType: 'initial',
+                avatarBg: '#d97706', // Laranja do protótipo
+                initial: 'n'
+            },
+            {
+                name: 'TrendCommerce AI',
                 email: 'trendeccomerceai@gmail.com',
-                avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+                avatarType: 'initial',
+                avatarBg: '#0284c7',
+                initial: 'T'
             }
         ];
-        if (initialEmail && initialEmail.includes('@') && !list.some(a => a.email.toLowerCase() === initialEmail.toLowerCase())) {
-            list.unshift({
-                name: initialEmail.split('@')[0],
-                email: initialEmail.toLowerCase(),
-                avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
-            });
+
+        if (initialEmail && initialEmail.includes('@')) {
+            const clean = initialEmail.toLowerCase().trim();
+            if (!base.some(a => a.email.toLowerCase() === clean)) {
+                base.unshift({
+                    name: clean.split('@')[0],
+                    email: clean,
+                    avatarType: 'initial',
+                    avatarBg: '#7c3aed',
+                    initial: clean.charAt(0).toUpperCase()
+                });
+            }
         }
-        return list;
+        return base;
     }, [initialEmail]);
 
     React.useEffect(() => {
@@ -46,7 +63,7 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
         }
     }, [isOpen]);
 
-    // Timer do botão de reenvio
+    // Timer de contagem regressiva para reenvio do código 2FA
     React.useEffect(() => {
         if (resendCooldown > 0) {
             const timer = setTimeout(() => setResendCooldown(c => c - 1), 1000);
@@ -56,33 +73,30 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
 
     if (!isOpen) return null;
 
-    // Enviar código para o e-mail selecionado
-    const handleSendCode = async (targetEmail, targetName) => {
-        const cleanEmail = targetEmail.trim().toLowerCase();
-        if (!cleanEmail || !cleanEmail.includes('@')) {
-            setErrorMessage('Informe um e-mail válido da sua conta Google.');
-            return;
-        }
+    // Disparar envio de código de 2 Fatores (OTP) para o e-mail
+    const handleSelectAccountAndSend2FA = async (account) => {
+        const targetEmail = account.email.trim().toLowerCase();
+        const targetName = account.name || targetEmail.split('@')[0];
 
         setErrorMessage('');
         setLoading(true);
-        setSelectedAccount({ email: cleanEmail, name: targetName || cleanEmail.split('@')[0] });
+        setSelectedAccount(account);
 
         try {
-            const resp = await window.apiService.auth.requestGoogleCode(cleanEmail, targetName);
-            showToast(resp.message || `Código enviado para ${cleanEmail}!`, 'success');
-            setStep('otp');
+            const resp = await window.apiService.auth.requestGoogleCode(targetEmail, targetName);
+            showToast(resp.message || `Código 2FA enviado para ${targetEmail}!`, 'success');
+            setStep('2fa');
             setResendCooldown(45);
         } catch (err) {
-            setErrorMessage(err.message || 'Falha ao enviar código para o e-mail informado.');
-            showToast(err.message || 'Erro no envio do código.', 'error');
+            setErrorMessage(err.message || 'Falha ao enviar código 2FA para o e-mail selecionado.');
+            showToast(err.message || 'Erro no envio do código de verificação.', 'error');
         } finally {
             setLoading(false);
         }
     };
 
-    // Submissão do código OTP digitado
-    const handleVerifyOtp = async (e) => {
+    // Submissão do código 2FA
+    const handleVerify2FA = async (e) => {
         if (e) e.preventDefault();
         const code = otpCode.join('').trim();
         if (code.length < 4) {
@@ -99,31 +113,30 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
                 code,
                 selectedAccount.name
             );
-            showToast(`Conta Google (${data.user.email}) validada e conectada com sucesso!`, 'success');
+            showToast(`Autenticação de 2 fatores aprovada! Bem-vindo, ${data.user.name || data.user.email}!`, 'success');
             onClose();
             onLoginSuccess(data.user);
         } catch (err) {
-            setErrorMessage(err.message || 'Código incorreto. Verifique seu e-mail.');
+            setErrorMessage(err.message || 'Código 2FA incorreto ou expirado.');
             showToast(err.message || 'Código de verificação inválido.', 'error');
         } finally {
             setLoading(false);
         }
     };
 
-    // Gerenciador dos inputs de 4 dígitos
+    // Gerenciador de digitação e auto-focus dos 4 dígitos
     const handleOtpChange = (index, value) => {
         const cleaned = value.replace(/\D/g, '');
         const newCode = [...otpCode];
 
         if (cleaned.length > 1) {
-            // Se colou código completo
             const chars = cleaned.slice(0, 4).split('');
             for (let i = 0; i < 4; i++) {
                 newCode[i] = chars[i] || '';
             }
             setOtpCode(newCode);
             const lastIdx = Math.min(chars.length - 1, 3);
-            const nextInput = document.getElementById(`google-otp-${lastIdx}`);
+            const nextInput = document.getElementById(`google-2fa-${lastIdx}`);
             if (nextInput) nextInput.focus();
             return;
         }
@@ -132,14 +145,14 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
         setOtpCode(newCode);
 
         if (cleaned && index < 3) {
-            const nextInput = document.getElementById(`google-otp-${index + 1}`);
+            const nextInput = document.getElementById(`google-2fa-${index + 1}`);
             if (nextInput) nextInput.focus();
         }
     };
 
     const handleOtpKeyDown = (index, e) => {
         if (e.key === 'Backspace' && !otpCode[index] && index > 0) {
-            const prevInput = document.getElementById(`google-otp-${index - 1}`);
+            const prevInput = document.getElementById(`google-2fa-${index - 1}`);
             if (prevInput) {
                 prevInput.focus();
                 const newCode = [...otpCode];
@@ -150,200 +163,268 @@ function GoogleAuthModal({ isOpen, onClose, onLoginSuccess, showToast, initialEm
     };
 
     return (
-        <div className="google-modal-backdrop" onClick={onClose}>
-            <div className="google-modal-container" onClick={(e) => e.stopPropagation()}>
-                {/* Botão de Fechar */}
-                <button type="button" className="google-modal-close" onClick={onClose} aria-label="Fechar">
-                    <i className="ph ph-x"></i>
-                </button>
+        <div className="google-oauth-backdrop" onClick={onClose}>
+            <div className="google-oauth-window" onClick={(e) => e.stopPropagation()}>
+                {/* Barra Superior Oficial Google */}
+                <div className="google-oauth-topbar">
+                    <div className="google-topbar-brand">
+                        <svg className="google-topbar-icon" viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span>Fazer Login com o Google</span>
+                    </div>
 
-                {/* Cabeçalho Oficial Google */}
-                <div className="google-modal-header">
-                    <svg className="google-svg-logo" viewBox="0 0 24 24" width="32" height="32">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-
-                    <h2 className="google-modal-title">
-                        {step === 'otp' ? 'Verifique seu e-mail' : 'Fazer login com o Google'}
-                    </h2>
-                    <p className="google-modal-subtitle">
-                        {step === 'otp' ? (
-                            <React.Fragment>
-                                Enviamos um código de segurança de 4 dígitos para:<br />
-                                <strong style={{ color: '#00f0ff' }}>{selectedAccount?.email}</strong>
-                            </React.Fragment>
-                        ) : (
-                            'Escolha uma conta para continuar no TrendCommerce AI'
-                        )}
-                    </p>
+                    <button type="button" className="google-oauth-close-btn" onClick={onClose} aria-label="Fechar">
+                        <i className="ph ph-x"></i>
+                    </button>
                 </div>
 
-                {errorMessage && (
-                    <div className="google-modal-error">
-                        <i className="ph ph-warning-circle"></i>
-                        <span>{errorMessage}</span>
-                    </div>
-                )}
-
-                {/* ETAPA 1: Lista de Contas */}
-                {step === 'select' && (
-                    <div className="google-accounts-list">
-                        {defaultAccounts.map((acc, idx) => (
-                            <div
-                                key={idx}
-                                className="google-account-item"
-                                onClick={() => handleSendCode(acc.email, acc.name)}
-                            >
-                                <div className="google-avatar-wrap">
-                                    <span className="google-avatar-initial">{acc.name.charAt(0).toUpperCase()}</span>
+                {/* Conteúdo Principal em 2 Colunas */}
+                <div className="google-oauth-body">
+                    {/* ETAPA 1: ESCOLHA UMA CONTA */}
+                    {step === 'select' && (
+                        <div className="google-oauth-grid">
+                            {/* Coluna Esquerda: Título e App Info */}
+                            <div className="google-oauth-left">
+                                <div className="google-app-logo-wrap">
+                                    <img src="assets/logo.png" alt="TrendCommerce Logo" onError={(e) => { e.target.style.display = 'none'; }} />
                                 </div>
-                                <div className="google-account-info">
-                                    <div className="google-account-name">{acc.name}</div>
-                                    <div className="google-account-email">{acc.email}</div>
+                                <h1 className="google-oauth-headline">Escolha uma conta</h1>
+                                <p className="google-oauth-subheadline">
+                                    Prosseguir para <a href="#!">TrendCommerce AI</a>
+                                </p>
+                            </div>
+
+                            {/* Coluna Direita: Lista de Contas */}
+                            <div className="google-oauth-right">
+                                {errorMessage && (
+                                    <div className="google-error-alert">
+                                        <i className="ph ph-warning-circle"></i>
+                                        <span>{errorMessage}</span>
+                                    </div>
+                                )}
+
+                                <div className="google-account-rows">
+                                    {defaultAccounts.map((acc, index) => (
+                                        <div
+                                            key={index}
+                                            className="google-account-row"
+                                            onClick={() => handleSelectAccountAndSend2FA(acc)}
+                                        >
+                                            {acc.avatarType === 'img' ? (
+                                                <img src={acc.avatarSrc} alt={acc.name} className="google-row-avatar-img" />
+                                            ) : (
+                                                <div className="google-row-avatar-circle" style={{ backgroundColor: acc.avatarBg || '#1a73e8' }}>
+                                                    {acc.initial}
+                                                </div>
+                                            )}
+
+                                            <div className="google-row-details">
+                                                <div className="google-row-name">{acc.name}</div>
+                                                <div className="google-row-email">{acc.email}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {/* Opção "Usar outra conta" */}
+                                    <div
+                                        className="google-account-row google-add-row"
+                                        onClick={() => {
+                                            setErrorMessage('');
+                                            setStep('custom');
+                                        }}
+                                    >
+                                        <div className="google-row-avatar-circle google-add-circle">
+                                            <i className="ph ph-user-circle"></i>
+                                        </div>
+                                        <div className="google-row-details">
+                                            <div className="google-row-name google-add-text">Usar outra conta</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <i className="ph ph-caret-right google-account-arrow"></i>
+
+                                <div className="google-oauth-disclaimer">
+                                    Consulte a <a href="#!">Política de Privacidade</a> e os <a href="#!">Termos de Serviço</a> do app TrendCommerce AI antes de usá-lo.
+                                </div>
                             </div>
-                        ))}
+                        </div>
+                    )}
 
-                        {/* Opção Usar Outra Conta */}
-                        <div
-                            className="google-account-item google-add-account"
-                            onClick={() => {
-                                setErrorMessage('');
-                                setStep('custom');
-                            }}
-                        >
-                            <div className="google-avatar-wrap add-icon">
-                                <i className="ph ph-user-plus"></i>
+                    {/* ETAPA 1.1: DIGITAR OUTRA CONTA GOOGLE */}
+                    {step === 'custom' && (
+                        <div className="google-oauth-grid">
+                            <div className="google-oauth-left">
+                                <div className="google-app-logo-wrap">
+                                    <img src="assets/logo.png" alt="TrendCommerce Logo" onError={(e) => { e.target.style.display = 'none'; }} />
+                                </div>
+                                <h1 className="google-oauth-headline">Fazer Login</h1>
+                                <p className="google-oauth-subheadline">
+                                    Use sua Conta do Google para acessar o <a href="#!">TrendCommerce AI</a>
+                                </p>
                             </div>
-                            <div className="google-account-info">
-                                <div className="google-account-name">Usar outra conta Google</div>
-                                <div className="google-account-email">Digite qualquer endereço Gmail ou corporativo</div>
-                            </div>
-                            <i className="ph ph-caret-right google-account-arrow"></i>
-                        </div>
-                    </div>
-                )}
 
-                {/* ETAPA 1.1: Digitar Conta Personalizada */}
-                {step === 'custom' && (
-                    <form
-                        className="google-custom-form"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSendCode(customEmail, customName);
-                        }}
-                    >
-                        <div className="google-input-group">
-                            <label>SEU E-MAIL DO GOOGLE:</label>
-                            <input
-                                type="email"
-                                className="login-input"
-                                placeholder="exemplo@gmail.com"
-                                value={customEmail}
-                                onChange={(e) => setCustomEmail(e.target.value)}
-                                required
-                                autoFocus
-                            />
-                        </div>
+                            <div className="google-oauth-right">
+                                {errorMessage && (
+                                    <div className="google-error-alert">
+                                        <i className="ph ph-warning-circle"></i>
+                                        <span>{errorMessage}</span>
+                                    </div>
+                                )}
 
-                        <div className="google-input-group" style={{ marginTop: '10px' }}>
-                            <label>SEU NOME (OPCIONAL):</label>
-                            <input
-                                type="text"
-                                className="login-input"
-                                placeholder="Seu nome ou apelido..."
-                                value={customName}
-                                onChange={(e) => setCustomName(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="google-modal-actions">
-                            <button
-                                type="button"
-                                className="btn-google-back"
-                                onClick={() => setStep('select')}
-                            >
-                                Voltar
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn-primary"
-                                disabled={loading}
-                                style={{ minWidth: '140px', height: '44px' }}
-                            >
-                                {loading ? <span className="login-spinner"></span> : 'CONTINUAR'}
-                            </button>
-                        </div>
-                    </form>
-                )}
-
-                {/* ETAPA 2: Digitar Código OTP */}
-                {step === 'otp' && (
-                    <form className="google-otp-form" onSubmit={handleVerifyOtp}>
-                        <div className="codigo-container">
-                            {otpCode.map((digit, idx) => (
-                                <input
-                                    key={idx}
-                                    id={`google-otp-${idx}`}
-                                    type="text"
-                                    inputMode="numeric"
-                                    maxLength={1}
-                                    className="codigo-input"
-                                    value={digit}
-                                    onChange={(e) => handleOtpChange(idx, e.target.value)}
-                                    onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                                    autoFocus={idx === 0}
-                                    required
-                                />
-                            ))}
-                        </div>
-
-                        <div className="codigo-resend">
-                            {resendCooldown > 0 ? (
-                                <span>Reenviar código em <strong>{resendCooldown}s</strong></span>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => handleSendCode(selectedAccount.email, selectedAccount.name)}
-                                    disabled={loading}
+                                <form
+                                    className="google-custom-form"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleSelectAccountAndSend2FA({ email: customEmail, name: customName });
+                                    }}
                                 >
-                                    Reenviar código de verificação
-                                </button>
-                            )}
-                        </div>
+                                    <div className="google-material-input-group">
+                                        <label>E-mail ou telefone</label>
+                                        <input
+                                            type="email"
+                                            className="google-material-input"
+                                            placeholder="Digite seu e-mail do Google..."
+                                            value={customEmail}
+                                            onChange={(e) => setCustomEmail(e.target.value)}
+                                            required
+                                            autoFocus
+                                        />
+                                    </div>
 
-                        <div className="google-modal-actions">
-                            <button
-                                type="button"
-                                className="btn-google-back"
-                                onClick={() => {
-                                    setStep('select');
-                                    setOtpCode(['', '', '', '']);
-                                    setErrorMessage('');
-                                }}
-                            >
-                                Trocar conta
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn-primary"
-                                disabled={loading || otpCode.join('').length < 4}
-                                style={{ minWidth: '160px', height: '44px' }}
-                            >
-                                {loading ? <span className="login-spinner"></span> : 'CONFIRMAR'}
-                            </button>
-                        </div>
-                    </form>
-                )}
+                                    <div className="google-material-input-group" style={{ marginTop: '16px' }}>
+                                        <label>Nome completo (opcional)</label>
+                                        <input
+                                            type="text"
+                                            className="google-material-input"
+                                            placeholder="Seu nome de exibição..."
+                                            value={customName}
+                                            onChange={(e) => setCustomName(e.target.value)}
+                                        />
+                                    </div>
 
-                <div className="google-modal-footer">
-                    <p>
-                        Para continuar, o Google compartilhará seu nome e endereço de e-mail com o TrendCommerce AI.
-                    </p>
+                                    <div className="google-form-actions">
+                                        <button
+                                            type="button"
+                                            className="google-btn-text"
+                                            onClick={() => setStep('select')}
+                                        >
+                                            Voltar
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            className="google-btn-primary"
+                                            disabled={loading || !customEmail.includes('@')}
+                                        >
+                                            {loading ? <span className="login-spinner"></span> : 'Próxima'}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div className="google-oauth-disclaimer">
+                                    Consulte a <a href="#!">Política de Privacidade</a> e os <a href="#!">Termos de Serviço</a> do app TrendCommerce AI antes de usá-lo.
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ETAPA 2: AUTENTICAÇÃO DE 2 FATORES (2FA COM CÓDIGO POR EMAIL) */}
+                    {step === '2fa' && (
+                        <div className="google-oauth-grid">
+                            <div className="google-oauth-left">
+                                <div className="google-2fa-shield-icon">
+                                    <i className="ph ph-shield-check"></i>
+                                </div>
+                                <h1 className="google-oauth-headline">Verificação em duas etapas</h1>
+                                <p className="google-oauth-subheadline">
+                                    Para confirmar sua identidade, enviamos um código de 4 dígitos para:
+                                </p>
+                                <div className="google-2fa-badge">
+                                    <i className="ph ph-envelope-simple"></i>
+                                    <strong>{selectedAccount?.email}</strong>
+                                </div>
+                            </div>
+
+                            <div className="google-oauth-right">
+                                {errorMessage && (
+                                    <div className="google-error-alert">
+                                        <i className="ph ph-warning-circle"></i>
+                                        <span>{errorMessage}</span>
+                                    </div>
+                                )}
+
+                                <form className="google-2fa-form" onSubmit={handleVerify2FA}>
+                                    <p className="google-2fa-instruction">
+                                        Digite o código de 4 dígitos para concluir o login seguro com o Google:
+                                    </p>
+
+                                    <div className="codigo-container google-2fa-inputs">
+                                        {otpCode.map((digit, idx) => (
+                                            <input
+                                                key={idx}
+                                                id={`google-2fa-${idx}`}
+                                                type="text"
+                                                inputMode="numeric"
+                                                maxLength={1}
+                                                className="codigo-input"
+                                                value={digit}
+                                                onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                                onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                                                autoFocus={idx === 0}
+                                                required
+                                            />
+                                        ))}
+                                    </div>
+
+                                    <div className="google-2fa-resend-wrap">
+                                        {resendCooldown > 0 ? (
+                                            <span className="google-resend-timer">
+                                                Reenviar código em <strong>{resendCooldown}s</strong>
+                                            </span>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="google-resend-link"
+                                                onClick={() => handleSelectAccountAndSend2FA(selectedAccount)}
+                                                disabled={loading}
+                                            >
+                                                Não recebi o código. Reenviar agora
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="google-form-actions">
+                                        <button
+                                            type="button"
+                                            className="google-btn-text"
+                                            onClick={() => {
+                                                setStep('select');
+                                                setOtpCode(['', '', '', '']);
+                                                setErrorMessage('');
+                                            }}
+                                        >
+                                            Escolher outra conta
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            className="google-btn-primary"
+                                            disabled={loading || otpCode.join('').length < 4}
+                                        >
+                                            {loading ? <span className="login-spinner"></span> : 'Confirmar'}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div className="google-oauth-disclaimer">
+                                    A Verificação em duas etapas do Google protege sua conta contra acessos não autorizados.
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
