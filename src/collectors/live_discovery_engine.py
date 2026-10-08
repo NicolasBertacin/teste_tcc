@@ -10,10 +10,12 @@ Implementa a Estratégia de Mediana de Mercado em Tempo Real com Filtro de Outli
 """
 
 import os
+import re
+import unicodedata
 import random
 import logging
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 import requests
 from sqlalchemy.orm import Session
@@ -237,13 +239,80 @@ def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, An
     }
 
 
-# Termos restritos pela ANVISA / proibidos em marketplaces abertos (Mercado Livre e Amazon)
-RESTRICTED_OR_PROHIBITED_TERMS = [
-    "caneta emagrecedora", "ozempic", "saxenda", "wegovy", "mounjaro", "semaglutida",
-    "tirzepatida", "sibutramina", "anabolizante", "esteroide", "medicamento controlado",
-    "remedio controlado", "tarja preta", "tarja vermelha", "arma de fogo", "municao",
-    "entorpecente", "droga", "coca", "erva", "veneno", "fentanil", "morfina"
-]
+# Catálogo exaustivo de produtos e categorias estritamente proibidos / controlados nos marketplaces (ANVISA, Polícia Federal, Exército, IBAMA, Anatel, Políticas ML & Amazon)
+PROHIBITED_CATEGORIES_CATALOG: Dict[str, List[str]] = {
+    "Drogas e Entorpecentes": [
+        "maconha", "cannabis", "baseado", "beck", "prensado", "skunk", "haxixe", "thc", 
+        "cocaina", "pasta base", "crack", "lsd", "ecstasy", "mdma", "cogumelo magico", 
+        "cogumelo alucinogeno", "heroina", "metanfetamina", "opio", "entorpecente", 
+        "narcotico", "lolo", "lanca perfume", "droga", "drogas"
+    ],
+    "Medicamentos de Prescrição & Controlados (ANVISA)": [
+        "caneta emagrecedora", "ozempic", "saxenda", "wegovy", "mounjaro", "semaglutida",
+        "tirzepatida", "liraglutida", "dulaglutida", "victoza", "trulicity",
+        "sibutramina", "femproporex", "anfepramona", "mazindol",
+        "anabolizante", "anabolizantes", "esteroide", "esteroides", "durateston", 
+        "deca durabolin", "trembolona", "oxandrolona", "stanozolol", "hemogenin", 
+        "deposteron", "testosterona", "enantato", "cipionato",
+        "clonazepam", "rivotril", "diazepam", "alprazolam", "lorazepam", "zolpidem",
+        "ritalina", "venvanse", "metilfenidato", "lisdexanfetamina", "modafinil", "stavigile",
+        "morfina", "codeina", "tramadol", "fentanil", "metadona", "oxicodona", "dimorf",
+        "tarja preta", "tarja vermelha", "receita controlada", "medicamento controlado", "remedio controlado"
+    ],
+    "Cigarros Eletrônicos, Vapes & Tabaco (RDC 855/2024 ANVISA)": [
+        "vape", "vapes", "vaper", "vapers", "cigarro eletronico", "pod descartavel", 
+        "pod recarregavel", "pod", "pods", "juice nicotina", "e-liquid", "eliquid", "ignite", "elfbar", 
+        "lost mary", "oxva", "zomo pod", "essencia vape", "cigarro", "charuto", 
+        "tabaco para fumo", "fumo desfiado", "narguile"
+    ],
+    "Armas, Munições e Explosivos": [
+        "arma de fogo", "arma", "armas", "revolver", "pistola", "espingarda", "fuzil", "carabina", "rifle", 
+        "garrucha", "municao", "municoes", "projetil", "bala de arma", "cartucho de fuzil", 
+        "polvora", "espoleta", "silenciador", "supressor de tiro", "explosivo", "dinamite", 
+        "tnt", "granada", "bomba", "taser", "soco ingles", "shuriken"
+    ],
+    "Documentos, Pirataria & Dados Ilícitos": [
+        "documento falso", "cnh falsa", "diploma falso", "identidade falsa", "certidao falsa", 
+        "atestado medico", "atestado falso", "cartao clonado", "conta clonada", "painel de dados", 
+        "consulta de dados", "puxar dados", "iptv pirata", "cs login", "desbloqueador de canal", 
+        "tv box pirata", "receptor pirata", "freesky", "cinebox", "azamerica", "malware", "botnet"
+    ],
+    "Fauna Silvestre & Animais Proibidos (IBAMA)": [
+        "animal silvestre", "filhote de papagaio", "arara", "macaco prego", "jabuti", 
+        "serpente peconhenta", "pele de onca", "marfim", "tartaruga marinha"
+    ],
+    "Venenos & Químicos Controlados": [
+        "chumbinho", "veneno para rato", "aldicarb", "cianeto", "estricnina", "ricina", 
+        "gas lacrimogeneo", "spray de pimenta"
+    ]
+}
+
+
+def remove_accents(text: str) -> str:
+    """Remove acentuação para busca uniforme sem falsos negativos."""
+    return ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+
+
+def check_prohibited_product(query: str) -> Optional[Tuple[str, str]]:
+    """Verifica se o termo pesquisado viola políticas de produtos proibidos/controlados."""
+    # Exceções conhecidas de produtos de e-commerce legítimos
+    WHITELIST_EXCEPTIONS = [
+        "airpods", "earpods", "tripod", "armario", "parmesao", 
+        "armadilha", "jogo de cartas", "armazenamento", "armação de oculos", "armacao de oculos"
+    ]
+    q_norm = remove_accents(query.lower().strip())
+
+    for exc in WHITELIST_EXCEPTIONS:
+        if exc in q_norm:
+            q_norm = q_norm.replace(exc, " ")
+
+    for cat, terms in PROHIBITED_CATEGORIES_CATALOG.items():
+        for term in terms:
+            term_norm = remove_accents(term.lower())
+            pattern = r'\b' + re.escape(term_norm) + r'\b'
+            if re.search(pattern, q_norm):
+                return cat, term
+    return None
 
 
 class LiveDiscoveryEngine:
@@ -302,9 +371,11 @@ class LiveDiscoveryEngine:
 
         norm_query = self.normalize_query(raw_query)
 
-        # 0. Validação de Produtos Restritos ou Proibidos nos Marketplaces (ANVISA / Políticas de Venda)
-        if any(banned in norm_query for banned in RESTRICTED_OR_PROHIBITED_TERMS):
-            logger.warning(f"Busca rejeitada para termo restrito/proibido por regulação ou sem venda aberta no e-commerce: '{raw_query}'")
+        # 0. Validação Rigorosa de Produtos Proibidos / Restritos (ANVISA, Polícia Federal, IBAMA, Marketplaces)
+        prohibited_match = check_prohibited_product(raw_query) or check_prohibited_product(norm_query)
+        if prohibited_match:
+            cat_name, term_name = prohibited_match
+            logger.warning(f"Busca rejeitada para produto restrito/proibido [{cat_name}]: '{raw_query}' (Termo: {term_name})")
             return []
 
         tokens = [t for t in norm_query.split() if len(t) > 2]
