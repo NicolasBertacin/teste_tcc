@@ -30,6 +30,8 @@ class ProductResponse(BaseModel):
     currency: str = "BRL"
     condition: Optional[str] = None
     url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    product_url: Optional[str] = None
     attributes: Optional[Dict[str, Any]] = None
     is_active: bool = True
     created_at: Optional[datetime] = None
@@ -58,3 +60,6 @@ class TopProductItem(BaseModel):
     price: float
     quantity_sold: int
     revenue: float
+    platform: str = "mercadolivre"
+    thumbnail_url: Optional[str] = None
+    product_url: Optional[str] = None

@@ -2,6 +2,7 @@
  * RankingTab.jsx
  * Aba Ranking Produtos: Top 7 Produtos Próximos 30 Dias e Top 5 Produtos por Categoria
  * com Explicabilidade IA integrada (Explicação de por que está no topo e como vai vender).
+ * Exibe foto real do produto, badge de marketplace e link direto oficial para o anúncio.
  */
 
 function RankingTab({ categories }) {
@@ -44,6 +45,8 @@ function RankingTab({ categories }) {
             ? rankingData.top_overall.slice(0, 5)
             : (Object.values(rankingData.top_by_category || {})[0] || []);
 
+    const defaultImg = 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
+
     return (
         <section className="dash-tab-content active">
             <div className="ranking-two-col-grid">
@@ -57,32 +60,46 @@ function RankingTab({ categories }) {
                         {loading ? (
                             <p className="empty-msg">Processando modelo XGBoost...</p>
                         ) : (
-                            rankingData.top_overall.slice(0, 7).map((item) => (
-                                <div
-                                    key={item.product_id}
-                                    className={`ranking-card-item clickable ${selectedItemModal?.product_id === item.product_id ? 'active-item' : ''}`}
-                                    onClick={() => setSelectedItemModal(item)}
-                                    title="Clique para ver por que este produto está no ranking e como vai vender"
-                                >
-                                    <div className="item-left">
-                                        <span className="item-num">{item.rank}.</span>
-                                        <div className="item-info">
-                                            <span className="item-title">{item.title}</span>
-                                            {item.key_driver && (
-                                                <span className="item-driver-pill">
-                                                    <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                            rankingData.top_overall.slice(0, 7).map((item) => {
+                                const isAmazon = (item.platform || 'mercadolivre').toLowerCase() === 'amazon';
+                                const thumb = item.thumbnail_url || defaultImg;
+
+                                return (
+                                    <div
+                                        key={item.product_id}
+                                        className={`ranking-card-item clickable ${selectedItemModal?.product_id === item.product_id ? 'active-item' : ''}`}
+                                        onClick={() => setSelectedItemModal(item)}
+                                        title="Clique para ver detalhes do produto e análise explicativa da IA"
+                                        style={{ padding: '10px 14px' }}
+                                    >
+                                        <div className="item-left" style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                            <span className="item-num">{item.rank}.</span>
+                                            <img src={thumb} alt="" className="ranking-thumb-img" />
+                                            <div className="item-info" style={{ minWidth: 0, flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                                    <span className={`platform-tag-mini ${isAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
+                                                        {isAmazon ? 'Amazon' : 'Mercado Livre'}
+                                                    </span>
+                                                </div>
+                                                <span className="item-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                    {item.title}
                                                 </span>
-                                            )}
+                                                {item.key_driver && (
+                                                    <span className="item-driver-pill" style={{ marginTop: '4px' }}>
+                                                        <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="item-right" style={{ flexShrink: 0, textAlign: 'right' }}>
+                                            <span className="item-units">{item.projected_units} un</span>
+                                            <span className="item-price">
+                                                R$ {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="item-right">
-                                        <span className="item-units">{item.predicted_units} un</span>
-                                        <span className="item-price">
-                                            R$ {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>
@@ -97,32 +114,46 @@ function RankingTab({ categories }) {
                         {loading ? (
                             <p className="empty-msg">Carregando categorias...</p>
                         ) : (
-                            categoryItems.slice(0, 5).map((item) => (
-                                <div
-                                    key={item.product_id}
-                                    className={`ranking-card-item clickable ${selectedItemModal?.product_id === item.product_id ? 'active-item' : ''}`}
-                                    onClick={() => setSelectedItemModal(item)}
-                                    title="Clique para ver por que este produto está no ranking e como vai vender"
-                                >
-                                    <div className="item-left">
-                                        <span className="item-num">{item.rank}.</span>
-                                        <div className="item-info">
-                                            <span className="item-title">{item.title}</span>
-                                            {item.key_driver && (
-                                                <span className="item-driver-pill">
-                                                    <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                            categoryItems.slice(0, 5).map((item) => {
+                                const isAmazon = (item.platform || 'mercadolivre').toLowerCase() === 'amazon';
+                                const thumb = item.thumbnail_url || defaultImg;
+
+                                return (
+                                    <div
+                                        key={item.product_id}
+                                        className={`ranking-card-item clickable ${selectedItemModal?.product_id === item.product_id ? 'active-item' : ''}`}
+                                        onClick={() => setSelectedItemModal(item)}
+                                        title="Clique para ver detalhes do produto e análise explicativa da IA"
+                                        style={{ padding: '10px 14px' }}
+                                    >
+                                        <div className="item-left" style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                            <span className="item-num">{item.rank}.</span>
+                                            <img src={thumb} alt="" className="ranking-thumb-img" />
+                                            <div className="item-info" style={{ minWidth: 0, flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                                    <span className={`platform-tag-mini ${isAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
+                                                        {isAmazon ? 'Amazon' : 'Mercado Livre'}
+                                                    </span>
+                                                </div>
+                                                <span className="item-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                    {item.title}
                                                 </span>
-                                            )}
+                                                {item.key_driver && (
+                                                    <span className="item-driver-pill" style={{ marginTop: '4px' }}>
+                                                        <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="item-right" style={{ flexShrink: 0, textAlign: 'right' }}>
+                                            <span className="item-units">{item.projected_units} un</span>
+                                            <span className="item-price">
+                                                R$ {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="item-right">
-                                        <span className="item-units">{item.predicted_units} un</span>
-                                        <span className="item-price">
-                                            R$ {item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                     <div className="ranking-cat-btn-wrap" ref={catDropdownRef} style={{ position: 'relative' }}>
@@ -207,11 +238,26 @@ function RankingTab({ categories }) {
                 <div className="ranking-modal-overlay" onClick={() => setSelectedItemModal(null)}>
                     <div className="ranking-modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="ranking-modal-header">
-                            <div className="modal-badge-row">
+                            <div className="modal-badge-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                 <span className="modal-rank-badge">
                                     <i className="ph ph-trophy" style={{ fontSize: '13px', marginRight: '4px' }}></i> #{selectedItemModal.rank} NO RANKING
                                 </span>
                                 <span className="modal-category-badge">{selectedItemModal.category}</span>
+                                <span className={`platform-badge ${(selectedItemModal.platform || '').toLowerCase() === 'amazon' ? 'platform-badge-amazon' : 'platform-badge-ml'}`}>
+                                    {(selectedItemModal.platform || '').toLowerCase() === 'amazon' ? 'Amazon' : 'Mercado Livre'}
+                                </span>
+                                {selectedItemModal.product_url && (
+                                    <a
+                                        href={selectedItemModal.product_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-view-ad"
+                                        title="Ver anúncio oficial no marketplace"
+                                    >
+                                        <span>Ver Anúncio Original</span>
+                                        <i className="ph ph-arrow-square-out"></i>
+                                    </a>
+                                )}
                             </div>
                             <button
                                 type="button"
@@ -222,7 +268,21 @@ function RankingTab({ categories }) {
                             </button>
                         </div>
 
-                        <h2 className="modal-prod-title">{selectedItemModal.title}</h2>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '14px 0' }}>
+                            <img
+                                src={selectedItemModal.thumbnail_url || defaultImg}
+                                alt=""
+                                className="product-thumbnail-large"
+                            />
+                            <div>
+                                <h2 className="modal-prod-title" style={{ margin: 0, fontSize: '16px', wordBreak: 'break-word', lineHeight: '1.3' }}>
+                                    {selectedItemModal.title}
+                                </h2>
+                                <div style={{ fontSize: '12px', color: '#8da2bd', marginTop: '4px' }}>
+                                    Preço de Mercado: <strong style={{ color: '#00f0ff' }}>R$ {selectedItemModal.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                                </div>
+                            </div>
+                        </div>
 
                         {/* Rationale Banner */}
                         <div className="modal-reason-box">
@@ -238,7 +298,7 @@ function RankingTab({ categories }) {
                         <div className="modal-metrics-grid">
                             <div className="modal-metric-card">
                                 <span className="m-label">VENDAS PROJETADAS (30D)</span>
-                                <span className="m-val text-cyan">{selectedItemModal.predicted_units} unidades</span>
+                                <span className="m-val text-cyan">{selectedItemModal.projected_units} unidades</span>
                             </div>
                             <div className="modal-metric-card">
                                 <span className="m-label">RECEITA ESTIMADA</span>
@@ -264,7 +324,7 @@ function RankingTab({ categories }) {
                                 <i className="ph ph-chart-bar" style={{ fontSize: '15px', marginRight: '5px' }}></i> Dinâmica de Vendas Prevista pelo Modelo IA:
                             </h4>
                             <p className="dynamics-desc">
-                                A projeção considera uma média diária consistente de {(selectedItemModal.predicted_units / 30).toFixed(1)} un/dia, com picos impulsionados por {selectedItemModal.key_driver?.toLowerCase() || 'tendência orgânica'}. A recomendação é manter estoque de segurança calibrado em pelo menos {Math.round(selectedItemModal.predicted_units * 1.25)} unidades para evitar ruptura.
+                                A projeção considera uma média diária consistente de {(selectedItemModal.projected_units / 30).toFixed(1)} un/dia, com picos impulsionados por {selectedItemModal.key_driver?.toLowerCase() || 'tendência orgânica'}. A recomendação é manter estoque de segurança calibrado em pelo menos {Math.round(selectedItemModal.projected_units * 1.25)} unidades para evitar ruptura.
                             </p>
                         </div>
 

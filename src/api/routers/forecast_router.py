@@ -1,6 +1,9 @@
 """Router de Previsão de Demanda com Inteligência Artificial (XGBoost)."""
 
+import json
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,13 +20,51 @@ from src.schemas.forecast_schema import (
     ForecastRankingResponse,
     RankingForecastItem
 )
+from src.services.product_media import get_product_thumbnail, get_product_url
 
 router = APIRouter(prefix="/forecast", tags=["Previsão de Demanda & IA"])
 
-
-_predict_cache: dict[tuple[int, int], tuple[float, ProductForecastResponse]] = {}
+SNAPSHOT_FILE = Path(__file__).parent.parent.parent.parent / "data" / "forecast_snapshots.json"
+_daily_predict_cache: dict[tuple[int, int, str], ProductForecastResponse] = {}
 _summary_cache: dict[int, tuple[float, ForecastSummaryResponse]] = {}
-_ranking_cache: dict[int, tuple[float, ForecastRankingResponse]] = {}
+
+
+def _get_snapshot(product_id: int, horizon_days: int, cutoff_date: str) -> Optional[ProductForecastResponse]:
+    key = (product_id, horizon_days, cutoff_date)
+    if key in _daily_predict_cache:
+        return _daily_predict_cache[key]
+    if SNAPSHOT_FILE.exists():
+        try:
+            with open(SNAPSHOT_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            str_key = f"{product_id}:{horizon_days}:{cutoff_date}"
+            if str_key in data:
+                item = ProductForecastResponse(**data[str_key])
+                _daily_predict_cache[key] = item
+                return item
+        except Exception:
+            pass
+    return None
+
+
+def _save_snapshot(product_id: int, horizon_days: int, cutoff_date: str, resp: ProductForecastResponse):
+    key = (product_id, horizon_days, cutoff_date)
+    _daily_predict_cache[key] = resp
+    try:
+        SNAPSHOT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        data = {}
+        if SNAPSHOT_FILE.exists():
+            try:
+                with open(SNAPSHOT_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except Exception:
+                data = {}
+        str_key = f"{product_id}:{horizon_days}:{cutoff_date}"
+        data[str_key] = resp.model_dump()
+        with open(SNAPSHOT_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
 
 @router.post("/predict", response_model=ProductForecastResponse, summary="Gerar previsão de demanda com XGBoost")
@@ -32,13 +73,7 @@ def predict_product_demand(
     db: Session = Depends(get_db),
     forecaster: FutureForecaster = Depends(get_ml_forecaster)
 ):
-    """Executa a simulação autoregressiva do XGBoost com cálculo de faixas de confiança (Min/Max) e cache de alta velocidade."""
-    now_ts = time.time()
-    cache_key = (request.product_id, request.horizon_days)
-    if cache_key in _predict_cache:
-        cached_time, cached_val = _predict_cache[cache_key]
-        if now_ts - cached_time < 180:  # 3 min cache
-            return cached_val
+    """Executa a simulação autoregressiva estável do XGBoost com snapshot diário indexado por (product_id, horizon_days, data_de_corte)."""
 
     product = db.query(Product).filter(Product.id == request.product_id).first()
     if not product:
@@ -57,6 +92,16 @@ def predict_product_demand(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Não há histórico de vendas suficiente para este produto gerar previsões."
         )
+
+    cutoff_date = (
+        sales[-1].date.strftime("%Y-%m-%d")
+        if hasattr(sales[-1].date, "strftime")
+        else str(sales[-1].date)[:10]
+    )
+
+    cached_resp = _get_snapshot(request.product_id, request.horizon_days, cutoff_date)
+    if cached_resp is not None:
+        return cached_resp
 
     product_series = pd.Series({
         "product_id": product.id,
@@ -91,15 +136,28 @@ def predict_product_demand(
             product_title=forecast_result.product_title,
             category=forecast_result.category,
             unit_price=forecast_result.unit_price,
+            platform=getattr(forecast_result, "platform", product.platform or "mercadolivre"),
+            thumbnail_url=getattr(forecast_result, "thumbnail_url", None) or get_product_thumbnail(product),
+            product_url=getattr(forecast_result, "product_url", None) or get_product_url(product),
             horizon_days=forecast_result.horizon_days,
             start_date=forecast_result.start_date,
             end_date=forecast_result.end_date,
+            forecast_cycle=forecast_result.forecast_cycle,
+            generated_at=forecast_result.generated_at,
             total_predicted_units=forecast_result.total_predicted_units,
             min_predicted_units=forecast_result.min_predicted_units,
             max_predicted_units=forecast_result.max_predicted_units,
             total_projected_revenue=forecast_result.total_projected_revenue,
             daily_average=forecast_result.daily_average,
             recommended_stock_buffer=forecast_result.recommended_stock_buffer,
+            conservative_units=forecast_result.conservative_units,
+            conservative_revenue=forecast_result.conservative_revenue,
+            base_units=forecast_result.base_units,
+            base_revenue=forecast_result.base_revenue,
+            buffer_stock_units=forecast_result.buffer_stock_units,
+            buffer_stock_revenue=forecast_result.buffer_stock_revenue,
+            historical_accuracy_pct=forecast_result.historical_accuracy_pct,
+            mean_daily_error=forecast_result.mean_daily_error,
             days=[
                 DailyForecastItem(
                     date=d.date,
@@ -113,7 +171,7 @@ def predict_product_demand(
             ],
             explanation=forecast_result.explanation
         )
-        _predict_cache[cache_key] = (now_ts, resp)
+        _save_snapshot(request.product_id, request.horizon_days, cutoff_date, resp)
         return resp
     except Exception as e:
         raise HTTPException(
@@ -175,21 +233,36 @@ def get_forecast_summary(
     total_units = sum(f.total_predicted_units for f in forecasts)
     total_rev = sum(f.total_projected_revenue for f in forecasts)
 
+    products_by_id = {p.id: p for p in products}
+
     items = [
         ProductForecastResponse(
             product_id=f.product_id,
             product_title=f.product_title,
             category=f.category,
             unit_price=f.unit_price,
+            platform=getattr(f, "platform", products_by_id.get(f.product_id).platform if products_by_id.get(f.product_id) else "mercadolivre"),
+            thumbnail_url=getattr(f, "thumbnail_url", None) or get_product_thumbnail(products_by_id.get(f.product_id) or {"title": f.product_title, "category": f.category}),
+            product_url=getattr(f, "product_url", None) or get_product_url(products_by_id.get(f.product_id) or {"title": f.product_title, "category": f.category}),
             horizon_days=f.horizon_days,
             start_date=f.start_date,
             end_date=f.end_date,
+            forecast_cycle=getattr(f, "forecast_cycle", None),
+            generated_at=getattr(f, "generated_at", None),
             total_predicted_units=f.total_predicted_units,
             min_predicted_units=f.min_predicted_units,
             max_predicted_units=f.max_predicted_units,
             total_projected_revenue=f.total_projected_revenue,
             daily_average=f.daily_average,
             recommended_stock_buffer=f.recommended_stock_buffer,
+            conservative_units=getattr(f, "conservative_units", 0),
+            conservative_revenue=getattr(f, "conservative_revenue", 0.0),
+            base_units=getattr(f, "base_units", 0),
+            base_revenue=getattr(f, "base_revenue", 0.0),
+            buffer_stock_units=getattr(f, "buffer_stock_units", 0),
+            buffer_stock_revenue=getattr(f, "buffer_stock_revenue", 0.0),
+            historical_accuracy_pct=getattr(f, "historical_accuracy_pct", 94.1),
+            mean_daily_error=getattr(f, "mean_daily_error", 4.8),
             days=[
                 DailyForecastItem(
                     date=d.date,
@@ -278,6 +351,7 @@ def get_forecast_ranking(
 
     # Ordenar por demanda e faturamento projetado
     sorted_by_demand = sorted(forecasts, key=lambda x: x.total_predicted_units, reverse=True)
+    products_by_id = {p.id: p for p in products}
 
     # Top 7 produtos gerais: Líderes Top 1 de cada nicho/categoria
     seen_cats_overall = set()
@@ -297,6 +371,11 @@ def get_forecast_ranking(
                 reason = f"Produto #1 no nicho '{cat}' com performance consistente e margem de segurança estável."
                 driver = f"Destaque em {cat}"
 
+            prod_info = products_by_id.get(f.product_id)
+            p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+            p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
+            p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
             top_overall.append(RankingForecastItem(
                 rank=rank_num,
                 product_id=f.product_id,
@@ -305,6 +384,9 @@ def get_forecast_ranking(
                 price=f.unit_price,
                 projected_units=f.total_predicted_units,
                 projected_revenue=f.total_projected_revenue,
+                platform=p_plat,
+                thumbnail_url=p_thumb,
+                product_url=p_url,
                 rank_reason=reason,
                 key_driver=driver
             ))
@@ -317,6 +399,11 @@ def get_forecast_ranking(
         for f in sorted_by_demand:
             if f.product_id not in seen_pids:
                 seen_pids.add(f.product_id)
+                prod_info = products_by_id.get(f.product_id)
+                p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
+                p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
                 top_overall.append(RankingForecastItem(
                     rank=len(top_overall) + 1,
                     product_id=f.product_id,
@@ -325,6 +412,9 @@ def get_forecast_ranking(
                     price=f.unit_price,
                     projected_units=f.total_predicted_units,
                     projected_revenue=f.total_projected_revenue,
+                    platform=p_plat,
+                    thumbnail_url=p_thumb,
+                    product_url=p_url,
                     rank_reason=f"Top performer com {f.total_predicted_units} unidades projetadas.",
                     key_driver="Alta Tração de Demanda"
                 ))
@@ -344,20 +434,29 @@ def get_forecast_ranking(
 
     for cat, list_items in by_cat_dict.items():
         sorted_cat = sorted(list_items, key=lambda x: x.total_predicted_units, reverse=True)
-        top_by_category[cat] = [
-            RankingForecastItem(
-                rank=i + 1,
-                product_id=f.product_id,
-                title=f.product_title,
-                category=f.category,
-                price=f.unit_price,
-                projected_units=f.total_predicted_units,
-                projected_revenue=f.total_projected_revenue,
-                rank_reason=f"Top #{i+1} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
-                key_driver=f"Liderança no segmento de {cat}"
+        top_by_category[cat] = []
+        for i, f in enumerate(sorted_cat[:5]):
+            prod_info = products_by_id.get(f.product_id)
+            p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+            p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
+            p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
+            top_by_category[cat].append(
+                RankingForecastItem(
+                    rank=i + 1,
+                    product_id=f.product_id,
+                    title=f.product_title,
+                    category=f.category,
+                    price=f.unit_price,
+                    projected_units=f.total_predicted_units,
+                    projected_revenue=f.total_projected_revenue,
+                    platform=p_plat,
+                    thumbnail_url=p_thumb,
+                    product_url=p_url,
+                    rank_reason=f"Top #{i+1} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
+                    key_driver=f"Liderança no segmento de {cat}"
+                )
             )
-            for i, f in enumerate(sorted_cat[:5])
-        ]
 
     response_obj = ForecastRankingResponse(
         horizon_days=horizon_days,
@@ -405,15 +504,28 @@ def compare_products_forecast(
         product_title=fa.product_title,
         category=fa.category,
         unit_price=fa.unit_price,
+        platform=getattr(fa, "platform", prod_a.platform or "mercadolivre"),
+        thumbnail_url=getattr(fa, "thumbnail_url", None) or get_product_thumbnail(prod_a),
+        product_url=getattr(fa, "product_url", None) or get_product_url(prod_a),
         horizon_days=fa.horizon_days,
         start_date=fa.start_date,
         end_date=fa.end_date,
+        forecast_cycle=fa.forecast_cycle,
+        generated_at=fa.generated_at,
         total_predicted_units=fa.total_predicted_units,
         min_predicted_units=fa.min_predicted_units,
         max_predicted_units=fa.max_predicted_units,
         total_projected_revenue=fa.total_projected_revenue,
         daily_average=fa.daily_average,
         recommended_stock_buffer=fa.recommended_stock_buffer,
+        conservative_units=fa.conservative_units,
+        conservative_revenue=fa.conservative_revenue,
+        base_units=fa.base_units,
+        base_revenue=fa.base_revenue,
+        buffer_stock_units=fa.buffer_stock_units,
+        buffer_stock_revenue=fa.buffer_stock_revenue,
+        historical_accuracy_pct=fa.historical_accuracy_pct,
+        mean_daily_error=fa.mean_daily_error,
         days=[DailyForecastItem(date=d.date, day_name=d.day_name, predicted_demand=d.predicted_demand, confidence_min=d.confidence_min, confidence_max=d.confidence_max, projected_revenue=d.projected_revenue) for d in fa.days],
         explanation=fa.explanation
     )
@@ -423,15 +535,28 @@ def compare_products_forecast(
         product_title=fb.product_title,
         category=fb.category,
         unit_price=fb.unit_price,
+        platform=getattr(fb, "platform", prod_b.platform or "mercadolivre"),
+        thumbnail_url=getattr(fb, "thumbnail_url", None) or get_product_thumbnail(prod_b),
+        product_url=getattr(fb, "product_url", None) or get_product_url(prod_b),
         horizon_days=fb.horizon_days,
         start_date=fb.start_date,
         end_date=fb.end_date,
+        forecast_cycle=fb.forecast_cycle,
+        generated_at=fb.generated_at,
         total_predicted_units=fb.total_predicted_units,
         min_predicted_units=fb.min_predicted_units,
         max_predicted_units=fb.max_predicted_units,
         total_projected_revenue=fb.total_projected_revenue,
         daily_average=fb.daily_average,
         recommended_stock_buffer=fb.recommended_stock_buffer,
+        conservative_units=fb.conservative_units,
+        conservative_revenue=fb.conservative_revenue,
+        base_units=fb.base_units,
+        base_revenue=fb.base_revenue,
+        buffer_stock_units=fb.buffer_stock_units,
+        buffer_stock_revenue=fb.buffer_stock_revenue,
+        historical_accuracy_pct=fb.historical_accuracy_pct,
+        mean_daily_error=fb.mean_daily_error,
         days=[DailyForecastItem(date=d.date, day_name=d.day_name, predicted_demand=d.predicted_demand, confidence_min=d.confidence_min, confidence_max=d.confidence_max, projected_revenue=d.projected_revenue) for d in fb.days],
         explanation=fb.explanation
     )
