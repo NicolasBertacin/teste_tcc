@@ -36,15 +36,28 @@ class ProductForecastResponse(BaseModel):
     product_title: str
     category: str
     unit_price: float
+    platform: str = "mercadolivre"
+    thumbnail_url: Optional[str] = None
+    product_url: Optional[str] = None
     horizon_days: int
     start_date: str
     end_date: str
+    forecast_cycle: Optional[str] = None
+    generated_at: Optional[str] = None
     total_predicted_units: int
     min_predicted_units: int
     max_predicted_units: int
     total_projected_revenue: float
     daily_average: float
     recommended_stock_buffer: int
+    conservative_units: Optional[int] = None
+    conservative_revenue: Optional[float] = None
+    base_units: Optional[int] = None
+    base_revenue: Optional[float] = None
+    buffer_stock_units: Optional[int] = None
+    buffer_stock_revenue: Optional[float] = None
+    historical_accuracy_pct: Optional[float] = None
+    mean_daily_error: Optional[float] = None
     days: List[DailyForecastItem]
     explanation: Optional[ForecastExplanation] = None
 
@@ -65,6 +78,9 @@ class RankingForecastItem(BaseModel):
     price: float
     projected_units: int
     projected_revenue: float
+    platform: str = "mercadolivre"
+    thumbnail_url: Optional[str] = None
+    product_url: Optional[str] = None
     rank_reason: Optional[str] = None
     key_driver: Optional[str] = None
 

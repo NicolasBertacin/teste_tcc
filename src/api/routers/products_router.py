@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.api.dependencies import get_db
 from src.database.models import Product, SalesHistory
+from src.services.product_media import get_product_thumbnail, get_product_url
 from src.schemas.product_schema import (
     ProductResponse,
     ProductDetailResponse,
@@ -76,6 +77,8 @@ def list_products(
             currency=prod.currency,
             condition=prod.condition,
             url=prod.url,
+            thumbnail_url=get_product_thumbnail(prod),
+            product_url=get_product_url(prod),
             attributes=prod.attributes,
             is_active=prod.is_active,
             created_at=prod.created_at,
@@ -149,6 +152,9 @@ def get_top_selling_products(
         Product.title,
         Product.category,
         Product.price,
+        Product.platform,
+        Product.external_id,
+        Product.url,
         func.sum(SalesHistory.quantity_sold).label("total_sold"),
         func.sum(SalesHistory.quantity_sold * func.coalesce(SalesHistory.price_at_date, Product.price)).label("total_revenue")
     ).join(SalesHistory, Product.id == SalesHistory.product_id)
@@ -159,13 +165,13 @@ def get_top_selling_products(
 
     if category and category.strip().upper() not in ["GERAIS", "GERAL", "TODAS", "TODOS"]:
         query = query.filter(Product.category == category.strip())
-        results = query.group_by(Product.id, Product.title, Product.category, Product.price)\
+        results = query.group_by(Product.id, Product.title, Product.category, Product.price, Product.platform, Product.external_id, Product.url)\
                        .order_by(desc("total_sold"))\
                        .limit(limit)\
                        .all()
 
         items = []
-        for rank, (p_id, title, cat, price, total_sold, total_rev) in enumerate(results, start=1):
+        for rank, (p_id, title, cat, price, platform, external_id, p_url, total_sold, total_rev) in enumerate(results, start=1):
             items.append(TopProductItem(
                 rank=rank,
                 id=p_id,
@@ -173,19 +179,22 @@ def get_top_selling_products(
                 category=cat or "Geral",
                 price=float(price or 0.0),
                 quantity_sold=int(total_sold or 0),
-                revenue=round(float(total_rev or 0.0), 2)
+                revenue=round(float(total_rev or 0.0), 2),
+                platform=platform or "mercadolivre",
+                thumbnail_url=get_product_thumbnail({"title": title, "category": cat, "platform": platform}),
+                product_url=get_product_url({"title": title, "platform": platform, "external_id": external_id, "url": p_url})
             ))
         return items
 
     # Modo GERAIS: Seleciona o Top 1 mais vendido de cada nicho/categoria distinto
-    all_results = query.group_by(Product.id, Product.title, Product.category, Product.price)\
+    all_results = query.group_by(Product.id, Product.title, Product.category, Product.price, Product.platform, Product.external_id, Product.url)\
                        .order_by(desc("total_sold"))\
                        .all()
 
     seen_cats = set()
     items = []
     rank = 1
-    for p_id, title, cat, price, total_sold, total_rev in all_results:
+    for p_id, title, cat, price, platform, external_id, p_url, total_sold, total_rev in all_results:
         clean_cat = cat or "Geral"
         if clean_cat not in seen_cats:
             seen_cats.add(clean_cat)
@@ -196,7 +205,10 @@ def get_top_selling_products(
                 category=clean_cat,
                 price=float(price or 0.0),
                 quantity_sold=int(total_sold or 0),
-                revenue=round(float(total_rev or 0.0), 2)
+                revenue=round(float(total_rev or 0.0), 2),
+                platform=platform or "mercadolivre",
+                thumbnail_url=get_product_thumbnail({"title": title, "category": clean_cat, "platform": platform}),
+                product_url=get_product_url({"title": title, "platform": platform, "external_id": external_id, "url": p_url})
             ))
             rank += 1
             if len(items) >= limit:
@@ -213,6 +225,8 @@ class AutocompleteItem(BaseModel):
     category: str
     price: float
     platform: str = "mercadolivre"
+    thumbnail_url: Optional[str] = None
+    product_url: Optional[str] = None
     is_live_suggestion: bool = False
 
 
@@ -224,7 +238,22 @@ def autocomplete_products(
 ):
     """Retorna recomendações inteligentes e modelos de produtos em tempo real para a busca preditiva."""
     from src.collectors.live_discovery_engine import live_discovery
-    return live_discovery.get_autocomplete_suggestions(q, db, limit=limit)
+    raw_sugs = live_discovery.get_autocomplete_suggestions(q, db, limit=limit)
+    out = []
+    for s in raw_sugs:
+        t_url = get_product_thumbnail(s)
+        p_url = get_product_url(s)
+        out.append(AutocompleteItem(
+            id=s.get("id"),
+            title=s.get("title", ""),
+            category=s.get("category", "Geral"),
+            price=float(s.get("price", 0.0)),
+            platform=s.get("platform", "mercadolivre"),
+            thumbnail_url=t_url,
+            product_url=p_url,
+            is_live_suggestion=s.get("is_live_suggestion", False)
+        ))
+    return out
 
 
 @router.get("/{product_id}", response_model=ProductDetailResponse, summary="Obter detalhes de um produto específico")
@@ -271,6 +300,8 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
         currency=prod.currency,
         condition=prod.condition,
         url=prod.url,
+        thumbnail_url=get_product_thumbnail(prod),
+        product_url=get_product_url(prod),
         attributes=prod.attributes,
         is_active=prod.is_active,
         created_at=prod.created_at,

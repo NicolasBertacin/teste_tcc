@@ -2390,3 +2390,313 @@ canvas {
     border-radius: 9999px;
     cursor: pointer;
 }
+
+/* ==========================================================================
+   Identificação de Produto, Badges de Plataforma & Gestão de Risco de Estoque
+   ========================================================================== */
+
+.product-thumbnail-img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    background: #061527;
+    flex-shrink: 0;
+}
+
+.product-thumbnail-large {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1.5px solid rgba(0, 212, 255, 0.4);
+    background: #061527;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.ranking-thumb-img {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    background: #061527;
+    flex-shrink: 0;
+}
+
+.platform-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.platform-badge-ml {
+    background: rgba(255, 230, 0, 0.15);
+    color: #ffe600;
+    border: 1px solid rgba(255, 230, 0, 0.4);
+}
+
+.platform-badge-amazon {
+    background: rgba(255, 153, 0, 0.15);
+    color: #ff9900;
+    border: 1px solid rgba(255, 153, 0, 0.4);
+}
+
+.platform-tag-mini {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.platform-tag-mercadolivre, .platform-tag-ml {
+    background: rgba(255, 230, 0, 0.2);
+    color: #ffe600;
+    border: 1px solid rgba(255, 230, 0, 0.35);
+}
+
+.platform-tag-amazon {
+    background: rgba(255, 153, 0, 0.2);
+    color: #ff9900;
+    border: 1px solid rgba(255, 153, 0, 0.35);
+}
+
+.btn-view-ad {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.35);
+    color: #00f0ff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-view-ad:hover {
+    background: rgba(0, 212, 255, 0.22);
+    border-color: #00f0ff;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+/* Selo de Confiabilidade & Ciclo */
+.reliability-seal-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(7, 26, 46, 0.85);
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    border-radius: 12px;
+    margin: 12px 0;
+}
+
+.reliability-seal-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.reliability-seal-badge {
+    background: rgba(16, 185, 129, 0.18);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cycle-info-pill {
+    font-size: 11px;
+    color: #8da2bd;
+    background: rgba(0, 150, 255, 0.08);
+    border: 1px solid rgba(0, 150, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.revenue-disclaimer-note {
+    font-size: 11px;
+    color: #8da2bd;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Grade dos 3 Níveis de Risco de Decisão de Estoque */
+.decision-tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 14px 0 18px 0;
+}
+
+@media (max-width: 900px) {
+    .decision-tiers-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.decision-tier-card {
+    background: rgba(9, 32, 60, 0.65);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid rgba(0, 180, 216, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.decision-tier-card:hover {
+    transform: translateY(-2px);
+}
+
+.decision-tier-card.tier-conservative {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: linear-gradient(180deg, rgba(14, 45, 80, 0.6) 0%, rgba(7, 23, 43, 0.6) 100%);
+}
+
+.decision-tier-card.tier-base {
+    border-color: rgba(0, 240, 255, 0.45);
+    background: linear-gradient(180deg, rgba(8, 55, 95, 0.65) 0%, rgba(7, 26, 46, 0.6) 100%);
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.12);
+}
+
+.decision-tier-card.tier-buffer {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: linear-gradient(180deg, rgba(6, 60, 65, 0.6) 0%, rgba(7, 26, 46, 0.6) 100%);
+}
+
+.tier-badge-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    width: fit-content;
+}
+
+.tier-conservative .tier-badge-label {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.tier-base .tier-badge-label {
+    background: rgba(0, 240, 255, 0.2);
+    color: #00f0ff;
+    border: 1px solid rgba(0, 240, 255, 0.45);
+}
+
+.tier-buffer .tier-badge-label {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.tier-desc-text {
+    font-size: 11px;
+    color: #8da2bd;
+    line-height: 1.4;
+    margin: 4px 0 8px 0;
+}
+
+.tier-metrics-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+}
+
+.tier-units-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.tier-revenue-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #00f0ff;
+    text-align: right;
+}
+
+/* Loading & Skeletons */
+.chart-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(3, 10, 22, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 10;
+    border-radius: 12px;
+}
+
+.chart-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(0, 212, 255, 0.2);
+    border-top-color: #00f0ff;
+    border-radius: 50%;
+    animation: spin-pulse 0.8s linear infinite;
+}
+
+@keyframes spin-pulse {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chart-error-banner {
+    padding: 16px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 10px;
+    color: #fca5a5;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
