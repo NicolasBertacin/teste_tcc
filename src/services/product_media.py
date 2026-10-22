@@ -40,8 +40,13 @@ CURATED_PRODUCT_IMAGES = {
     "xbox series s": "https://http2.mlstatic.com/D_NQ_NP_2X_759902-MLA45731835253_042021-F.webp",
     "nintendo switch oled": "https://http2.mlstatic.com/D_NQ_NP_2X_925624-MLA47920621422_102021-F.webp",
     "dualsense": "https://http2.mlstatic.com/D_NQ_NP_2X_728448-MLA45731835299_042021-F.webp",
-    "teclado mecanico redragon": "https://http2.mlstatic.com/D_NQ_NP_2X_850119-MLA51332822187_082022-F.webp",
     "hyperx cloud": "https://http2.mlstatic.com/D_NQ_NP_2X_988358-MLA74070265749_012024-F.webp",
+    "gt 710": "https://http2.mlstatic.com/D_NQ_NP_2X_708298-MLA54984577880_042023-F.webp",
+    "gt 1030": "https://http2.mlstatic.com/D_NQ_NP_2X_708298-MLA54984577880_042023-F.webp",
+    "rx 580": "https://http2.mlstatic.com/D_NQ_NP_2X_708298-MLA54984577880_042023-F.webp",
+    "placa de video": "https://http2.mlstatic.com/D_NQ_NP_2X_708298-MLA54984577880_042023-F.webp",
+    "teclado com fio": "https://http2.mlstatic.com/D_NQ_NP_2X_850119-MLA51332822187_082022-F.webp",
+    "mouse optico": "https://http2.mlstatic.com/D_NQ_NP_2X_850119-MLA51332822187_082022-F.webp",
 
     # Áudio & Fones
     "airpods pro 3": "https://http2.mlstatic.com/D_NQ_NP_2X_764953-MLA71783471415_092023-F.webp",

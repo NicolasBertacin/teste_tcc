@@ -21,6 +21,9 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         y: 0
     });
 
+    const [customPrice, setCustomPrice] = React.useState('');
+    const effectivePriceRef = React.useRef(0);
+
     const canvasRef = React.useRef(null);
     const pointsRef = React.useRef([]);
     const hoveredIndexRef = React.useRef(null);
@@ -55,7 +58,16 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
 
     React.useEffect(() => {
         selectedProductRef.current = selectedProduct;
+        if (selectedProduct && selectedProduct.price !== undefined && selectedProduct.price !== null) {
+            setCustomPrice(Number(selectedProduct.price).toFixed(2));
+        }
     }, [selectedProduct]);
+
+    React.useEffect(() => {
+        if (forecast && forecast.unit_price !== undefined && forecast.unit_price !== null && !selectedProduct) {
+            setCustomPrice(Number(forecast.unit_price).toFixed(2));
+        }
+    }, [forecast]);
 
     React.useEffect(() => {
         forecastRef.current = forecast;
@@ -65,6 +77,28 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
             });
         }
     }, [forecast]);
+
+    React.useEffect(() => {
+        if (hoveredIndexRef.current !== null && pointsRef.current && pointsRef.current[hoveredIndexRef.current]) {
+            const p = pointsRef.current[hoveredIndexRef.current];
+            const currentEffPrice = effectivePriceRef.current;
+            const demand = p.d?.predicted_demand ?? p.val ?? 0;
+            const dailyRevenue = demand * currentEffPrice;
+            const rawDay = p.d?.day_name || '';
+            const dayAbbr = rawDay ? rawDay.split('-')[0].toUpperCase().slice(0, 3) : '';
+            const dateShort = p.d?.date || '';
+            const dateInfo = dayAbbr && dateShort ? `${dayAbbr} (${dateShort})` : (dayAbbr || dateShort);
+            const dateSuffix = dateInfo ? ` • ${dateInfo}` : '';
+            const prodTitle = selectedProductRef.current?.title || forecastRef.current?.product_title || 'PRODUTO';
+
+            setTooltipData(prev => ({
+                ...prev,
+                title: prodTitle.toUpperCase(),
+                price: `Preço: R$ ${Number(currentEffPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} • Receita: R$ ${dailyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+                sold: `${demand.toLocaleString('pt-BR')} VENDAS PREVISTAS${dateSuffix}`
+            }));
+        }
+    }, [customPrice]);
 
     React.useEffect(() => {
         if (selectedProduct) {
@@ -438,13 +472,14 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                 const dateSuffix = dateInfo ? ` • ${dateInfo}` : '';
 
                 const prodTitle = currentProd?.title || forecastRef.current?.product_title || 'PRODUTO';
-                const prodPrice = currentProd?.price ?? forecastRef.current?.unit_price;
+                const currentEffPrice = effectivePriceRef.current || (currentProd?.price ?? forecastRef.current?.unit_price ?? 0);
                 const demand = matchedPoint.d?.predicted_demand ?? matchedPoint.val ?? 0;
+                const dailyRevenue = demand * currentEffPrice;
 
                 setTooltipData({
                     visible: true,
                     title: prodTitle.toUpperCase(),
-                    price: prodPrice !== undefined ? `R$ ${Number(prodPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '',
+                    price: `Preço: R$ ${Number(currentEffPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} • Receita: R$ ${dailyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
                     sold: `${demand.toLocaleString('pt-BR')} VENDAS PREVISTAS${dateSuffix}`,
                     x: clampedX,
                     y: Math.max(70, matchedPoint.y - 12)
@@ -485,6 +520,9 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
     const productUrl = selectedProduct?.product_url || forecast?.product_url;
     const thumbUrl = selectedProduct?.thumbnail_url || forecast?.thumbnail_url || 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
     const activePrice = selectedProduct?.price ?? forecast?.unit_price ?? 0;
+    const parsedCustomPrice = parseFloat(String(customPrice).replace(',', '.'));
+    const effectivePrice = (!isNaN(parsedCustomPrice) && parsedCustomPrice >= 0) ? parsedCustomPrice : activePrice;
+    effectivePriceRef.current = effectivePrice;
 
     return (
         <section className="dash-tab-content active">
@@ -603,17 +641,52 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                         </div>
                     </div>
 
-                    <div className="specific-prod-price" style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Preço Real de Mercado</div>
-                        <div style={{ fontSize: '18px', fontWeight: '800', color: '#00f0ff' }}>
-                            R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    <div className="specific-prod-price" style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                            <span style={{ textTransform: 'uppercase' }}>Preço de Mercado (Ref.):</span>
+                            <span style={{ fontWeight: '700', color: '#8da2bd' }}>
+                                R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label htmlFor="custom-retail-price-input" style={{ fontSize: '11px', fontWeight: '800', color: '#00f0ff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Preço Praticado:
+                            </label>
+                            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                                <span style={{ position: 'absolute', left: '10px', color: '#00f0ff', fontSize: '12px', fontWeight: '700' }}>R$</span>
+                                <input
+                                    id="custom-retail-price-input"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    className="custom-price-input"
+                                    value={customPrice}
+                                    onChange={(e) => setCustomPrice(e.target.value)}
+                                    placeholder="0.00"
+                                    style={{
+                                        background: 'rgba(7, 23, 43, 0.85)',
+                                        border: '1.5px solid #00d4ff',
+                                        borderRadius: '8px',
+                                        color: '#00f0ff',
+                                        padding: '5px 28px 5px 32px',
+                                        fontSize: '15px',
+                                        fontWeight: '800',
+                                        width: '135px',
+                                        outline: 'none',
+                                        textAlign: 'right',
+                                        boxShadow: '0 0 10px rgba(0, 212, 255, 0.2)'
+                                    }}
+                                    title="Altere o preço de venda para recalcular o faturamento e cenários de estoque instantaneamente"
+                                />
+                                <span style={{ position: 'absolute', right: '8px', fontSize: '12px', pointerEvents: 'none' }}>✏️</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Subtítulo de Clareza de Faturamento */}
                 <div className="revenue-disclaimer-note" style={{ padding: '0 4px', margin: '8px 0 12px 0' }}>
-                    * Faturamento Bruto Projetado (com base no preço de mercado de R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })})
+                    * Faturamento Bruto Projetado (com base no preço praticado de R$ {effectivePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{effectivePrice !== activePrice ? ` • Preço de Mercado: R$ ${activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''})
                 </div>
 
                 {/* Selo de Confiabilidade Estatística & Ciclo de Previsão */}
@@ -691,7 +764,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <div className="kpi-box">
                         <span className="kpi-title">FATURAMENTO ESTIMADO</span>
                         <span className="kpi-val text-cyan">
-                            {loading ? 'Calculando...' : (forecast ? `R$ ${forecast.total_projected_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00')}
+                            {loading ? 'Calculando...' : (forecast ? `R$ ${(forecast.total_predicted_units * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00')}
                         </span>
                     </div>
                     <div className="kpi-box">
@@ -727,7 +800,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                 </div>
                                 <div>
                                     <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Mínima</div>
-                                    <div className="tier-revenue-val">R$ {(forecast.conservative_revenue || ((forecast.conservative_units || Math.round(forecast.total_predicted_units * 0.85)) * activePrice)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                                    <div className="tier-revenue-val">R$ {(((forecast.conservative_units || Math.round(forecast.total_predicted_units * 0.85))) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
                                 </div>
                             </div>
                         </div>
@@ -748,7 +821,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                 </div>
                                 <div>
                                     <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Projetada</div>
-                                    <div className="tier-revenue-val">R$ {(forecast.base_revenue || forecast.total_projected_revenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                                    <div className="tier-revenue-val">R$ {(((forecast.base_units || forecast.total_predicted_units)) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
                                 </div>
                             </div>
                         </div>
@@ -769,7 +842,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                 </div>
                                 <div>
                                     <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Capital Necessário</div>
-                                    <div className="tier-revenue-val" style={{ color: '#10b981' }}>R$ {(forecast.buffer_stock_revenue || ((forecast.buffer_stock_units || forecast.recommended_stock_buffer) * activePrice)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                                    <div className="tier-revenue-val" style={{ color: '#10b981' }}>R$ {(((forecast.buffer_stock_units || forecast.recommended_stock_buffer)) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
                                 </div>
                             </div>
                         </div>
