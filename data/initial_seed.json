@@ -1334,6 +1334,121 @@
       "created_at": "2026-10-01 13:11:27.885904",
       "updated_at": "2026-10-01 13:11:27.885914",
       "is_active": 1
+    },
+    {
+      "id": 110,
+      "external_id": "PROD_110",
+      "platform": "mercadolivre",
+      "title": "Placa de Vídeo Nvidia GeForce GT 710 2GB DDR3",
+      "category": "Tecnologia",
+      "price": 289.0,
+      "currency": "BRL",
+      "condition": "new",
+      "url": "https://www.mercadolivre.com.br/anuncio/MLB-GT710",
+      "attributes": {
+        "pricing_engine": "verified_benchmark",
+        "market_median": 289.0,
+        "iqr_bounds": [
+          239.0,
+          369.0
+        ],
+        "confidence_score": 0.98
+      },
+      "created_at": "2026-06-20 00:00:00.000000",
+      "updated_at": "2026-10-01 00:00:00.000000",
+      "is_active": 1
+    },
+    {
+      "id": 111,
+      "external_id": "PROD_111",
+      "platform": "mercadolivre",
+      "title": "Placa de Vídeo GeForce GT 1030 2GB GDDR5",
+      "category": "Tecnologia",
+      "price": 549.0,
+      "currency": "BRL",
+      "condition": "new",
+      "url": "https://www.mercadolivre.com.br/anuncio/MLB-GT1030",
+      "attributes": {
+        "pricing_engine": "verified_benchmark",
+        "market_median": 549.0,
+        "iqr_bounds": [
+          469.0,
+          649.0
+        ],
+        "confidence_score": 0.97
+      },
+      "created_at": "2026-06-20 00:00:00.000000",
+      "updated_at": "2026-10-01 00:00:00.000000",
+      "is_active": 1
+    },
+    {
+      "id": 112,
+      "external_id": "PROD_112",
+      "platform": "mercadolivre",
+      "title": "Placa de Vídeo AMD Radeon RX 580 8GB",
+      "category": "Tecnologia",
+      "price": 699.0,
+      "currency": "BRL",
+      "condition": "new",
+      "url": "https://www.mercadolivre.com.br/anuncio/MLB-RX580",
+      "attributes": {
+        "pricing_engine": "verified_benchmark",
+        "market_median": 699.0,
+        "iqr_bounds": [
+          599.0,
+          899.0
+        ],
+        "confidence_score": 0.97
+      },
+      "created_at": "2026-06-20 00:00:00.000000",
+      "updated_at": "2026-10-01 00:00:00.000000",
+      "is_active": 1
+    },
+    {
+      "id": 113,
+      "external_id": "PROD_113",
+      "platform": "mercadolivre",
+      "title": "Teclado com Fio USB Básico para Escritório",
+      "category": "Tecnologia",
+      "price": 49.9,
+      "currency": "BRL",
+      "condition": "new",
+      "url": "https://www.mercadolivre.com.br/anuncio/MLB-TECLADOBASICO",
+      "attributes": {
+        "pricing_engine": "verified_benchmark",
+        "market_median": 49.9,
+        "iqr_bounds": [
+          39.9,
+          69.9
+        ],
+        "confidence_score": 0.98
+      },
+      "created_at": "2026-06-20 00:00:00.000000",
+      "updated_at": "2026-10-01 00:00:00.000000",
+      "is_active": 1
+    },
+    {
+      "id": 114,
+      "external_id": "PROD_114",
+      "platform": "mercadolivre",
+      "title": "Mouse Óptico USB Básico 1000 DPI",
+      "category": "Tecnologia",
+      "price": 29.9,
+      "currency": "BRL",
+      "condition": "new",
+      "url": "https://www.mercadolivre.com.br/anuncio/MLB-MOUSEBASICO",
+      "attributes": {
+        "pricing_engine": "verified_benchmark",
+        "market_median": 29.9,
+        "iqr_bounds": [
+          19.9,
+          49.9
+        ],
+        "confidence_score": 0.98
+      },
+      "created_at": "2026-06-20 00:00:00.000000",
+      "updated_at": "2026-10-01 00:00:00.000000",
+      "is_active": 1
     }
   ],
   "sales_history": [
@@ -88646,6 +88761,5206 @@
       "available_quantity": 433,
       "platform": "mercadolivre",
       "collected_at": "2026-10-01 13:11:27.902600"
+    },
+    {
+      "id": 8732,
+      "product_id": 110,
+      "date": "2026-06-20 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 293.33,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8733,
+      "product_id": 110,
+      "date": "2026-06-21 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 293.25,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8734,
+      "product_id": 110,
+      "date": "2026-06-22 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 292.99,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8735,
+      "product_id": 110,
+      "date": "2026-06-23 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 292.58,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8736,
+      "product_id": 110,
+      "date": "2026-06-24 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 292.02,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8737,
+      "product_id": 110,
+      "date": "2026-06-25 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 291.34,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8738,
+      "product_id": 110,
+      "date": "2026-06-26 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 290.57,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8739,
+      "product_id": 110,
+      "date": "2026-06-27 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 289.74,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8740,
+      "product_id": 110,
+      "date": "2026-06-28 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 288.87,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8741,
+      "product_id": 110,
+      "date": "2026-06-29 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 288.02,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8742,
+      "product_id": 110,
+      "date": "2026-06-30 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 287.2,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8743,
+      "product_id": 110,
+      "date": "2026-07-01 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 286.45,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8744,
+      "product_id": 110,
+      "date": "2026-07-02 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 285.8,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8745,
+      "product_id": 110,
+      "date": "2026-07-03 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 285.29,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8746,
+      "product_id": 110,
+      "date": "2026-07-04 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 284.92,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8747,
+      "product_id": 110,
+      "date": "2026-07-05 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 284.71,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8748,
+      "product_id": 110,
+      "date": "2026-07-06 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 284.67,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8749,
+      "product_id": 110,
+      "date": "2026-07-07 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 284.81,
+      "available_quantity": 151,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8750,
+      "product_id": 110,
+      "date": "2026-07-08 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 285.11,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8751,
+      "product_id": 110,
+      "date": "2026-07-09 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 285.57,
+      "available_quantity": 116,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8752,
+      "product_id": 110,
+      "date": "2026-07-10 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 286.17,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8753,
+      "product_id": 110,
+      "date": "2026-07-11 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 286.87,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8754,
+      "product_id": 110,
+      "date": "2026-07-12 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 287.67,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8755,
+      "product_id": 110,
+      "date": "2026-07-13 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 288.51,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8756,
+      "product_id": 110,
+      "date": "2026-07-14 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 289.38,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8757,
+      "product_id": 110,
+      "date": "2026-07-15 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 290.23,
+      "available_quantity": 117,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8758,
+      "product_id": 110,
+      "date": "2026-07-16 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 291.03,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8759,
+      "product_id": 110,
+      "date": "2026-07-17 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 291.75,
+      "available_quantity": 152,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8760,
+      "product_id": 110,
+      "date": "2026-07-18 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 292.36,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8761,
+      "product_id": 110,
+      "date": "2026-07-19 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 292.84,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8762,
+      "product_id": 110,
+      "date": "2026-07-20 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 293.16,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8763,
+      "product_id": 110,
+      "date": "2026-07-21 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 293.32,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8764,
+      "product_id": 110,
+      "date": "2026-07-22 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 293.31,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8765,
+      "product_id": 110,
+      "date": "2026-07-23 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 293.12,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8766,
+      "product_id": 110,
+      "date": "2026-07-24 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 292.77,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8767,
+      "product_id": 110,
+      "date": "2026-07-25 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 292.27,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8768,
+      "product_id": 110,
+      "date": "2026-07-26 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 291.64,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8769,
+      "product_id": 110,
+      "date": "2026-07-27 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 290.9,
+      "available_quantity": 106,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8770,
+      "product_id": 110,
+      "date": "2026-07-28 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 290.09,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8771,
+      "product_id": 110,
+      "date": "2026-07-29 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 289.23,
+      "available_quantity": 144,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8772,
+      "product_id": 110,
+      "date": "2026-07-30 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 288.37,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8773,
+      "product_id": 110,
+      "date": "2026-07-31 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 287.53,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8774,
+      "product_id": 110,
+      "date": "2026-08-01 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 286.75,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8775,
+      "product_id": 110,
+      "date": "2026-08-02 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 286.06,
+      "available_quantity": 138,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8776,
+      "product_id": 110,
+      "date": "2026-08-03 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 285.48,
+      "available_quantity": 119,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8777,
+      "product_id": 110,
+      "date": "2026-08-04 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 285.05,
+      "available_quantity": 100,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8778,
+      "product_id": 110,
+      "date": "2026-08-05 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 284.77,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8779,
+      "product_id": 110,
+      "date": "2026-08-06 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 284.67,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8780,
+      "product_id": 110,
+      "date": "2026-08-07 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 284.73,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8781,
+      "product_id": 110,
+      "date": "2026-08-08 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 284.97,
+      "available_quantity": 96,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8782,
+      "product_id": 110,
+      "date": "2026-08-09 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 285.36,
+      "available_quantity": 114,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8783,
+      "product_id": 110,
+      "date": "2026-08-10 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 285.9,
+      "available_quantity": 134,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8784,
+      "product_id": 110,
+      "date": "2026-08-11 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 286.57,
+      "available_quantity": 150,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8785,
+      "product_id": 110,
+      "date": "2026-08-12 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 287.33,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8786,
+      "product_id": 110,
+      "date": "2026-08-13 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 288.16,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8787,
+      "product_id": 110,
+      "date": "2026-08-14 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 289.02,
+      "available_quantity": 147,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8788,
+      "product_id": 110,
+      "date": "2026-08-15 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 289.88,
+      "available_quantity": 130,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8789,
+      "product_id": 110,
+      "date": "2026-08-16 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 290.71,
+      "available_quantity": 111,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8790,
+      "product_id": 110,
+      "date": "2026-08-17 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 291.46,
+      "available_quantity": 93,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8791,
+      "product_id": 110,
+      "date": "2026-08-18 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 292.12,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8792,
+      "product_id": 110,
+      "date": "2026-08-19 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 292.66,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8793,
+      "product_id": 110,
+      "date": "2026-08-20 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 293.05,
+      "available_quantity": 88,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8794,
+      "product_id": 110,
+      "date": "2026-08-21 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 293.28,
+      "available_quantity": 103,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8795,
+      "product_id": 110,
+      "date": "2026-08-22 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 293.33,
+      "available_quantity": 123,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8796,
+      "product_id": 110,
+      "date": "2026-08-23 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 293.22,
+      "available_quantity": 142,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8797,
+      "product_id": 110,
+      "date": "2026-08-24 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 292.93,
+      "available_quantity": 155,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8798,
+      "product_id": 110,
+      "date": "2026-08-25 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 292.49,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8799,
+      "product_id": 110,
+      "date": "2026-08-26 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 291.91,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8800,
+      "product_id": 110,
+      "date": "2026-08-27 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 291.22,
+      "available_quantity": 141,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8801,
+      "product_id": 110,
+      "date": "2026-08-28 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 290.43,
+      "available_quantity": 122,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8802,
+      "product_id": 110,
+      "date": "2026-08-29 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 289.59,
+      "available_quantity": 102,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8803,
+      "product_id": 110,
+      "date": "2026-08-30 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 288.73,
+      "available_quantity": 87,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8804,
+      "product_id": 110,
+      "date": "2026-08-31 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 287.87,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8805,
+      "product_id": 110,
+      "date": "2026-09-01 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 287.06,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8806,
+      "product_id": 110,
+      "date": "2026-09-02 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 286.33,
+      "available_quantity": 94,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8807,
+      "product_id": 110,
+      "date": "2026-09-03 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 285.71,
+      "available_quantity": 112,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8808,
+      "product_id": 110,
+      "date": "2026-09-04 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 285.21,
+      "available_quantity": 131,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8809,
+      "product_id": 110,
+      "date": "2026-09-05 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 284.87,
+      "available_quantity": 148,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8810,
+      "product_id": 110,
+      "date": "2026-09-06 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 284.69,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8811,
+      "product_id": 110,
+      "date": "2026-09-07 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 284.68,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8812,
+      "product_id": 110,
+      "date": "2026-09-08 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 284.85,
+      "available_quantity": 149,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8813,
+      "product_id": 110,
+      "date": "2026-09-09 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 285.18,
+      "available_quantity": 133,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8814,
+      "product_id": 110,
+      "date": "2026-09-10 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 285.66,
+      "available_quantity": 113,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8815,
+      "product_id": 110,
+      "date": "2026-09-11 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 286.28,
+      "available_quantity": 95,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8816,
+      "product_id": 110,
+      "date": "2026-09-12 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 287.0,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8817,
+      "product_id": 110,
+      "date": "2026-09-13 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 287.81,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8818,
+      "product_id": 110,
+      "date": "2026-09-14 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 288.66,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8819,
+      "product_id": 110,
+      "date": "2026-09-15 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 289.52,
+      "available_quantity": 101,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8820,
+      "product_id": 110,
+      "date": "2026-09-16 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 290.37,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8821,
+      "product_id": 110,
+      "date": "2026-09-17 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 291.16,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8822,
+      "product_id": 110,
+      "date": "2026-09-18 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 291.86,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8823,
+      "product_id": 110,
+      "date": "2026-09-19 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 292.45,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8824,
+      "product_id": 110,
+      "date": "2026-09-20 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 292.9,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8825,
+      "product_id": 110,
+      "date": "2026-09-21 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 293.2,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8826,
+      "product_id": 110,
+      "date": "2026-09-22 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 293.33,
+      "available_quantity": 124,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8827,
+      "product_id": 110,
+      "date": "2026-09-23 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 293.29,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8828,
+      "product_id": 110,
+      "date": "2026-09-24 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 293.07,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8829,
+      "product_id": 110,
+      "date": "2026-09-25 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 292.69,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8830,
+      "product_id": 110,
+      "date": "2026-09-26 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 292.17,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8831,
+      "product_id": 110,
+      "date": "2026-09-27 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 291.52,
+      "available_quantity": 92,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8832,
+      "product_id": 110,
+      "date": "2026-09-28 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 290.77,
+      "available_quantity": 109,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8833,
+      "product_id": 110,
+      "date": "2026-09-29 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 289.95,
+      "available_quantity": 129,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8834,
+      "product_id": 110,
+      "date": "2026-09-30 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 289.09,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8835,
+      "product_id": 110,
+      "date": "2026-10-01 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 288.23,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8836,
+      "product_id": 111,
+      "date": "2026-06-20 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 557.23,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8837,
+      "product_id": 111,
+      "date": "2026-06-21 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 557.07,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8838,
+      "product_id": 111,
+      "date": "2026-06-22 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 556.58,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8839,
+      "product_id": 111,
+      "date": "2026-06-23 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 555.8,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8840,
+      "product_id": 111,
+      "date": "2026-06-24 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 554.74,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8841,
+      "product_id": 111,
+      "date": "2026-06-25 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 553.45,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8842,
+      "product_id": 111,
+      "date": "2026-06-26 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 551.98,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8843,
+      "product_id": 111,
+      "date": "2026-06-27 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 550.4,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8844,
+      "product_id": 111,
+      "date": "2026-06-28 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 548.76,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8845,
+      "product_id": 111,
+      "date": "2026-06-29 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 547.13,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8846,
+      "product_id": 111,
+      "date": "2026-06-30 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 545.57,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8847,
+      "product_id": 111,
+      "date": "2026-07-01 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 544.15,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8848,
+      "product_id": 111,
+      "date": "2026-07-02 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 542.93,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8849,
+      "product_id": 111,
+      "date": "2026-07-03 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 541.94,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8850,
+      "product_id": 111,
+      "date": "2026-07-04 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 541.24,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8851,
+      "product_id": 111,
+      "date": "2026-07-05 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 540.85,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8852,
+      "product_id": 111,
+      "date": "2026-07-06 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 540.78,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8853,
+      "product_id": 111,
+      "date": "2026-07-07 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 541.04,
+      "available_quantity": 151,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8854,
+      "product_id": 111,
+      "date": "2026-07-08 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 541.62,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8855,
+      "product_id": 111,
+      "date": "2026-07-09 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 542.49,
+      "available_quantity": 116,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8856,
+      "product_id": 111,
+      "date": "2026-07-10 00:00:00.000000",
+      "quantity_sold": 27,
+      "price_at_date": 543.62,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8857,
+      "product_id": 111,
+      "date": "2026-07-11 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 544.96,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8858,
+      "product_id": 111,
+      "date": "2026-07-12 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 546.47,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8859,
+      "product_id": 111,
+      "date": "2026-07-13 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 548.08,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8860,
+      "product_id": 111,
+      "date": "2026-07-14 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 549.72,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8861,
+      "product_id": 111,
+      "date": "2026-07-15 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 551.34,
+      "available_quantity": 117,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8862,
+      "product_id": 111,
+      "date": "2026-07-16 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 552.86,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8863,
+      "product_id": 111,
+      "date": "2026-07-17 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 554.23,
+      "available_quantity": 152,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8864,
+      "product_id": 111,
+      "date": "2026-07-18 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 555.39,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8865,
+      "product_id": 111,
+      "date": "2026-07-19 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 556.29,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8866,
+      "product_id": 111,
+      "date": "2026-07-20 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 556.91,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8867,
+      "product_id": 111,
+      "date": "2026-07-21 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 557.21,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8868,
+      "product_id": 111,
+      "date": "2026-07-22 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 557.18,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8869,
+      "product_id": 111,
+      "date": "2026-07-23 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 556.83,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8870,
+      "product_id": 111,
+      "date": "2026-07-24 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 556.16,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8871,
+      "product_id": 111,
+      "date": "2026-07-25 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 555.21,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8872,
+      "product_id": 111,
+      "date": "2026-07-26 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 554.01,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8873,
+      "product_id": 111,
+      "date": "2026-07-27 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 552.61,
+      "available_quantity": 106,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8874,
+      "product_id": 111,
+      "date": "2026-07-28 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 551.07,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8875,
+      "product_id": 111,
+      "date": "2026-07-29 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 549.44,
+      "available_quantity": 144,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8876,
+      "product_id": 111,
+      "date": "2026-07-30 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 547.8,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8877,
+      "product_id": 111,
+      "date": "2026-07-31 00:00:00.000000",
+      "quantity_sold": 27,
+      "price_at_date": 546.21,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8878,
+      "product_id": 111,
+      "date": "2026-08-01 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 544.72,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8879,
+      "product_id": 111,
+      "date": "2026-08-02 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 543.41,
+      "available_quantity": 138,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8880,
+      "product_id": 111,
+      "date": "2026-08-03 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 542.32,
+      "available_quantity": 119,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8881,
+      "product_id": 111,
+      "date": "2026-08-04 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 541.5,
+      "available_quantity": 100,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8882,
+      "product_id": 111,
+      "date": "2026-08-05 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 540.97,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8883,
+      "product_id": 111,
+      "date": "2026-08-06 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 540.77,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8884,
+      "product_id": 111,
+      "date": "2026-08-07 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 540.89,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8885,
+      "product_id": 111,
+      "date": "2026-08-08 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 541.34,
+      "available_quantity": 96,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8886,
+      "product_id": 111,
+      "date": "2026-08-09 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 542.09,
+      "available_quantity": 114,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8887,
+      "product_id": 111,
+      "date": "2026-08-10 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 543.12,
+      "available_quantity": 134,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8888,
+      "product_id": 111,
+      "date": "2026-08-11 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 544.38,
+      "available_quantity": 150,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8889,
+      "product_id": 111,
+      "date": "2026-08-12 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 545.83,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8890,
+      "product_id": 111,
+      "date": "2026-08-13 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 547.4,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8891,
+      "product_id": 111,
+      "date": "2026-08-14 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 549.04,
+      "available_quantity": 147,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8892,
+      "product_id": 111,
+      "date": "2026-08-15 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 550.67,
+      "available_quantity": 130,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8893,
+      "product_id": 111,
+      "date": "2026-08-16 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 552.24,
+      "available_quantity": 111,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8894,
+      "product_id": 111,
+      "date": "2026-08-17 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 553.68,
+      "available_quantity": 93,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8895,
+      "product_id": 111,
+      "date": "2026-08-18 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 554.93,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8896,
+      "product_id": 111,
+      "date": "2026-08-19 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 555.95,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8897,
+      "product_id": 111,
+      "date": "2026-08-20 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 556.69,
+      "available_quantity": 88,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8898,
+      "product_id": 111,
+      "date": "2026-08-21 00:00:00.000000",
+      "quantity_sold": 27,
+      "price_at_date": 557.12,
+      "available_quantity": 103,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8899,
+      "product_id": 111,
+      "date": "2026-08-22 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 557.23,
+      "available_quantity": 123,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8900,
+      "product_id": 111,
+      "date": "2026-08-23 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 557.01,
+      "available_quantity": 142,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8901,
+      "product_id": 111,
+      "date": "2026-08-24 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 556.47,
+      "available_quantity": 155,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8902,
+      "product_id": 111,
+      "date": "2026-08-25 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 555.64,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8903,
+      "product_id": 111,
+      "date": "2026-08-26 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 554.54,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8904,
+      "product_id": 111,
+      "date": "2026-08-27 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 553.21,
+      "available_quantity": 141,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8905,
+      "product_id": 111,
+      "date": "2026-08-28 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 551.72,
+      "available_quantity": 122,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8906,
+      "product_id": 111,
+      "date": "2026-08-29 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 550.13,
+      "available_quantity": 102,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8907,
+      "product_id": 111,
+      "date": "2026-08-30 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 548.48,
+      "available_quantity": 87,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8908,
+      "product_id": 111,
+      "date": "2026-08-31 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 546.86,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8909,
+      "product_id": 111,
+      "date": "2026-09-01 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 545.32,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8910,
+      "product_id": 111,
+      "date": "2026-09-02 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 543.93,
+      "available_quantity": 94,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8911,
+      "product_id": 111,
+      "date": "2026-09-03 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 542.74,
+      "available_quantity": 112,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8912,
+      "product_id": 111,
+      "date": "2026-09-04 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 541.8,
+      "available_quantity": 131,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8913,
+      "product_id": 111,
+      "date": "2026-09-05 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 541.15,
+      "available_quantity": 148,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8914,
+      "product_id": 111,
+      "date": "2026-09-06 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 540.81,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8915,
+      "product_id": 111,
+      "date": "2026-09-07 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 540.8,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8916,
+      "product_id": 111,
+      "date": "2026-09-08 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 541.11,
+      "available_quantity": 149,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8917,
+      "product_id": 111,
+      "date": "2026-09-09 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 541.74,
+      "available_quantity": 133,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8918,
+      "product_id": 111,
+      "date": "2026-09-10 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 542.66,
+      "available_quantity": 113,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8919,
+      "product_id": 111,
+      "date": "2026-09-11 00:00:00.000000",
+      "quantity_sold": 27,
+      "price_at_date": 543.83,
+      "available_quantity": 95,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8920,
+      "product_id": 111,
+      "date": "2026-09-12 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 545.21,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8921,
+      "product_id": 111,
+      "date": "2026-09-13 00:00:00.000000",
+      "quantity_sold": 28,
+      "price_at_date": 546.73,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8922,
+      "product_id": 111,
+      "date": "2026-09-14 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 548.35,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8923,
+      "product_id": 111,
+      "date": "2026-09-15 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 550.0,
+      "available_quantity": 101,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8924,
+      "product_id": 111,
+      "date": "2026-09-16 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 551.6,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8925,
+      "product_id": 111,
+      "date": "2026-09-17 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 553.1,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8926,
+      "product_id": 111,
+      "date": "2026-09-18 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 554.44,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8927,
+      "product_id": 111,
+      "date": "2026-09-19 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 555.56,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8928,
+      "product_id": 111,
+      "date": "2026-09-20 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 556.42,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8929,
+      "product_id": 111,
+      "date": "2026-09-21 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 556.98,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8930,
+      "product_id": 111,
+      "date": "2026-09-22 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 557.22,
+      "available_quantity": 124,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8931,
+      "product_id": 111,
+      "date": "2026-09-23 00:00:00.000000",
+      "quantity_sold": 20,
+      "price_at_date": 557.14,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8932,
+      "product_id": 111,
+      "date": "2026-09-24 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 556.73,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8933,
+      "product_id": 111,
+      "date": "2026-09-25 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 556.02,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8934,
+      "product_id": 111,
+      "date": "2026-09-26 00:00:00.000000",
+      "quantity_sold": 26,
+      "price_at_date": 555.02,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8935,
+      "product_id": 111,
+      "date": "2026-09-27 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 553.79,
+      "available_quantity": 92,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8936,
+      "product_id": 111,
+      "date": "2026-09-28 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 552.36,
+      "available_quantity": 109,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8937,
+      "product_id": 111,
+      "date": "2026-09-29 00:00:00.000000",
+      "quantity_sold": 18,
+      "price_at_date": 550.8,
+      "available_quantity": 129,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8938,
+      "product_id": 111,
+      "date": "2026-09-30 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 549.17,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8939,
+      "product_id": 111,
+      "date": "2026-10-01 00:00:00.000000",
+      "quantity_sold": 19,
+      "price_at_date": 547.53,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8940,
+      "product_id": 112,
+      "date": "2026-06-20 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 709.48,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8941,
+      "product_id": 112,
+      "date": "2026-06-21 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 709.28,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8942,
+      "product_id": 112,
+      "date": "2026-06-22 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 708.66,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8943,
+      "product_id": 112,
+      "date": "2026-06-23 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 707.65,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8944,
+      "product_id": 112,
+      "date": "2026-06-24 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 706.3,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8945,
+      "product_id": 112,
+      "date": "2026-06-25 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 704.67,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8946,
+      "product_id": 112,
+      "date": "2026-06-26 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 702.8,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8947,
+      "product_id": 112,
+      "date": "2026-06-27 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 700.78,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8948,
+      "product_id": 112,
+      "date": "2026-06-28 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 698.69,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8949,
+      "product_id": 112,
+      "date": "2026-06-29 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 696.62,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8950,
+      "product_id": 112,
+      "date": "2026-06-30 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 694.64,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8951,
+      "product_id": 112,
+      "date": "2026-07-01 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 692.83,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8952,
+      "product_id": 112,
+      "date": "2026-07-02 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 691.27,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8953,
+      "product_id": 112,
+      "date": "2026-07-03 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 690.02,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8954,
+      "product_id": 112,
+      "date": "2026-07-04 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 689.12,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8955,
+      "product_id": 112,
+      "date": "2026-07-05 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 688.62,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8956,
+      "product_id": 112,
+      "date": "2026-07-06 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 688.53,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8957,
+      "product_id": 112,
+      "date": "2026-07-07 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 688.86,
+      "available_quantity": 151,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8958,
+      "product_id": 112,
+      "date": "2026-07-08 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 689.6,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8959,
+      "product_id": 112,
+      "date": "2026-07-09 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 690.71,
+      "available_quantity": 116,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8960,
+      "product_id": 112,
+      "date": "2026-07-10 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 692.15,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8961,
+      "product_id": 112,
+      "date": "2026-07-11 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 693.86,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8962,
+      "product_id": 112,
+      "date": "2026-07-12 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 695.78,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8963,
+      "product_id": 112,
+      "date": "2026-07-13 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 697.82,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8964,
+      "product_id": 112,
+      "date": "2026-07-14 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 699.92,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8965,
+      "product_id": 112,
+      "date": "2026-07-15 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 701.97,
+      "available_quantity": 117,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8966,
+      "product_id": 112,
+      "date": "2026-07-16 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 703.91,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8967,
+      "product_id": 112,
+      "date": "2026-07-17 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 705.65,
+      "available_quantity": 152,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8968,
+      "product_id": 112,
+      "date": "2026-07-18 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 707.13,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8969,
+      "product_id": 112,
+      "date": "2026-07-19 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 708.28,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8970,
+      "product_id": 112,
+      "date": "2026-07-20 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 709.07,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8971,
+      "product_id": 112,
+      "date": "2026-07-21 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 709.45,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8972,
+      "product_id": 112,
+      "date": "2026-07-22 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 709.41,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8973,
+      "product_id": 112,
+      "date": "2026-07-23 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 708.96,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8974,
+      "product_id": 112,
+      "date": "2026-07-24 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 708.12,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8975,
+      "product_id": 112,
+      "date": "2026-07-25 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 706.9,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8976,
+      "product_id": 112,
+      "date": "2026-07-26 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 705.38,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8977,
+      "product_id": 112,
+      "date": "2026-07-27 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 703.6,
+      "available_quantity": 106,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8978,
+      "product_id": 112,
+      "date": "2026-07-28 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 701.63,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8979,
+      "product_id": 112,
+      "date": "2026-07-29 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 699.57,
+      "available_quantity": 144,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8980,
+      "product_id": 112,
+      "date": "2026-07-30 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 697.47,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8981,
+      "product_id": 112,
+      "date": "2026-07-31 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 695.44,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8982,
+      "product_id": 112,
+      "date": "2026-08-01 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 693.56,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8983,
+      "product_id": 112,
+      "date": "2026-08-02 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 691.88,
+      "available_quantity": 138,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8984,
+      "product_id": 112,
+      "date": "2026-08-03 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 690.5,
+      "available_quantity": 119,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8985,
+      "product_id": 112,
+      "date": "2026-08-04 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 689.45,
+      "available_quantity": 100,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8986,
+      "product_id": 112,
+      "date": "2026-08-05 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 688.78,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8987,
+      "product_id": 112,
+      "date": "2026-08-06 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 688.52,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8988,
+      "product_id": 112,
+      "date": "2026-08-07 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 688.68,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8989,
+      "product_id": 112,
+      "date": "2026-08-08 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 689.24,
+      "available_quantity": 96,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8990,
+      "product_id": 112,
+      "date": "2026-08-09 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 690.2,
+      "available_quantity": 114,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8991,
+      "product_id": 112,
+      "date": "2026-08-10 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 691.51,
+      "available_quantity": 134,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8992,
+      "product_id": 112,
+      "date": "2026-08-11 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 693.12,
+      "available_quantity": 150,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8993,
+      "product_id": 112,
+      "date": "2026-08-12 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 694.96,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8994,
+      "product_id": 112,
+      "date": "2026-08-13 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 696.96,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8995,
+      "product_id": 112,
+      "date": "2026-08-14 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 699.05,
+      "available_quantity": 147,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8996,
+      "product_id": 112,
+      "date": "2026-08-15 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 701.13,
+      "available_quantity": 130,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8997,
+      "product_id": 112,
+      "date": "2026-08-16 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 703.13,
+      "available_quantity": 111,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8998,
+      "product_id": 112,
+      "date": "2026-08-17 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 704.96,
+      "available_quantity": 93,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 8999,
+      "product_id": 112,
+      "date": "2026-08-18 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 706.55,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9000,
+      "product_id": 112,
+      "date": "2026-08-19 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 707.85,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9001,
+      "product_id": 112,
+      "date": "2026-08-20 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 708.79,
+      "available_quantity": 88,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9002,
+      "product_id": 112,
+      "date": "2026-08-21 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 709.34,
+      "available_quantity": 103,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9003,
+      "product_id": 112,
+      "date": "2026-08-22 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 709.48,
+      "available_quantity": 123,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9004,
+      "product_id": 112,
+      "date": "2026-08-23 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 709.2,
+      "available_quantity": 142,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9005,
+      "product_id": 112,
+      "date": "2026-08-24 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 708.51,
+      "available_quantity": 155,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9006,
+      "product_id": 112,
+      "date": "2026-08-25 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 707.45,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9007,
+      "product_id": 112,
+      "date": "2026-08-26 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 706.05,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9008,
+      "product_id": 112,
+      "date": "2026-08-27 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 704.37,
+      "available_quantity": 141,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9009,
+      "product_id": 112,
+      "date": "2026-08-28 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 702.47,
+      "available_quantity": 122,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9010,
+      "product_id": 112,
+      "date": "2026-08-29 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 700.43,
+      "available_quantity": 102,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9011,
+      "product_id": 112,
+      "date": "2026-08-30 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 698.34,
+      "available_quantity": 87,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9012,
+      "product_id": 112,
+      "date": "2026-08-31 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 696.28,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9013,
+      "product_id": 112,
+      "date": "2026-09-01 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 694.32,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9014,
+      "product_id": 112,
+      "date": "2026-09-02 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 692.55,
+      "available_quantity": 94,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9015,
+      "product_id": 112,
+      "date": "2026-09-03 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 691.03,
+      "available_quantity": 112,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9016,
+      "product_id": 112,
+      "date": "2026-09-04 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 689.84,
+      "available_quantity": 131,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9017,
+      "product_id": 112,
+      "date": "2026-09-05 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 689.01,
+      "available_quantity": 148,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9018,
+      "product_id": 112,
+      "date": "2026-09-06 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 688.58,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9019,
+      "product_id": 112,
+      "date": "2026-09-07 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 688.56,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9020,
+      "product_id": 112,
+      "date": "2026-09-08 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 688.96,
+      "available_quantity": 149,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9021,
+      "product_id": 112,
+      "date": "2026-09-09 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 689.76,
+      "available_quantity": 133,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9022,
+      "product_id": 112,
+      "date": "2026-09-10 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 690.93,
+      "available_quantity": 113,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9023,
+      "product_id": 112,
+      "date": "2026-09-11 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 692.42,
+      "available_quantity": 95,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9024,
+      "product_id": 112,
+      "date": "2026-09-12 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 694.17,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9025,
+      "product_id": 112,
+      "date": "2026-09-13 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 696.11,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9026,
+      "product_id": 112,
+      "date": "2026-09-14 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 698.18,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9027,
+      "product_id": 112,
+      "date": "2026-09-15 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 700.27,
+      "available_quantity": 101,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9028,
+      "product_id": 112,
+      "date": "2026-09-16 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 702.31,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9029,
+      "product_id": 112,
+      "date": "2026-09-17 00:00:00.000000",
+      "quantity_sold": 25,
+      "price_at_date": 704.22,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9030,
+      "product_id": 112,
+      "date": "2026-09-18 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 705.92,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9031,
+      "product_id": 112,
+      "date": "2026-09-19 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 707.35,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9032,
+      "product_id": 112,
+      "date": "2026-09-20 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 708.44,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9033,
+      "product_id": 112,
+      "date": "2026-09-21 00:00:00.000000",
+      "quantity_sold": 24,
+      "price_at_date": 709.16,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9034,
+      "product_id": 112,
+      "date": "2026-09-22 00:00:00.000000",
+      "quantity_sold": 23,
+      "price_at_date": 709.47,
+      "available_quantity": 124,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9035,
+      "product_id": 112,
+      "date": "2026-09-23 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 709.37,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9036,
+      "product_id": 112,
+      "date": "2026-09-24 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 708.85,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9037,
+      "product_id": 112,
+      "date": "2026-09-25 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 707.94,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9038,
+      "product_id": 112,
+      "date": "2026-09-26 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 706.67,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9039,
+      "product_id": 112,
+      "date": "2026-09-27 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 705.1,
+      "available_quantity": 92,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9040,
+      "product_id": 112,
+      "date": "2026-09-28 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 703.28,
+      "available_quantity": 109,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9041,
+      "product_id": 112,
+      "date": "2026-09-29 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 701.29,
+      "available_quantity": 129,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9042,
+      "product_id": 112,
+      "date": "2026-09-30 00:00:00.000000",
+      "quantity_sold": 21,
+      "price_at_date": 699.21,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9043,
+      "product_id": 112,
+      "date": "2026-10-01 00:00:00.000000",
+      "quantity_sold": 22,
+      "price_at_date": 697.13,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9044,
+      "product_id": 113,
+      "date": "2026-06-20 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 50.65,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9045,
+      "product_id": 113,
+      "date": "2026-06-21 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 50.63,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9046,
+      "product_id": 113,
+      "date": "2026-06-22 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 50.59,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9047,
+      "product_id": 113,
+      "date": "2026-06-23 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 50.52,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9048,
+      "product_id": 113,
+      "date": "2026-06-24 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 50.42,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9049,
+      "product_id": 113,
+      "date": "2026-06-25 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.3,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9050,
+      "product_id": 113,
+      "date": "2026-06-26 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.17,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9051,
+      "product_id": 113,
+      "date": "2026-06-27 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.03,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9052,
+      "product_id": 113,
+      "date": "2026-06-28 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 49.88,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9053,
+      "product_id": 113,
+      "date": "2026-06-29 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.73,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9054,
+      "product_id": 113,
+      "date": "2026-06-30 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 49.59,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9055,
+      "product_id": 113,
+      "date": "2026-07-01 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 49.46,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9056,
+      "product_id": 113,
+      "date": "2026-07-02 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 49.35,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9057,
+      "product_id": 113,
+      "date": "2026-07-03 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 49.26,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9058,
+      "product_id": 113,
+      "date": "2026-07-04 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 49.19,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9059,
+      "product_id": 113,
+      "date": "2026-07-05 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 49.16,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9060,
+      "product_id": 113,
+      "date": "2026-07-06 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 49.15,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9061,
+      "product_id": 113,
+      "date": "2026-07-07 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 49.18,
+      "available_quantity": 151,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9062,
+      "product_id": 113,
+      "date": "2026-07-08 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 49.23,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9063,
+      "product_id": 113,
+      "date": "2026-07-09 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.31,
+      "available_quantity": 116,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9064,
+      "product_id": 113,
+      "date": "2026-07-10 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 49.41,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9065,
+      "product_id": 113,
+      "date": "2026-07-11 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 49.53,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9066,
+      "product_id": 113,
+      "date": "2026-07-12 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 49.67,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9067,
+      "product_id": 113,
+      "date": "2026-07-13 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.82,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9068,
+      "product_id": 113,
+      "date": "2026-07-14 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 49.97,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9069,
+      "product_id": 113,
+      "date": "2026-07-15 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 50.11,
+      "available_quantity": 117,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9070,
+      "product_id": 113,
+      "date": "2026-07-16 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.25,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9071,
+      "product_id": 113,
+      "date": "2026-07-17 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.38,
+      "available_quantity": 152,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9072,
+      "product_id": 113,
+      "date": "2026-07-18 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.48,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9073,
+      "product_id": 113,
+      "date": "2026-07-19 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 50.56,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9074,
+      "product_id": 113,
+      "date": "2026-07-20 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 50.62,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9075,
+      "product_id": 113,
+      "date": "2026-07-21 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 50.65,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9076,
+      "product_id": 113,
+      "date": "2026-07-22 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 50.64,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9077,
+      "product_id": 113,
+      "date": "2026-07-23 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 50.61,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9078,
+      "product_id": 113,
+      "date": "2026-07-24 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 50.55,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9079,
+      "product_id": 113,
+      "date": "2026-07-25 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 50.46,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9080,
+      "product_id": 113,
+      "date": "2026-07-26 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 50.36,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9081,
+      "product_id": 113,
+      "date": "2026-07-27 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.23,
+      "available_quantity": 106,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9082,
+      "product_id": 113,
+      "date": "2026-07-28 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.09,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9083,
+      "product_id": 113,
+      "date": "2026-07-29 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.94,
+      "available_quantity": 144,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9084,
+      "product_id": 113,
+      "date": "2026-07-30 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.79,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9085,
+      "product_id": 113,
+      "date": "2026-07-31 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 49.65,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9086,
+      "product_id": 113,
+      "date": "2026-08-01 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 49.51,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9087,
+      "product_id": 113,
+      "date": "2026-08-02 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 49.39,
+      "available_quantity": 138,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9088,
+      "product_id": 113,
+      "date": "2026-08-03 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.29,
+      "available_quantity": 119,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9089,
+      "product_id": 113,
+      "date": "2026-08-04 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 49.22,
+      "available_quantity": 100,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9090,
+      "product_id": 113,
+      "date": "2026-08-05 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 49.17,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9091,
+      "product_id": 113,
+      "date": "2026-08-06 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 49.15,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9092,
+      "product_id": 113,
+      "date": "2026-08-07 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 49.16,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9093,
+      "product_id": 113,
+      "date": "2026-08-08 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 49.2,
+      "available_quantity": 96,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9094,
+      "product_id": 113,
+      "date": "2026-08-09 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 49.27,
+      "available_quantity": 114,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9095,
+      "product_id": 113,
+      "date": "2026-08-10 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.37,
+      "available_quantity": 134,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9096,
+      "product_id": 113,
+      "date": "2026-08-11 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 49.48,
+      "available_quantity": 150,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9097,
+      "product_id": 113,
+      "date": "2026-08-12 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 49.61,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9098,
+      "product_id": 113,
+      "date": "2026-08-13 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 49.75,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9099,
+      "product_id": 113,
+      "date": "2026-08-14 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 49.9,
+      "available_quantity": 147,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9100,
+      "product_id": 113,
+      "date": "2026-08-15 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 50.05,
+      "available_quantity": 130,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9101,
+      "product_id": 113,
+      "date": "2026-08-16 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 50.19,
+      "available_quantity": 111,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9102,
+      "product_id": 113,
+      "date": "2026-08-17 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.33,
+      "available_quantity": 93,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9103,
+      "product_id": 113,
+      "date": "2026-08-18 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.44,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9104,
+      "product_id": 113,
+      "date": "2026-08-19 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 50.53,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9105,
+      "product_id": 113,
+      "date": "2026-08-20 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 50.6,
+      "available_quantity": 88,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9106,
+      "product_id": 113,
+      "date": "2026-08-21 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 50.64,
+      "available_quantity": 103,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9107,
+      "product_id": 113,
+      "date": "2026-08-22 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 50.65,
+      "available_quantity": 123,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9108,
+      "product_id": 113,
+      "date": "2026-08-23 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 50.63,
+      "available_quantity": 142,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9109,
+      "product_id": 113,
+      "date": "2026-08-24 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 50.58,
+      "available_quantity": 155,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9110,
+      "product_id": 113,
+      "date": "2026-08-25 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 50.5,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9111,
+      "product_id": 113,
+      "date": "2026-08-26 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.4,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9112,
+      "product_id": 113,
+      "date": "2026-08-27 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.28,
+      "available_quantity": 141,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9113,
+      "product_id": 113,
+      "date": "2026-08-28 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.15,
+      "available_quantity": 122,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9114,
+      "product_id": 113,
+      "date": "2026-08-29 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.0,
+      "available_quantity": 102,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9115,
+      "product_id": 113,
+      "date": "2026-08-30 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 49.85,
+      "available_quantity": 87,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9116,
+      "product_id": 113,
+      "date": "2026-08-31 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.71,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9117,
+      "product_id": 113,
+      "date": "2026-09-01 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 49.57,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9118,
+      "product_id": 113,
+      "date": "2026-09-02 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 49.44,
+      "available_quantity": 94,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9119,
+      "product_id": 113,
+      "date": "2026-09-03 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.33,
+      "available_quantity": 112,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9120,
+      "product_id": 113,
+      "date": "2026-09-04 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 49.25,
+      "available_quantity": 131,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9121,
+      "product_id": 113,
+      "date": "2026-09-05 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 49.19,
+      "available_quantity": 148,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9122,
+      "product_id": 113,
+      "date": "2026-09-06 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 49.16,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9123,
+      "product_id": 113,
+      "date": "2026-09-07 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 49.15,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9124,
+      "product_id": 113,
+      "date": "2026-09-08 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 49.18,
+      "available_quantity": 149,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9125,
+      "product_id": 113,
+      "date": "2026-09-09 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.24,
+      "available_quantity": 133,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9126,
+      "product_id": 113,
+      "date": "2026-09-10 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.32,
+      "available_quantity": 113,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9127,
+      "product_id": 113,
+      "date": "2026-09-11 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 49.43,
+      "available_quantity": 95,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9128,
+      "product_id": 113,
+      "date": "2026-09-12 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 49.56,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9129,
+      "product_id": 113,
+      "date": "2026-09-13 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 49.69,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9130,
+      "product_id": 113,
+      "date": "2026-09-14 00:00:00.000000",
+      "quantity_sold": 34,
+      "price_at_date": 49.84,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9131,
+      "product_id": 113,
+      "date": "2026-09-15 00:00:00.000000",
+      "quantity_sold": 35,
+      "price_at_date": 49.99,
+      "available_quantity": 101,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9132,
+      "product_id": 113,
+      "date": "2026-09-16 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.14,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9133,
+      "product_id": 113,
+      "date": "2026-09-17 00:00:00.000000",
+      "quantity_sold": 36,
+      "price_at_date": 50.27,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9134,
+      "product_id": 113,
+      "date": "2026-09-18 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.39,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9135,
+      "product_id": 113,
+      "date": "2026-09-19 00:00:00.000000",
+      "quantity_sold": 47,
+      "price_at_date": 50.5,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9136,
+      "product_id": 113,
+      "date": "2026-09-20 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 50.57,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9137,
+      "product_id": 113,
+      "date": "2026-09-21 00:00:00.000000",
+      "quantity_sold": 33,
+      "price_at_date": 50.63,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9138,
+      "product_id": 113,
+      "date": "2026-09-22 00:00:00.000000",
+      "quantity_sold": 32,
+      "price_at_date": 50.65,
+      "available_quantity": 124,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9139,
+      "product_id": 113,
+      "date": "2026-09-23 00:00:00.000000",
+      "quantity_sold": 31,
+      "price_at_date": 50.64,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9140,
+      "product_id": 113,
+      "date": "2026-09-24 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 50.6,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9141,
+      "product_id": 113,
+      "date": "2026-09-25 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 50.54,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9142,
+      "product_id": 113,
+      "date": "2026-09-26 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 50.45,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9143,
+      "product_id": 113,
+      "date": "2026-09-27 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 50.34,
+      "available_quantity": 92,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9144,
+      "product_id": 113,
+      "date": "2026-09-28 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.21,
+      "available_quantity": 109,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9145,
+      "product_id": 113,
+      "date": "2026-09-29 00:00:00.000000",
+      "quantity_sold": 29,
+      "price_at_date": 50.06,
+      "available_quantity": 129,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9146,
+      "product_id": 113,
+      "date": "2026-09-30 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.92,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9147,
+      "product_id": 113,
+      "date": "2026-10-01 00:00:00.000000",
+      "quantity_sold": 30,
+      "price_at_date": 49.77,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9148,
+      "product_id": 114,
+      "date": "2026-06-20 00:00:00.000000",
+      "quantity_sold": 56,
+      "price_at_date": 30.35,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9149,
+      "product_id": 114,
+      "date": "2026-06-21 00:00:00.000000",
+      "quantity_sold": 58,
+      "price_at_date": 30.34,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9150,
+      "product_id": 114,
+      "date": "2026-06-22 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 30.31,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9151,
+      "product_id": 114,
+      "date": "2026-06-23 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 30.27,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9152,
+      "product_id": 114,
+      "date": "2026-06-24 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.21,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9153,
+      "product_id": 114,
+      "date": "2026-06-25 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.14,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9154,
+      "product_id": 114,
+      "date": "2026-06-26 00:00:00.000000",
+      "quantity_sold": 61,
+      "price_at_date": 30.06,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9155,
+      "product_id": 114,
+      "date": "2026-06-27 00:00:00.000000",
+      "quantity_sold": 60,
+      "price_at_date": 29.98,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9156,
+      "product_id": 114,
+      "date": "2026-06-28 00:00:00.000000",
+      "quantity_sold": 59,
+      "price_at_date": 29.89,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9157,
+      "product_id": 114,
+      "date": "2026-06-29 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 29.8,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9158,
+      "product_id": 114,
+      "date": "2026-06-30 00:00:00.000000",
+      "quantity_sold": 42,
+      "price_at_date": 29.71,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9159,
+      "product_id": 114,
+      "date": "2026-07-01 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 29.64,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9160,
+      "product_id": 114,
+      "date": "2026-07-02 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.57,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9161,
+      "product_id": 114,
+      "date": "2026-07-03 00:00:00.000000",
+      "quantity_sold": 53,
+      "price_at_date": 29.52,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9162,
+      "product_id": 114,
+      "date": "2026-07-04 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 29.48,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9163,
+      "product_id": 114,
+      "date": "2026-07-05 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 29.46,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9164,
+      "product_id": 114,
+      "date": "2026-07-06 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 29.45,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9165,
+      "product_id": 114,
+      "date": "2026-07-07 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 29.47,
+      "available_quantity": 151,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9166,
+      "product_id": 114,
+      "date": "2026-07-08 00:00:00.000000",
+      "quantity_sold": 38,
+      "price_at_date": 29.5,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9167,
+      "product_id": 114,
+      "date": "2026-07-09 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.55,
+      "available_quantity": 116,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9168,
+      "product_id": 114,
+      "date": "2026-07-10 00:00:00.000000",
+      "quantity_sold": 55,
+      "price_at_date": 29.61,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9169,
+      "product_id": 114,
+      "date": "2026-07-11 00:00:00.000000",
+      "quantity_sold": 56,
+      "price_at_date": 29.68,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9170,
+      "product_id": 114,
+      "date": "2026-07-12 00:00:00.000000",
+      "quantity_sold": 58,
+      "price_at_date": 29.76,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9171,
+      "product_id": 114,
+      "date": "2026-07-13 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 29.85,
+      "available_quantity": 84,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9172,
+      "product_id": 114,
+      "date": "2026-07-14 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 29.94,
+      "available_quantity": 98,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9173,
+      "product_id": 114,
+      "date": "2026-07-15 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.03,
+      "available_quantity": 117,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9174,
+      "product_id": 114,
+      "date": "2026-07-16 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.11,
+      "available_quantity": 136,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9175,
+      "product_id": 114,
+      "date": "2026-07-17 00:00:00.000000",
+      "quantity_sold": 61,
+      "price_at_date": 30.18,
+      "available_quantity": 152,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9176,
+      "product_id": 114,
+      "date": "2026-07-18 00:00:00.000000",
+      "quantity_sold": 60,
+      "price_at_date": 30.25,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9177,
+      "product_id": 114,
+      "date": "2026-07-19 00:00:00.000000",
+      "quantity_sold": 59,
+      "price_at_date": 30.3,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9178,
+      "product_id": 114,
+      "date": "2026-07-20 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 30.33,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9179,
+      "product_id": 114,
+      "date": "2026-07-21 00:00:00.000000",
+      "quantity_sold": 42,
+      "price_at_date": 30.35,
+      "available_quantity": 128,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9180,
+      "product_id": 114,
+      "date": "2026-07-22 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 30.35,
+      "available_quantity": 108,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9181,
+      "product_id": 114,
+      "date": "2026-07-23 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 30.33,
+      "available_quantity": 91,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9182,
+      "product_id": 114,
+      "date": "2026-07-24 00:00:00.000000",
+      "quantity_sold": 53,
+      "price_at_date": 30.29,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9183,
+      "product_id": 114,
+      "date": "2026-07-25 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 30.24,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9184,
+      "product_id": 114,
+      "date": "2026-07-26 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 30.17,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9185,
+      "product_id": 114,
+      "date": "2026-07-27 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.1,
+      "available_quantity": 106,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9186,
+      "product_id": 114,
+      "date": "2026-07-28 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.01,
+      "available_quantity": 125,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9187,
+      "product_id": 114,
+      "date": "2026-07-29 00:00:00.000000",
+      "quantity_sold": 38,
+      "price_at_date": 29.92,
+      "available_quantity": 144,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9188,
+      "product_id": 114,
+      "date": "2026-07-30 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.83,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9189,
+      "product_id": 114,
+      "date": "2026-07-31 00:00:00.000000",
+      "quantity_sold": 55,
+      "price_at_date": 29.75,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9190,
+      "product_id": 114,
+      "date": "2026-08-01 00:00:00.000000",
+      "quantity_sold": 56,
+      "price_at_date": 29.67,
+      "available_quantity": 153,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9191,
+      "product_id": 114,
+      "date": "2026-08-02 00:00:00.000000",
+      "quantity_sold": 58,
+      "price_at_date": 29.6,
+      "available_quantity": 138,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9192,
+      "product_id": 114,
+      "date": "2026-08-03 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 29.54,
+      "available_quantity": 119,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9193,
+      "product_id": 114,
+      "date": "2026-08-04 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 29.49,
+      "available_quantity": 100,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9194,
+      "product_id": 114,
+      "date": "2026-08-05 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 29.46,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9195,
+      "product_id": 114,
+      "date": "2026-08-06 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 29.45,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9196,
+      "product_id": 114,
+      "date": "2026-08-07 00:00:00.000000",
+      "quantity_sold": 61,
+      "price_at_date": 29.46,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9197,
+      "product_id": 114,
+      "date": "2026-08-08 00:00:00.000000",
+      "quantity_sold": 60,
+      "price_at_date": 29.48,
+      "available_quantity": 96,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9198,
+      "product_id": 114,
+      "date": "2026-08-09 00:00:00.000000",
+      "quantity_sold": 59,
+      "price_at_date": 29.52,
+      "available_quantity": 114,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9199,
+      "product_id": 114,
+      "date": "2026-08-10 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 29.58,
+      "available_quantity": 134,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9200,
+      "product_id": 114,
+      "date": "2026-08-11 00:00:00.000000",
+      "quantity_sold": 42,
+      "price_at_date": 29.65,
+      "available_quantity": 150,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9201,
+      "product_id": 114,
+      "date": "2026-08-12 00:00:00.000000",
+      "quantity_sold": 41,
+      "price_at_date": 29.73,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9202,
+      "product_id": 114,
+      "date": "2026-08-13 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.81,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9203,
+      "product_id": 114,
+      "date": "2026-08-14 00:00:00.000000",
+      "quantity_sold": 53,
+      "price_at_date": 29.9,
+      "available_quantity": 147,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9204,
+      "product_id": 114,
+      "date": "2026-08-15 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 29.99,
+      "available_quantity": 130,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9205,
+      "product_id": 114,
+      "date": "2026-08-16 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 30.08,
+      "available_quantity": 111,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9206,
+      "product_id": 114,
+      "date": "2026-08-17 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.15,
+      "available_quantity": 93,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9207,
+      "product_id": 114,
+      "date": "2026-08-18 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.22,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9208,
+      "product_id": 114,
+      "date": "2026-08-19 00:00:00.000000",
+      "quantity_sold": 38,
+      "price_at_date": 30.28,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9209,
+      "product_id": 114,
+      "date": "2026-08-20 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 30.32,
+      "available_quantity": 88,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9210,
+      "product_id": 114,
+      "date": "2026-08-21 00:00:00.000000",
+      "quantity_sold": 55,
+      "price_at_date": 30.34,
+      "available_quantity": 103,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9211,
+      "product_id": 114,
+      "date": "2026-08-22 00:00:00.000000",
+      "quantity_sold": 56,
+      "price_at_date": 30.35,
+      "available_quantity": 123,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9212,
+      "product_id": 114,
+      "date": "2026-08-23 00:00:00.000000",
+      "quantity_sold": 58,
+      "price_at_date": 30.34,
+      "available_quantity": 142,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9213,
+      "product_id": 114,
+      "date": "2026-08-24 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 30.31,
+      "available_quantity": 155,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9214,
+      "product_id": 114,
+      "date": "2026-08-25 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 30.26,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9215,
+      "product_id": 114,
+      "date": "2026-08-26 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.2,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9216,
+      "product_id": 114,
+      "date": "2026-08-27 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.13,
+      "available_quantity": 141,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9217,
+      "product_id": 114,
+      "date": "2026-08-28 00:00:00.000000",
+      "quantity_sold": 61,
+      "price_at_date": 30.05,
+      "available_quantity": 122,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9218,
+      "product_id": 114,
+      "date": "2026-08-29 00:00:00.000000",
+      "quantity_sold": 60,
+      "price_at_date": 29.96,
+      "available_quantity": 102,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9219,
+      "product_id": 114,
+      "date": "2026-08-30 00:00:00.000000",
+      "quantity_sold": 59,
+      "price_at_date": 29.87,
+      "available_quantity": 87,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9220,
+      "product_id": 114,
+      "date": "2026-08-31 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 29.78,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9221,
+      "product_id": 114,
+      "date": "2026-09-01 00:00:00.000000",
+      "quantity_sold": 42,
+      "price_at_date": 29.7,
+      "available_quantity": 82,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9222,
+      "product_id": 114,
+      "date": "2026-09-02 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 29.62,
+      "available_quantity": 94,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9223,
+      "product_id": 114,
+      "date": "2026-09-03 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.56,
+      "available_quantity": 112,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9224,
+      "product_id": 114,
+      "date": "2026-09-04 00:00:00.000000",
+      "quantity_sold": 53,
+      "price_at_date": 29.51,
+      "available_quantity": 131,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9225,
+      "product_id": 114,
+      "date": "2026-09-05 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 29.47,
+      "available_quantity": 148,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9226,
+      "product_id": 114,
+      "date": "2026-09-06 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 29.45,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9227,
+      "product_id": 114,
+      "date": "2026-09-07 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 29.45,
+      "available_quantity": 158,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9228,
+      "product_id": 114,
+      "date": "2026-09-08 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 29.47,
+      "available_quantity": 149,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9229,
+      "product_id": 114,
+      "date": "2026-09-09 00:00:00.000000",
+      "quantity_sold": 38,
+      "price_at_date": 29.5,
+      "available_quantity": 133,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9230,
+      "product_id": 114,
+      "date": "2026-09-10 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.55,
+      "available_quantity": 113,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9231,
+      "product_id": 114,
+      "date": "2026-09-11 00:00:00.000000",
+      "quantity_sold": 55,
+      "price_at_date": 29.62,
+      "available_quantity": 95,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9232,
+      "product_id": 114,
+      "date": "2026-09-12 00:00:00.000000",
+      "quantity_sold": 57,
+      "price_at_date": 29.69,
+      "available_quantity": 83,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9233,
+      "product_id": 114,
+      "date": "2026-09-13 00:00:00.000000",
+      "quantity_sold": 58,
+      "price_at_date": 29.78,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9234,
+      "product_id": 114,
+      "date": "2026-09-14 00:00:00.000000",
+      "quantity_sold": 44,
+      "price_at_date": 29.86,
+      "available_quantity": 86,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9235,
+      "product_id": 114,
+      "date": "2026-09-15 00:00:00.000000",
+      "quantity_sold": 45,
+      "price_at_date": 29.95,
+      "available_quantity": 101,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9236,
+      "product_id": 114,
+      "date": "2026-09-16 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.04,
+      "available_quantity": 120,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9237,
+      "product_id": 114,
+      "date": "2026-09-17 00:00:00.000000",
+      "quantity_sold": 46,
+      "price_at_date": 30.12,
+      "available_quantity": 139,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9238,
+      "product_id": 114,
+      "date": "2026-09-18 00:00:00.000000",
+      "quantity_sold": 61,
+      "price_at_date": 30.2,
+      "available_quantity": 154,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9239,
+      "product_id": 114,
+      "date": "2026-09-19 00:00:00.000000",
+      "quantity_sold": 60,
+      "price_at_date": 30.26,
+      "available_quantity": 159,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9240,
+      "product_id": 114,
+      "date": "2026-09-20 00:00:00.000000",
+      "quantity_sold": 59,
+      "price_at_date": 30.3,
+      "available_quantity": 156,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9241,
+      "product_id": 114,
+      "date": "2026-09-21 00:00:00.000000",
+      "quantity_sold": 43,
+      "price_at_date": 30.33,
+      "available_quantity": 143,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9242,
+      "product_id": 114,
+      "date": "2026-09-22 00:00:00.000000",
+      "quantity_sold": 42,
+      "price_at_date": 30.35,
+      "available_quantity": 124,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9243,
+      "product_id": 114,
+      "date": "2026-09-23 00:00:00.000000",
+      "quantity_sold": 40,
+      "price_at_date": 30.34,
+      "available_quantity": 105,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9244,
+      "product_id": 114,
+      "date": "2026-09-24 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 30.32,
+      "available_quantity": 89,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9245,
+      "product_id": 114,
+      "date": "2026-09-25 00:00:00.000000",
+      "quantity_sold": 53,
+      "price_at_date": 30.28,
+      "available_quantity": 80,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9246,
+      "product_id": 114,
+      "date": "2026-09-26 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 30.23,
+      "available_quantity": 81,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9247,
+      "product_id": 114,
+      "date": "2026-09-27 00:00:00.000000",
+      "quantity_sold": 52,
+      "price_at_date": 30.16,
+      "available_quantity": 92,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9248,
+      "product_id": 114,
+      "date": "2026-09-28 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.08,
+      "available_quantity": 109,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9249,
+      "product_id": 114,
+      "date": "2026-09-29 00:00:00.000000",
+      "quantity_sold": 37,
+      "price_at_date": 30.0,
+      "available_quantity": 129,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9250,
+      "product_id": 114,
+      "date": "2026-09-30 00:00:00.000000",
+      "quantity_sold": 38,
+      "price_at_date": 29.91,
+      "available_quantity": 146,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
+    },
+    {
+      "id": 9251,
+      "product_id": 114,
+      "date": "2026-10-01 00:00:00.000000",
+      "quantity_sold": 39,
+      "price_at_date": 29.82,
+      "available_quantity": 157,
+      "platform": "mercadolivre",
+      "collected_at": "2026-10-01 12:00:00.000000"
     }
   ],
   "search_trends": [

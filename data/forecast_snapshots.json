@@ -114,5 +114,121 @@
         }
       ]
     }
+  },
+  "1:7:2026-10-22": {
+    "product_id": 1,
+    "product_title": "Notebook Dell Inspiron 15 Intel Core i7 16GB 512GB SSD",
+    "category": "Tecnologia",
+    "unit_price": 3499.0,
+    "platform": "mercadolivre",
+    "thumbnail_url": "https://http2.mlstatic.com/D_NQ_NP_2X_988358-MLA74070265749_012024-F.webp",
+    "product_url": "https://lista.mercadolivre.com.br/Notebook%20Dell%20Inspiron%2015%20Intel%20Core%20i7%2016GB%20512GB%20SSD",
+    "horizon_days": 7,
+    "start_date": "23/10/2026",
+    "end_date": "29/10/2026",
+    "forecast_cycle": "Ciclo: 23/10/2026 a 29/10/2026",
+    "generated_at": "22/10/2026 07:46",
+    "total_predicted_units": 216,
+    "min_predicted_units": 190,
+    "max_predicted_units": 242,
+    "total_projected_revenue": 755784.0,
+    "daily_average": 30.9,
+    "recommended_stock_buffer": 266,
+    "conservative_units": 190,
+    "conservative_revenue": 664810.0,
+    "base_units": 216,
+    "base_revenue": 755784.0,
+    "buffer_stock_units": 266,
+    "buffer_stock_revenue": 930734.0,
+    "historical_accuracy_pct": 86.5,
+    "mean_daily_error": 7.7,
+    "days": [
+      {
+        "date": "23/10/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 118966.0
+      },
+      {
+        "date": "24/10/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 35,
+        "confidence_min": 31,
+        "confidence_max": 39,
+        "projected_revenue": 122465.0
+      },
+      {
+        "date": "25/10/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 104970.0
+      },
+      {
+        "date": "26/10/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 28,
+        "confidence_min": 25,
+        "confidence_max": 31,
+        "projected_revenue": 97972.0
+      },
+      {
+        "date": "27/10/2026",
+        "day_name": "Terça",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 118966.0
+      },
+      {
+        "date": "28/10/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 31,
+        "confidence_min": 27,
+        "confidence_max": 35,
+        "projected_revenue": 108469.0
+      },
+      {
+        "date": "29/10/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 24,
+        "confidence_min": 21,
+        "confidence_max": 27,
+        "projected_revenue": 83976.0
+      }
+    ],
+    "explanation": {
+      "summary": "Previsão de 30.9 un/dia em ritmo de estabilidade. Principais alavancas: demanda consistente em tecnologia e preço de R$ 3,499.00 em Tecnologia.",
+      "primary_driver": "Demanda Consistente em Tecnologia",
+      "factors": [
+        {
+          "name": "Sazonalidade",
+          "weight_pct": 28,
+          "impact": "Concentração Útil",
+          "description": "Maior concentração de vendas durante os dias úteis comerciais."
+        },
+        {
+          "name": "Média de Vendas",
+          "weight_pct": 25,
+          "impact": "Volatilidade Ativa",
+          "description": "Volume médio em torno de ~26.0 un/dia com oscilação natural."
+        },
+        {
+          "name": "Competitividade de Preço",
+          "weight_pct": 14,
+          "impact": "Tíquete Premium",
+          "description": "Preço de R$ 3,499.00 atende público qualificado de alto valor agregado."
+        },
+        {
+          "name": "Interesse de Busca",
+          "weight_pct": 33,
+          "impact": "Demanda Recorrente",
+          "description": "Procura consolidada com consumo orgânico contínuo."
+        }
+      ]
+    }
   }
 }

@@ -252,10 +252,22 @@ NICHE_PRICE_ESTIMATES = {
     "rtx 3060": {"category": "Tecnologia", "median": 1849.00, "q1": 1599.00, "q3": 2099.00, "avg_daily": 24},
     "rtx 3050": {"category": "Tecnologia", "median": 1349.00, "q1": 1149.00, "q3": 1549.00, "avg_daily": 22},
     "gtx 1660 super": {"category": "Tecnologia", "median": 1299.00, "q1": 1099.00, "q3": 1499.00, "avg_daily": 20},
-    "gtx 1650": {"category": "Tecnologia", "median": 899.00, "q1": 749.00, "q3": 1049.00, "avg_daily": 18},
+    "gtx 1660": {"category": "Tecnologia", "median": 1299.00, "q1": 1099.00, "q3": 1499.00, "avg_daily": 20},
+    "gtx 1650": {"category": "Tecnologia", "median": 999.00, "q1": 799.00, "q3": 1199.00, "avg_daily": 20},
     "rx 7600": {"category": "Tecnologia", "median": 1799.00, "q1": 1549.00, "q3": 1999.00, "avg_daily": 16},
     "rx 6600": {"category": "Tecnologia", "median": 1399.00, "q1": 1199.00, "q3": 1599.00, "avg_daily": 20},
-    "placa de video": {"category": "Tecnologia", "median": 2399.00, "q1": 1499.00, "q3": 3899.00, "avg_daily": 18},
+    "rx 580": {"category": "Tecnologia", "median": 699.00, "q1": 599.00, "q3": 899.00, "avg_daily": 25},
+    "gtx 960": {"category": "Tecnologia", "median": 549.00, "q1": 469.00, "q3": 649.00, "avg_daily": 22},
+    "gtx 750 ti": {"category": "Tecnologia", "median": 549.00, "q1": 469.00, "q3": 649.00, "avg_daily": 22},
+    "rx 550": {"category": "Tecnologia", "median": 549.00, "q1": 469.00, "q3": 649.00, "avg_daily": 22},
+    "gt 1030": {"category": "Tecnologia", "median": 549.00, "q1": 469.00, "q3": 649.00, "avg_daily": 22},
+    "gt 730": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "gt 710": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "gt 210": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "r5 230": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "r5 220": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "hd 5450": {"category": "Tecnologia", "median": 289.00, "q1": 239.00, "q3": 369.00, "avg_daily": 25},
+    "placa de video": {"category": "Tecnologia", "median": 1199.00, "q1": 799.00, "q3": 1999.00, "avg_daily": 18},
 
     # Processadores / CPUs (Tecnologia)
     "ryzen 7 7800x3d": {"category": "Tecnologia", "median": 2899.00, "q1": 2599.00, "q3": 3299.00, "avg_daily": 15},
@@ -293,14 +305,22 @@ NICHE_PRICE_ESTIMATES = {
     "laptop": {"category": "Tecnologia", "median": 2699.00, "q1": 1899.00, "q3": 3999.00, "avg_daily": 20},
 
     # Monitores e periféricos (Tecnologia)
-    "monitor 24": {"category": "Tecnologia", "median": 799.00, "q1": 699.00, "q3": 899.00, "avg_daily": 18},
     "monitor 27": {"category": "Tecnologia", "median": 1099.00, "q1": 899.00, "q3": 1399.00, "avg_daily": 15},
     "monitor 144hz": {"category": "Tecnologia", "median": 899.00, "q1": 799.00, "q3": 1199.00, "avg_daily": 20},
     "monitor gamer": {"category": "Tecnologia", "median": 899.00, "q1": 799.00, "q3": 1299.00, "avg_daily": 18},
+    "monitor 24": {"category": "Tecnologia", "median": 799.00, "q1": 699.00, "q3": 899.00, "avg_daily": 18},
+    "monitor 20": {"category": "Tecnologia", "median": 399.00, "q1": 319.00, "q3": 469.00, "avg_daily": 20},
+    "monitor 19": {"category": "Tecnologia", "median": 379.00, "q1": 299.00, "q3": 449.00, "avg_daily": 22},
+    "monitor 18.5": {"category": "Tecnologia", "median": 379.00, "q1": 299.00, "q3": 449.00, "avg_daily": 22},
+    "monitor basico": {"category": "Tecnologia", "median": 379.00, "q1": 299.00, "q3": 449.00, "avg_daily": 22},
+    "monitor de escritorio": {"category": "Tecnologia", "median": 379.00, "q1": 299.00, "q3": 449.00, "avg_daily": 22},
     "monitor": {"category": "Tecnologia", "median": 799.00, "q1": 599.00, "q3": 1199.00, "avg_daily": 16},
     "teclado mecanico": {"category": "Tecnologia", "median": 199.90, "q1": 149.00, "q3": 279.00, "avg_daily": 28},
+    "teclado com fio": {"category": "Tecnologia", "median": 49.90, "q1": 39.90, "q3": 69.90, "avg_daily": 35},
     "teclado": {"category": "Tecnologia", "median": 129.90, "q1": 69.00, "q3": 199.00, "avg_daily": 30},
     "mouse gamer": {"category": "Tecnologia", "median": 129.90, "q1": 79.00, "q3": 219.00, "avg_daily": 35},
+    "mouse optico": {"category": "Tecnologia", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 45},
+    "mouse óptico": {"category": "Tecnologia", "median": 29.90, "q1": 19.90, "q3": 49.90, "avg_daily": 45},
     "mouse": {"category": "Tecnologia", "median": 79.90, "q1": 39.00, "q3": 149.00, "avg_daily": 40},
     "headset gamer": {"category": "Tecnologia", "median": 249.00, "q1": 149.00, "q3": 399.00, "avg_daily": 25},
     "headset": {"category": "Tecnologia", "median": 189.00, "q1": 99.00, "q3": 349.00, "avg_daily": 25},
@@ -324,6 +344,11 @@ NICHE_PRICE_ESTIMATES = {
     "motorola edge": {"category": "Tecnologia", "median": 2199.00, "q1": 1899.00, "q3": 2399.00, "avg_daily": 18},
     "samsung": {"category": "Tecnologia", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 25},
     "xiaomi": {"category": "Tecnologia", "median": 1499.00, "q1": 890.00, "q3": 1999.00, "avg_daily": 25},
+    "celular para idoso": {"category": "Tecnologia", "median": 169.00, "q1": 149.00, "q3": 220.00, "avg_daily": 30},
+    "celular idoso": {"category": "Tecnologia", "median": 169.00, "q1": 149.00, "q3": 220.00, "avg_daily": 30},
+    "celular de teclas": {"category": "Tecnologia", "median": 159.00, "q1": 149.00, "q3": 210.00, "avg_daily": 35},
+    "celular basico": {"category": "Tecnologia", "median": 169.00, "q1": 149.00, "q3": 220.00, "avg_daily": 30},
+    "celular flip": {"category": "Tecnologia", "median": 189.00, "q1": 149.00, "q3": 220.00, "avg_daily": 25},
     "smartphone": {"category": "Tecnologia", "median": 1899.00, "q1": 890.00, "q3": 3490.00, "avg_daily": 20},
     "celular": {"category": "Tecnologia", "median": 1899.00, "q1": 790.00, "q3": 3490.00, "avg_daily": 20},
     "ipad": {"category": "Tecnologia", "median": 4499.00, "q1": 3299.00, "q3": 6499.00, "avg_daily": 14},
@@ -434,7 +459,7 @@ NICHE_PRICE_ESTIMATES = {
 # Mapeamento oficial de Domínios do Mercado Livre para Benchmarks Estatísticos
 DOMAIN_BENCHMARKS = {
     # Hardware & Componentes
-    "MLB-GRAPHICS_CARDS": {"category": "Tecnologia", "median": 2499.00, "q1": 1499.00, "q3": 3899.00, "avg_daily": 15},
+    "MLB-GRAPHICS_CARDS": {"category": "Tecnologia", "median": 1199.00, "q1": 699.00, "q3": 2199.00, "avg_daily": 18},
     "MLB-PROCESSORS": {"category": "Tecnologia", "median": 1199.00, "q1": 699.00, "q3": 2299.00, "avg_daily": 18},
     "MLB-MOTHERBOARDS": {"category": "Tecnologia", "median": 699.00, "q1": 499.00, "q3": 1199.00, "avg_daily": 20},
     "MLB-COMPUTER_POWER_SUPPLIES": {"category": "Tecnologia", "median": 389.00, "q1": 249.00, "q3": 599.00, "avg_daily": 22},
@@ -488,7 +513,12 @@ def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, An
     norm = text.lower().strip()
     
     # 1. Regras especializadas para Placas de Vídeo / GPUs
-    if any(k in norm for k in ["rtx", "gtx", "radeon", "geforce", "placa de video", "placa de vídeo", "gpu", "rx 7", "rx 6", "rx 5"]):
+    gpu_identifiers = [
+        "rtx", "gtx", "radeon", "geforce", "placa de video", "placa de vídeo", "gpu", 
+        "rx 7", "rx 6", "rx 5", "rx 4", "gt 710", "gt 730", "gt 210", "r5 220", "r5 230", 
+        "hd 5450", "gt 1030", "rx 550", "gtx 750", "gtx 960", "rx 580"
+    ]
+    if any(k in norm for k in gpu_identifiers):
         # Acessórios de GPU (ex: suporte de placa de vídeo, cabo riser)
         if any(acc in norm for acc in ["suporte", "cabo", "riser", "bracket", "pasta termica"]):
             return {"median": 59.90, "q1": 39.90, "q3": 99.90, "category": "Tecnologia", "avg_daily": 30}
@@ -506,11 +536,34 @@ def resolve_dynamic_market_pricing(text: str, domain_info: Optional[Dict[str, An
             return {"median": 2199.00, "q1": 1899.00, "q3": 2599.00, "category": "Tecnologia", "avg_daily": 22}
         if "3060" in norm:
             return {"median": 1849.00, "q1": 1599.00, "q3": 2099.00, "category": "Tecnologia", "avg_daily": 24}
+
+        # Placas Intermediárias Gamer (gtx 1650, rx 580, gtx 1660, rtx 3050): Mediana R$ 999,00 a R$ 1.349,00
         if any(k in norm for k in ["3050", "1660", "6600", "7600"]):
-            return {"median": 1399.00, "q1": 1199.00, "q3": 1599.00, "category": "Tecnologia", "avg_daily": 20}
-        if any(k in norm for k in ["1650", "1050", "580"]):
-            return {"median": 899.00, "q1": 749.00, "q3": 1049.00, "category": "Tecnologia", "avg_daily": 18}
-        return {"median": 2399.00, "q1": 1499.00, "q3": 3899.00, "category": "Tecnologia", "avg_daily": 18}
+            return {"median": 1349.00, "q1": 1149.00, "q3": 1599.00, "category": "Tecnologia", "avg_daily": 20}
+        if any(k in norm for k in ["1650", "rx 580", "rx580", "rx 570", "1050"]):
+            return {"median": 999.00, "q1": 799.00, "q3": 1199.00, "category": "Tecnologia", "avg_daily": 20}
+
+        # Placas Intermediárias Básicas (gt 1030, rx 550, gtx 750 ti, gtx 960): Mediana R$ 549,00 (IQR: R$ 469,00 a R$ 649,00)
+        if any(k in norm for k in ["1030", "gt 1030", "rx 550", "rx550", "750 ti", "750ti", "gtx 750", "960", "gtx 960"]):
+            return {"median": 549.00, "q1": 469.00, "q3": 649.00, "category": "Tecnologia", "avg_daily": 22}
+
+        # Placas de Entrada/Básicas (gt 710, gt 730, gt 210, r5 220, r5 230, hd 5450): Mediana R$ 289,00 (IQR: R$ 239,00 a R$ 369,00)
+        if any(k in norm for k in ["710", "gt 710", "730", "gt 730", "210", "gt 210", "r5 220", "r5 230", "hd 5450", "hd5450", "r5220", "r5230"]):
+            return {"median": 289.00, "q1": 239.00, "q3": 369.00, "category": "Tecnologia", "avg_daily": 25}
+
+        # Fallback para GPU não identificada (elimina o antigo fallback genérico de R$ 2.499,00)
+        return {"median": 1199.00, "q1": 799.00, "q3": 1899.00, "category": "Tecnologia", "avg_daily": 18}
+
+    # 2. Monitores Básicos de Escritório (18.5", 19", 20"): Mediana R$ 379,00
+    if "monitor" in norm:
+        if any(sz in norm for sz in ["18.5", "18,5", "19", "20", "escritorio", "escritório", "basico", "básico", "corporativo", "vga"]):
+            if not any(g in norm for g in ["gamer", "144hz", "165hz", "240hz", "curvo", "qhd", "4k"]):
+                return {"median": 379.00, "q1": 299.00, "q3": 449.00, "category": "Tecnologia", "avg_daily": 22}
+
+    # 3. Celulares Básicos / Idosos / Teclas: Mediana R$ 149,00 a R$ 220,00
+    if any(k in norm for k in ["celular", "telefone", "smartphone"]):
+        if any(b in norm for b in ["idoso", "idosos", "tecla", "teclas", "basico", "básico", "flip", "rural", "simples", "senior", "sênior", "multilaser zapp", "positivo p"]):
+            return {"median": 169.00, "q1": 149.00, "q3": 220.00, "category": "Tecnologia", "avg_daily": 30}
 
     # 2. Processadores / CPUs
     if any(k in norm for k in ["ryzen", "core i9", "core i7", "core i5", "core i3", "processador"]):
@@ -734,6 +787,7 @@ class LiveDiscoveryEngine:
         tokens = [t for t in norm_query.split() if len(t) >= 2]
         results: List[Dict[str, Any]] = []
         seen_titles = set()
+        noise_terms = ["driver", "drivers", "download", "bios", "firmware", "manual", "windows", "como instalar", "gratis"]
 
         # 2. Prioridade 1: Produtos já cadastrados no banco de dados
         all_prods = db.query(Product).filter(Product.is_active == True).all()
@@ -742,6 +796,8 @@ class LiveDiscoveryEngine:
 
         for p in all_prods:
             p_title_lower = p.title.lower()
+            if any(nt in p_title_lower for nt in noise_terms):
+                continue
             if non_numeric_tokens and not any(t in p_title_lower for t in non_numeric_tokens):
                 continue
 
@@ -782,6 +838,10 @@ class LiveDiscoveryEngine:
 
                 sug_clean = sug.strip()
                 if not sug_clean or sug_clean.lower() in seen_titles:
+                    continue
+
+                # Filtro anti-ruído: descartar suporte técnico, drivers e manuais
+                if any(nt in sug_clean.lower() for nt in noise_terms):
                     continue
 
                 # Validar termo da sugestão contra catálogo de proibições
@@ -887,14 +947,8 @@ class LiveDiscoveryEngine:
             q1_val = niche_info.get("q1", median_val * 0.85)
             q3_val = niche_info.get("q3", median_val * 1.15)
             
-            # Flutuação natural em torno da Mediana Real (dentro do intervalo IQR)
-            natural_price = round(random.uniform(q1_val, q3_val), 2)
-            
-            # Garantir terminação comercial agradável (.90 ou .00)
-            if natural_price > 100:
-                final_price = round(natural_price, 0)
-            else:
-                final_price = round(int(natural_price) + 0.90, 2)
+            # Preço determinístico e fiel à mediana estatística real de mercado (sem geração sintética aleatória)
+            final_price = round(float(median_val), 2)
                 
             category = niche_info["category"]
             platform = random.choice(["mercadolivre", "amazon", "mercadolivre"])

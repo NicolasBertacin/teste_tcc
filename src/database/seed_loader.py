@@ -102,6 +102,37 @@ def seed_database_if_empty(session: Session):
                 if db_shift and db_shift.days > 0:
                     s.date = s.date + db_shift
 
+            # Inserir vendas para produtos adicionados ao seed que ainda não tenham histórico no banco
+            existing_pids_with_sales = {row[0] for row in session.query(SalesHistory.product_id).distinct().all()}
+            max_sale_id = session.query(func.max(SalesHistory.id)).scalar() or 0
+
+            seed_sales_by_pid = {}
+            for s_data in sales_data:
+                pid = s_data.get("product_id")
+                if pid not in seed_sales_by_pid:
+                    seed_sales_by_pid[pid] = []
+                seed_sales_by_pid[pid].append(s_data)
+
+            for p_data in products_data:
+                pid = p_data.get("id")
+                if pid not in existing_pids_with_sales:
+                    p_sales = seed_sales_by_pid.get(pid, [])
+                    for s_data in p_sales:
+                        max_sale_id += 1
+                        shifted_date = _parse_dt(s_data.get("date")) + seed_shift
+                        sales_entry = SalesHistory(
+                            id=max_sale_id,
+                            product_id=pid,
+                            date=shifted_date,
+                            quantity_sold=int(s_data.get("quantity_sold", 10)),
+                            price_at_date=float(s_data.get("price_at_date", p_data.get("price", 100.0))),
+                            available_quantity=int(s_data.get("available_quantity", 50)),
+                            platform=s_data.get("platform", "mercadolivre"),
+                            collected_at=_parse_dt(s_data.get("collected_at"))
+                        )
+                        session.add(sales_entry)
+                    existing_pids_with_sales.add(pid)
+
         # 3. Sincronizar Search Trends se tabela vazia
         if session.query(SearchTrend).count() == 0:
             trends_records = []
