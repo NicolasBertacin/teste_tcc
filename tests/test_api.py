@@ -201,6 +201,33 @@ def test_forecast_ranking(client):
         assert first_item["rank"] == 1
 
 
+def test_forecast_ranking_sync_live(client):
+    """Testa endpoint de sincronização dos líderes de mercado ao vivo."""
+    response = client.post("/api/v1/forecast/ranking/sync-live")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "total_synced_products" in data
+    assert isinstance(data["sample_products"], list)
+    assert "timestamp" in data
+
+    # Testar com categoria específica
+    cat_response = client.post("/api/v1/forecast/ranking/sync-live?category=Tecnologia")
+    assert cat_response.status_code == 200
+    cat_data = cat_response.json()
+    assert cat_data["status"] == "success"
+
+
+def test_forecast_ranking_with_sync_param(client):
+    """Testa chamada do ranking com flag sync_live ativada."""
+    response = client.get("/api/v1/forecast/ranking?horizon_days=30&sync_live=true")
+    assert response.status_code == 200
+    data = response.json()
+    assert "top_overall" in data
+    assert "top_by_category" in data
+
+
+
 def test_forecast_compare_endpoint(client):
     """Testa comparador preditivo lado a lado (Produto A vs B)."""
     response = client.post("/api/v1/forecast/compare", json={

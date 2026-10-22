@@ -18,9 +18,14 @@ from src.schemas.forecast_schema import (
     DailyForecastItem,
     ForecastSummaryResponse,
     ForecastRankingResponse,
-    RankingForecastItem
+    RankingForecastItem,
+    SyncLiveRankingResponse,
+    CompareForecastRequest,
+    CompareForecastResponse
 )
 from src.services.product_media import get_product_thumbnail, get_product_url
+from src.collectors.category_harvester import harvest_all_top_categories, harvest_category
+
 
 router = APIRouter(prefix="/forecast", tags=["Previsão de Demanda & IA"])
 
@@ -294,15 +299,21 @@ _ranking_cache: dict[int, tuple[float, ForecastRankingResponse]] = {}
 @router.get("/ranking", response_model=ForecastRankingResponse, summary="Ranking preditivo de produtos e categorias")
 def get_forecast_ranking(
     horizon_days: int = Query(30, ge=7, le=30, description="Horizonte de projeção em dias"),
+    sync_live: bool = Query(False, description="Forçar sincronização com o mercado antes de calcular o ranking"),
     db: Session = Depends(get_db),
     forecaster: FutureForecaster = Depends(get_ml_forecaster)
 ):
     """Retorna Top 7 produtos gerais e Top 5 produtos por categoria para os próximos 30 dias com explicabilidade."""
+    if sync_live:
+        harvest_all_top_categories(db, limit_per_term=1)
+        _ranking_cache.pop(horizon_days, None)
+
     now_ts = time.time()
     if horizon_days in _ranking_cache:
         cached_time, cached_data = _ranking_cache[horizon_days]
         if now_ts - cached_time < 180:  # 3 min cache
             return cached_data
+
 
     products = db.query(Product).filter(Product.is_active.is_(True)).all()
     sales = db.query(SalesHistory).all()
@@ -467,10 +478,32 @@ def get_forecast_ranking(
     return response_obj
 
 
-from src.schemas.forecast_schema import CompareForecastRequest, CompareForecastResponse
+@router.post("/ranking/sync-live", response_model=SyncLiveRankingResponse, summary="Sincronizar ranking com os mais vendidos ao vivo dos marketplaces")
+def sync_live_ranking(
+    category: Optional[str] = Query(None, description="Filtrar categoria específica ou sincronizar todas"),
+    db: Session = Depends(get_db)
+):
+    """Varre as categorias líderes do Mercado Livre e da Amazon, descobre e sincroniza os produtos mais vendidos,
+    e invalida o cache do ranking preditivo para forçar o recálculo em tempo real."""
+    if category and category.upper() != "GERAIS":
+        res = harvest_category(db, category_name=category, limit_per_term=1)
+    else:
+        res = harvest_all_top_categories(db, limit_per_term=1)
+
+    # Invalida o cache do ranking para que a próxima chamada reflita os novos dados imediatamente
+    _ranking_cache.clear()
+
+    return SyncLiveRankingResponse(
+        status="success",
+        message=f"Sincronização concluída com sucesso! {res.get('total_synced_products', 0)} produtos líderes sincronizados com o mercado.",
+        total_synced_products=res.get("total_synced_products", 0),
+        sample_products=res.get("sample_products", []),
+        timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    )
 
 
 @router.post("/compare", response_model=CompareForecastResponse, summary="Comparador Preditivo Lado a Lado (Produto A vs Produto B)")
+
 def compare_products_forecast(
     request: CompareForecastRequest,
     db: Session = Depends(get_db),

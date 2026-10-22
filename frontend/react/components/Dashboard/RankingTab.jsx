@@ -9,6 +9,11 @@ function RankingTab({ categories }) {
     const [rankingData, setRankingData] = React.useState({ top_overall: [], top_by_category: {} });
     const [selectedCategory, setSelectedCategory] = React.useState('GERAIS');
     const [loading, setLoading] = React.useState(true);
+    const [syncing, setSyncing] = React.useState(false);
+    const [syncStatusMsg, setSyncStatusMsg] = React.useState('');
+    const [lastSyncedAt, setLastSyncedAt] = React.useState(() => {
+        return localStorage.getItem('trendcommerce_last_rank_sync') || 'Hoje (Tempo Real Ativo)';
+    });
     const [selectedItemModal, setSelectedItemModal] = React.useState(null);
     const [catDropdownOpen, setCatDropdownOpen] = React.useState(false);
     const catDropdownRef = React.useRef(null);
@@ -39,6 +44,26 @@ function RankingTab({ categories }) {
         }
     };
 
+    const handleSyncLiveMarket = async () => {
+        setSyncing(true);
+        setSyncStatusMsg('Consultando APIs do Mercado Livre e Amazon para os produtos mais vendidos...');
+        try {
+            const res = await window.apiService.forecast.syncLiveRanking(selectedCategory !== 'GERAIS' ? selectedCategory : null);
+            const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const syncLabel = `Hoje às ${nowTime}`;
+            setLastSyncedAt(syncLabel);
+            localStorage.setItem('trendcommerce_last_rank_sync', syncLabel);
+            setSyncStatusMsg(`✓ ${res.message || 'Catálogo atualizado com sucesso com os produtos mais vendidos!'}`);
+            await loadRanking();
+        } catch (err) {
+            console.error('Erro na sincronização:', err);
+            setSyncStatusMsg('Aviso: Utilizando base de produtos em cache local.');
+        } finally {
+            setSyncing(false);
+            setTimeout(() => setSyncStatusMsg(''), 6000);
+        }
+    };
+
     const categoryItems = (rankingData.top_by_category && rankingData.top_by_category[selectedCategory])
         ? rankingData.top_by_category[selectedCategory]
         : (selectedCategory === 'GERAIS' && rankingData.top_overall)
@@ -49,6 +74,81 @@ function RankingTab({ categories }) {
 
     return (
         <section className="dash-tab-content active">
+            {/* Barra de Inteligência e Sincronização em Tempo Real com Mercado Livre & Amazon */}
+            <div className="ranking-sync-bar" style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px',
+                marginBottom: '16px',
+                padding: '12px 18px',
+                background: 'linear-gradient(90deg, rgba(16, 26, 43, 0.9) 0%, rgba(20, 36, 62, 0.9) 100%)',
+                border: '1px solid rgba(0, 240, 255, 0.25)',
+                borderRadius: '10px',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+                    <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        background: 'rgba(0, 240, 255, 0.12)',
+                        border: '1px solid rgba(0, 240, 255, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#00f0ff',
+                        flexShrink: 0
+                    }}>
+                        <i className="ph ph-globe" style={{ fontSize: '20px' }}></i>
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff', letterSpacing: '0.5px' }}>
+                                RADAR GLOBAL DE MERCADO
+                            </span>
+                            <span className="platform-tag-mini platform-tag-mercadolivre" style={{ fontSize: '10px' }}>Mercado Livre</span>
+                            <span className="platform-tag-mini platform-tag-amazon" style={{ fontSize: '10px' }}>Amazon</span>
+                            <span style={{ fontSize: '11px', color: '#8da2bd', marginLeft: '6px' }}>
+                                • Sincronização: <strong style={{ color: '#00f0ff' }}>{lastSyncedAt}</strong>
+                            </span>
+                        </div>
+                        <div style={{ fontSize: '11px', color: syncStatusMsg.startsWith('✓') ? '#10b981' : '#8da2bd', marginTop: '3px' }}>
+                            {syncStatusMsg || 'O ranking computa projeções XGBoost para os produtos líderes de vendas de cada categoria nos marketplaces.'}
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                    <button
+                        type="button"
+                        className="btn-sync-market"
+                        onClick={handleSyncLiveMarket}
+                        disabled={syncing || loading}
+                        title="Varrer as categorias do Mercado Livre e Amazon e atualizar os líderes de venda ao vivo"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '9px 18px',
+                            background: syncing ? 'rgba(0, 240, 255, 0.15)' : 'linear-gradient(135deg, #00f0ff 0%, #0077ff 100%)',
+                            color: syncing ? '#00f0ff' : '#0a101d',
+                            border: '1px solid rgba(0, 240, 255, 0.4)',
+                            borderRadius: '8px',
+                            fontWeight: '700',
+                            fontSize: '12px',
+                            cursor: syncing ? 'not-allowed' : 'pointer',
+                            boxShadow: syncing ? 'none' : '0 2px 12px rgba(0, 240, 255, 0.3)',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <i className={`ph ${syncing ? 'ph-spinner ph-spin' : 'ph-arrows-clockwise'}`} style={{ fontSize: '15px' }}></i>
+                        <span>{syncing ? 'Varrendo Marketplaces...' : 'Sincronizar Mais Vendidos ao Vivo'}</span>
+                    </button>
+                </div>
+            </div>
+
             <div className="ranking-two-col-grid">
                 {/* Coluna Esquerda: Top 7 Próximos 30 Dias */}
                 <div className="dash-card ranking-col-card">
