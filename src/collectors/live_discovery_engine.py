@@ -129,6 +129,9 @@ CATEGORY_NORMALIZE_MAP = {
     "moda": "Moda",
     "calçados": "Moda",
     "calcados": "Moda",
+    "tênis": "Moda",
+    "tenis": "Moda",
+
 
     # Beleza e Cuidado Pessoal
     "beleza & cosméticos": "Beleza e Cuidado Pessoal",
@@ -157,11 +160,21 @@ CATEGORY_NORMALIZE_MAP = {
     "alimentos & bebidas": "Supermercado",
     "alimentos e bebidas": "Supermercado",
     "supermercado": "Supermercado",
+    "café moído e em grãos": "Supermercado",
+    "café moído e em graos": "Supermercado",
+    "café": "Supermercado",
+    "cafe": "Supermercado",
+    "cafés": "Supermercado",
+    "cafes": "Supermercado",
 
     # Acessórios para Veículos
     "automotivo": "Acessórios para Veículos",
     "acessórios para veículos": "Acessórios para Veículos",
     "acessorios para veiculos": "Acessórios para Veículos",
+    "rastreadores de veículos": "Acessórios para Veículos",
+    "rastreadores de veiculos": "Acessórios para Veículos",
+    "rastreadores": "Acessórios para Veículos",
+
 
     # Livros
     "livros": "Livros",

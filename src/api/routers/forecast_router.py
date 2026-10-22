@@ -2,9 +2,11 @@
 
 import json
 import time
+import math
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -348,41 +350,70 @@ def get_forecast_ranking(
         for s in sales
     ])
 
-    # Selecionar candidatos líderes por categoria (top 6 por volume histórico) para performance instantânea
-    sales_summary = sales_df.groupby("product_id")["quantity_sold"].sum().reset_index()
-    merged_candidates = products_df.merge(sales_summary, on="product_id", how="left").fillna(0)
-    
-    candidate_ids = set()
-    for _, cat_group in merged_candidates.groupby("category"):
-        top_in_cat = cat_group.sort_values("quantity_sold", ascending=False).head(6)
-        candidate_ids.update(top_in_cat["product_id"].tolist())
-
-    filtered_products_df = products_df[products_df["product_id"].isin(candidate_ids)]
-    forecasts = forecaster.forecast_all_products(filtered_products_df, sales_df, horizon_days=horizon_days)
-
-    # Ordenar por demanda e faturamento projetado
-    sorted_by_demand = sorted(forecasts, key=lambda x: x.total_predicted_units, reverse=True)
     products_by_id = {p.id: p for p in products}
 
-    # Top 7 produtos gerais: Líderes Top 1 de cada nicho/categoria
+    # Avaliação preditiva sobre todos os produtos ativos do catálogo para não excluir produtos âncora de alto valor
+    forecasts = forecaster.forecast_all_products(products_df, sales_df, horizon_days=horizon_days)
+
+    ACCESSORY_TERMS = ["capa", "case", "pelicula", "película", "cabo", "suporte celular", "suporte veicular"]
+
+    def _get_product_root_family(title: str) -> str:
+        """Extrai a família principal do produto para desduplicação e diversificação do ranking."""
+        t_lower = title.lower()
+        for root in [
+            "iphone", "macbook", "airpods", "galaxy s", "moto", "playstation", "xbox", "switch", 
+            "creatina", "whey", "pre treino", "havaianas", "smart tv", "aspirador", "air fryer",
+            "perfume", "secador", "parafusadeira", "ferramentas", "notebook", "monitor", "tapete",
+            "teclado", "mouse", "ssd", "micro-ondas", "cafeteira", "liquidificador", "tenis", "tênis",
+            "rastreador", "café", "cafe"
+        ]:
+            if root in t_lower:
+                return root
+        return title[:18].lower()
+
+    # Cálculo do Score Institucional de Attratividade Comercial (Log-Harmonic Demanda x Receita)
+    scored_items = []
+    for f in forecasts:
+        prod_info = products_by_id.get(f.product_id)
+        u_price = f.unit_price or (prod_info.price if prod_info else 100.0)
+        is_acc = any(term in f.product_title.lower() for term in ACCESSORY_TERMS) and u_price < 80.0
+        
+        units = max(1, f.total_predicted_units)
+        rev = max(1.0, f.total_projected_revenue)
+        raw_score = math.log10(units + 1) * math.log10(rev + 1)
+        # Acessórios de baixo valor sofrem ajuste de 30% para não roubarem o topo geral de produtos principais
+        adj_score = raw_score * 0.70 if is_acc else raw_score
+        
+        scored_items.append({
+            "forecast": f,
+            "score": adj_score,
+            "is_acc": is_acc,
+            "root_family": _get_product_root_family(f.product_title),
+            "prod_info": prod_info
+        })
+
+    scored_items.sort(key=lambda x: x["score"], reverse=True)
+
+    # Top 7 produtos gerais: Líderes absolutos ponderados de cada nicho/categoria
     seen_cats_overall = set()
     top_overall = []
-    for f in sorted_by_demand:
+    for item in scored_items:
+        f = item["forecast"]
         cat = f.category or "Geral"
         if cat not in seen_cats_overall:
             seen_cats_overall.add(cat)
             rank_num = len(top_overall) + 1
             if rank_num == 1:
-                reason = f"Líder absoluto de demanda com {f.total_predicted_units} un e faturamento projetado de R$ {f.total_projected_revenue:,.2f} no horizonte de {horizon_days} dias."
+                reason = f"Líder comercial absoluto com {f.total_predicted_units} un e faturamento projetado de R$ {f.total_projected_revenue:,.2f} no horizonte de {horizon_days} dias."
                 driver = f"Líder Geral & Tração Máxima em {cat}"
             elif rank_num in [2, 3]:
-                reason = f"Líder no nicho '{cat}' com altíssima velocidade de saída (~{f.daily_average:.1f} un/dia) e picos nos finais de semana."
+                reason = f"Líder no nicho '{cat}' com altíssima tração financeira (R$ {f.total_projected_revenue:,.2f}) e velocidade de saída (~{f.daily_average:.1f} un/dia)."
                 driver = f"Líder no segmento de {cat}"
             else:
-                reason = f"Produto #1 no nicho '{cat}' com performance consistente e margem de segurança estável."
-                driver = f"Destaque em {cat}"
+                reason = f"Produto #1 no nicho '{cat}' com performance de alta liquidez e consistência de demanda."
+                driver = f"Referência em {cat}"
 
-            prod_info = products_by_id.get(f.product_id)
+            prod_info = item["prod_info"]
             p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
             p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
             p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
@@ -404,13 +435,17 @@ def get_forecast_ranking(
             if len(top_overall) >= 7:
                 break
 
-    # Se ainda houver vagas para 7 e poucas categorias distintas, preenche com os próximos melhores
+    # Se ainda houver vagas para 7 e poucas categorias distintas, preenche com os próximos melhores de famílias distintas
     if len(top_overall) < 7:
         seen_pids = {item.product_id for item in top_overall}
-        for f in sorted_by_demand:
-            if f.product_id not in seen_pids:
+        seen_roots = {_get_product_root_family(item.title) for item in top_overall}
+        for item in scored_items:
+            f = item["forecast"]
+            rf = item["root_family"]
+            if f.product_id not in seen_pids and rf not in seen_roots:
                 seen_pids.add(f.product_id)
-                prod_info = products_by_id.get(f.product_id)
+                seen_roots.add(rf)
+                prod_info = item["prod_info"]
                 p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
                 p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
                 p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
@@ -426,48 +461,90 @@ def get_forecast_ranking(
                     platform=p_plat,
                     thumbnail_url=p_thumb,
                     product_url=p_url,
-                    rank_reason=f"Top performer com {f.total_predicted_units} unidades projetadas.",
+                    rank_reason=f"Top performer com {f.total_predicted_units} unidades projetadas e faturamento de R$ {f.total_projected_revenue:,.2f}.",
                     key_driver="Alta Tração de Demanda"
                 ))
                 if len(top_overall) >= 7:
                     break
 
-    # Agrupar por categoria e pegar top 5 com justificativas
+    # Agrupar por categoria e selecionar Top 5 diversificado por família/linha
     by_cat_dict = {}
-    for f in forecasts:
+    for item in scored_items:
+        f = item["forecast"]
         cat = f.category or "Geral"
         if cat not in by_cat_dict:
             by_cat_dict[cat] = []
-        by_cat_dict[cat].append(f)
+        by_cat_dict[cat].append(item)
 
     top_by_category = {}
     top_by_category["GERAIS"] = top_overall[:5]
 
-    for cat, list_items in by_cat_dict.items():
-        sorted_cat = sorted(list_items, key=lambda x: x.total_predicted_units, reverse=True)
+    for cat, list_scored in by_cat_dict.items():
         top_by_category[cat] = []
-        for i, f in enumerate(sorted_cat[:5]):
-            prod_info = products_by_id.get(f.product_id)
-            p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
-            p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
-            p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+        seen_roots_cat = set()
+        
+        # Passe 1: Famílias distintas na categoria para evitar clones
+        for item in list_scored:
+            f = item["forecast"]
+            rf = item["root_family"]
+            if rf not in seen_roots_cat:
+                seen_roots_cat.add(rf)
+                rank_pos = len(top_by_category[cat]) + 1
+                prod_info = item["prod_info"]
+                p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
+                p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
 
-            top_by_category[cat].append(
-                RankingForecastItem(
-                    rank=i + 1,
-                    product_id=f.product_id,
-                    title=f.product_title,
-                    category=f.category,
-                    price=f.unit_price,
-                    projected_units=f.total_predicted_units,
-                    projected_revenue=f.total_projected_revenue,
-                    platform=p_plat,
-                    thumbnail_url=p_thumb,
-                    product_url=p_url,
-                    rank_reason=f"Top #{i+1} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
-                    key_driver=f"Liderança no segmento de {cat}"
+                top_by_category[cat].append(
+                    RankingForecastItem(
+                        rank=rank_pos,
+                        product_id=f.product_id,
+                        title=f.product_title,
+                        category=f.category,
+                        price=f.unit_price,
+                        projected_units=f.total_predicted_units,
+                        projected_revenue=f.total_projected_revenue,
+                        platform=p_plat,
+                        thumbnail_url=p_thumb,
+                        product_url=p_url,
+                        rank_reason=f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
+                        key_driver=f"Liderança no segmento de {cat}"
+                    )
                 )
-            )
+                if len(top_by_category[cat]) >= 5:
+                    break
+
+        # Passe 2: Se ainda faltar vagas para 5 na categoria, preenche com os melhores restantes
+        if len(top_by_category[cat]) < 5:
+            seen_pids = {x.product_id for x in top_by_category[cat]}
+            for item in list_scored:
+                f = item["forecast"]
+                if f.product_id not in seen_pids:
+                    seen_pids.add(f.product_id)
+                    rank_pos = len(top_by_category[cat]) + 1
+                    prod_info = item["prod_info"]
+                    p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                    p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
+                    p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
+                    top_by_category[cat].append(
+                        RankingForecastItem(
+                            rank=rank_pos,
+                            product_id=f.product_id,
+                            title=f.product_title,
+                            category=f.category,
+                            price=f.unit_price,
+                            projected_units=f.total_predicted_units,
+                            projected_revenue=f.total_projected_revenue,
+                            platform=p_plat,
+                            thumbnail_url=p_thumb,
+                            product_url=p_url,
+                            rank_reason=f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
+                            key_driver=f"Destaque em {cat}"
+                        )
+                    )
+                    if len(top_by_category[cat]) >= 5:
+                        break
 
     response_obj = ForecastRankingResponse(
         horizon_days=horizon_days,
@@ -476,6 +553,7 @@ def get_forecast_ranking(
     )
     _ranking_cache[horizon_days] = (now_ts, response_obj)
     return response_obj
+
 
 
 @router.post("/ranking/sync-live", response_model=SyncLiveRankingResponse, summary="Sincronizar ranking com os mais vendidos ao vivo dos marketplaces")
