@@ -106,3 +106,12 @@ class CompareForecastResponse(BaseModel):
     demand_difference: int
     demand_leader: str
     verdict: str
+
+
+class SyncLiveRankingResponse(BaseModel):
+    status: str
+    message: str
+    total_synced_products: int
+    sample_products: List[str] = []
+    timestamp: str
+

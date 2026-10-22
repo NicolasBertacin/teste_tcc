@@ -238,6 +238,15 @@ class ApiClient {
             return await this.request(`/forecast/ranking?horizon_days=${horizonDays}`);
         },
 
+        syncLiveRanking: async (category = null) => {
+            let endpoint = '/forecast/ranking/sync-live';
+            if (category && category !== 'GERAIS') {
+                endpoint += `?category=${encodeURIComponent(category)}`;
+            }
+            return await this.request(endpoint, { method: 'POST' });
+        },
+
+
         compare: async (productIdA, productIdB, horizonDays = 30) => {
             return await this.request('/forecast/compare', {
                 method: 'POST',
