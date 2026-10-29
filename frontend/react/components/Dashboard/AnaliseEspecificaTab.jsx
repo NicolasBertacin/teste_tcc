@@ -617,24 +617,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: '240px' }}>
                         <img src={thumbUrl} alt="" className="product-thumbnail-large" />
                         <div style={{ minWidth: 0, flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                                <span className={`platform-badge ${isAmazon ? 'platform-badge-amazon' : 'platform-badge-ml'}`}>
-                                    <i className={isAmazon ? 'ph ph-shopping-bag' : 'ph ph-storefront'}></i>
-                                    {isAmazon ? 'Amazon' : 'Mercado Livre'}
-                                </span>
-                                {productUrl && (
-                                    <a
-                                        href={productUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-view-ad"
-                                        title="Ver anúncio oficial no marketplace"
-                                    >
-                                        <span>Ver Anúncio Original</span>
-                                        <i className="ph ph-arrow-square-out"></i>
-                                    </a>
-                                )}
-                            </div>
+                            
                             <h2 className="specific-prod-title" style={{ fontSize: '15px', fontWeight: '800', wordBreak: 'break-word', lineHeight: '1.3' }}>
                                 {selectedProduct ? selectedProduct.title.toUpperCase() : (forecast ? forecast.product_title.toUpperCase() : 'SELECIONE UM PRODUTO')}
                             </h2>
@@ -684,29 +667,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     </div>
                 </div>
 
-                {/* Subtítulo de Clareza de Faturamento */}
-                <div className="revenue-disclaimer-note" style={{ padding: '0 4px', margin: '8px 0 12px 0' }}>
-                    * Faturamento Bruto Projetado (com base no preço praticado de R$ {effectivePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{effectivePrice !== activePrice ? ` • Preço de Mercado: R$ ${activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''})
-                </div>
-
-                {/* Selo de Confiabilidade Estatística & Ciclo de Previsão */}
-                {forecast && (
-                    <div className="reliability-seal-bar">
-                        <div className="reliability-seal-item">
-                            <span className="reliability-seal-badge">
-                                <i className="ph ph-shield-check"></i> Selo de Confiabilidade Estatística
-                            </span>
-                            <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '11px' }}>
-                                Acurácia Histórica: {forecast.historical_accuracy_pct ? forecast.historical_accuracy_pct.toFixed(1) : '94,1'}% | Erro Médio: ±{forecast.mean_daily_error ? forecast.mean_daily_error.toFixed(1) : '4,8'} un/dia
-                            </span>
-                        </div>
-                        <div className="cycle-info-pill">
-                            <i className="ph ph-calendar-blank" style={{ marginRight: '4px' }}></i>
-                            {forecast.forecast_cycle || `Ciclo: Próximos ${horizonDays} Dias`}
-                            {forecast.generated_at && ` • Apuração: ${forecast.generated_at}`}
-                        </div>
-                    </div>
-                )}
+                
 
                 {/* Horizon Toggle Buttons */}
                 <div className="horizon-toggle-bar">
@@ -780,74 +741,6 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                         </span>
                     </div>
                 </div>
-
-                {/* Três Níveis de Decisão de Estoque (Gestão de Risco) */}
-                {forecast && (
-                    <div className="decision-tiers-grid">
-                        <div className="decision-tier-card tier-conservative">
-                            <div>
-                                <span className="tier-badge-label">
-                                    <i className="ph ph-shield"></i> Cenário Conservador (Mínimo Seguro)
-                                </span>
-                                <p className="tier-desc-text">
-                                    Limite inferior com 95% de confiança estatística. Ideal para compras cautelosas com capital restrito.
-                                </p>
-                            </div>
-                            <div className="tier-metrics-row">
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Vendas Mínimas</div>
-                                    <div className="tier-units-val">{(forecast.conservative_units || Math.round(forecast.total_predicted_units * 0.85)).toLocaleString('pt-BR')} un</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Mínima</div>
-                                    <div className="tier-revenue-val">R$ {(((forecast.conservative_units || Math.round(forecast.total_predicted_units * 0.85))) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="decision-tier-card tier-base">
-                            <div>
-                                <span className="tier-badge-label">
-                                    <i className="ph ph-trend-up"></i> Cenário Base (Projeção Mais Provável)
-                                </span>
-                                <p className="tier-desc-text">
-                                    Projeção central do XGBoost ajustada para dinâmica temporal e volume histórico.
-                                </p>
-                            </div>
-                            <div className="tier-metrics-row">
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Demanda Esperada</div>
-                                    <div className="tier-units-val">{(forecast.base_units || forecast.total_predicted_units).toLocaleString('pt-BR')} un</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Projetada</div>
-                                    <div className="tier-revenue-val">R$ {(((forecast.base_units || forecast.total_predicted_units)) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="decision-tier-card tier-buffer">
-                            <div>
-                                <span className="tier-badge-label">
-                                    <i className="ph ph-package"></i> Estoque com Buffer (Anti-Ruptura)
-                                </span>
-                                <p className="tier-desc-text">
-                                    Quantidade recomendada para aquisição garantindo proteção contra esgotamento e atrasos.
-                                </p>
-                            </div>
-                            <div className="tier-metrics-row">
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Compra Sugerida</div>
-                                    <div className="tier-units-val" style={{ color: '#10b981' }}>{(forecast.buffer_stock_units || forecast.recommended_stock_buffer).toLocaleString('pt-BR')} un</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Capital Necessário</div>
-                                    <div className="tier-revenue-val" style={{ color: '#10b981' }}>R$ {(((forecast.buffer_stock_units || forecast.recommended_stock_buffer)) * effectivePrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* AI Explainability Section */}
                 {forecast && forecast.explanation && (

@@ -459,108 +459,51 @@ function IaPreditivaTab({ categories, showToast }) {
     const activePrice = forecastData?.unit_price ?? activeProd?.price ?? 0;
     const projectedRevenue = forecastData?.total_projected_revenue ?? (totalPredictedUnits * activePrice);
 
-    const platform = (activeProd?.platform || forecastData?.platform || 'mercadolivre').toLowerCase();
-    const isAmazon = platform === 'amazon';
-    const productUrl = activeProd?.product_url || forecastData?.product_url;
-    const thumbUrl = activeProd?.thumbnail_url || forecastData?.thumbnail_url || 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
 
     return (
         <section className="dash-tab-content active">
             {/* Top Chart Card */}
             <div className="dash-card main-chart-card">
                 <div className="chart-main-area-col" style={{ display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0, position: 'relative' }}>
-                    {/* Active Product Projection Header */}
+                    {/* Header Limpo: Nome do Produto, Demanda e Faturamento Projetado */}
                     <div className="chart-active-prod-banner" style={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         flexWrap: 'wrap',
-                        gap: '12px',
-                        padding: '12px 16px',
-                        marginBottom: '8px',
+                        gap: '16px',
+                        padding: '16px 20px',
+                        marginBottom: '16px',
                         background: 'rgba(0, 180, 216, 0.07)',
                         border: '1px solid rgba(0, 212, 255, 0.22)',
                         borderRadius: '12px'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '220px', flex: 1 }}>
-                            <img
-                                src={thumbUrl}
-                                alt={activeProd?.title || 'Produto'}
-                                className="product-thumbnail-large"
-                            />
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                                    <span className={`platform-badge ${isAmazon ? 'platform-badge-amazon' : 'platform-badge-ml'}`}>
-                                        <i className={isAmazon ? 'ph ph-shopping-bag' : 'ph ph-storefront'}></i>
-                                        {isAmazon ? 'Amazon' : 'Mercado Livre'}
-                                    </span>
-
-                                    {productUrl && (
-                                        <a
-                                            href={productUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="btn-view-ad"
-                                            title="Ver anúncio oficial no marketplace"
-                                        >
-                                            <span>Ver Anúncio Original</span>
-                                            <i className="ph ph-arrow-square-out"></i>
-                                        </a>
-                                    )}
-                                </div>
-                                <div style={{ fontSize: '14px', fontWeight: '800', color: '#ffffff', letterSpacing: '0.4px', wordBreak: 'break-word', lineHeight: '1.3' }}>
-                                    {activeProd ? activeProd.title.toUpperCase() : 'PROJEÇÃO DE VENDAS'}
-                                </div>
-                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                                    Preço: <strong style={{ color: '#00e5ff' }}>R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong> • Categoria: {activeProd?.category || 'Geral'}
-                                </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ fontSize: '15px', fontWeight: '800', color: '#ffffff', letterSpacing: '0.4px', wordBreak: 'break-word', lineHeight: '1.4' }}>
+                                {activeProd ? activeProd.title.toUpperCase() : 'PROJEÇÃO DE VENDAS'}
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                             <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     Demanda ({horizonDays}d)
                                 </div>
-                                <div style={{ fontSize: '16px', fontWeight: '800', color: '#ffffff' }}>
+                                <div style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>
                                     {forecastLoading ? 'Calculando...' : `${totalPredictedUnits.toLocaleString('pt-BR')} un`}
                                 </div>
                             </div>
 
                             <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     Faturamento Projetado
                                 </div>
-                                <div style={{ fontSize: '16px', fontWeight: '800', color: '#00f0ff' }}>
+                                <div style={{ fontSize: '18px', fontWeight: '800', color: '#00f0ff' }}>
                                     {forecastLoading ? 'Calculando...' : `R$ ${projectedRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {/* Subtítulo de Clareza de Faturamento */}
-                    <div className="revenue-disclaimer-note" style={{ padding: '0 4px', marginBottom: '8px' }}>
-                        * Faturamento Bruto Projetado (com base no preço de mercado de R$ {activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })})
-                    </div>
-
-                    {/* Selo de Confiabilidade & Ciclo Diário */}
-                    {forecastData && (
-                        <div className="reliability-seal-bar">
-                            <div className="reliability-seal-item">
-                                <span className="reliability-seal-badge">
-                                    <i className="ph ph-shield-check"></i> Selo de Confiabilidade Estatística
-                                </span>
-                                <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '11px' }}>
-                                    Acurácia Histórica: {forecastData.historical_accuracy_pct ? forecastData.historical_accuracy_pct.toFixed(1) : '94,1'}% | Erro Médio: ±{forecastData.mean_daily_error ? forecastData.mean_daily_error.toFixed(1) : '4,8'} un/dia
-                                </span>
-                            </div>
-                            <div className="cycle-info-pill">
-                                <i className="ph ph-calendar-blank" style={{ marginRight: '4px' }}></i>
-                                {forecastData.forecast_cycle || `Ciclo: Próximos ${horizonDays} Dias`}
-                                {forecastData.generated_at && ` • Apuração: ${forecastData.generated_at}`}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Container do Gráfico com Overlay de Carregamento e Tratamento de Erro */}
                     <div className="chart-container-wrap" style={{ position: 'relative' }}>
@@ -601,74 +544,7 @@ function IaPreditivaTab({ categories, showToast }) {
                         )}
                     </div>
 
-                    {/* Três Níveis de Risco de Decisão de Estoque */}
-                    {forecastData && (
-                        <div className="decision-tiers-grid">
-                            <div className="decision-tier-card tier-conservative">
-                                <div>
-                                    <span className="tier-badge-label">
-                                        <i className="ph ph-shield"></i> Cenário Conservador (Mínimo Seguro)
-                                    </span>
-                                    <p className="tier-desc-text">
-                                        Limite inferior com 95% de confiança estatística. Ideal para lojistas com capital restrito.
-                                    </p>
-                                </div>
-                                <div className="tier-metrics-row">
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Vendas Mínimas</div>
-                                        <div className="tier-units-val">{(forecastData.conservative_units || Math.round(totalPredictedUnits * 0.85)).toLocaleString('pt-BR')} un</div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Mínima</div>
-                                        <div className="tier-revenue-val">R$ {(forecastData.conservative_revenue || ((forecastData.conservative_units || Math.round(totalPredictedUnits * 0.85)) * activePrice)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="decision-tier-card tier-base">
-                                <div>
-                                    <span className="tier-badge-label">
-                                        <i className="ph ph-trend-up"></i> Cenário Base (Projeção Mais Provável)
-                                    </span>
-                                    <p className="tier-desc-text">
-                                        Projeção central do XGBoost calibrada para sazonalidade e dias da semana.
-                                    </p>
-                                </div>
-                                <div className="tier-metrics-row">
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Demanda Esperada</div>
-                                        <div className="tier-units-val">{(forecastData.base_units || totalPredictedUnits).toLocaleString('pt-BR')} un</div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Receita Projetada</div>
-                                        <div className="tier-revenue-val">R$ {(forecastData.base_revenue || projectedRevenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="decision-tier-card tier-buffer">
-                                <div>
-                                    <span className="tier-badge-label">
-                                        <i className="ph ph-package"></i> Estoque com Buffer (Anti-Ruptura)
-                                    </span>
-                                    <p className="tier-desc-text">
-                                        Quantidade recomendada para compra com margem de segurança para absorver picos.
-                                    </p>
-                                </div>
-                                <div className="tier-metrics-row">
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase' }}>Compra Sugerida</div>
-                                        <div className="tier-units-val" style={{ color: '#10b981' }}>{(forecastData.buffer_stock_units || forecastData.recommended_stock_buffer).toLocaleString('pt-BR')} un</div>
-                                    </div>
-                                    <div>
-                                        <div style={{ fontSize: '10px', color: '#8da2bd', textTransform: 'uppercase', textAlign: 'right' }}>Capital Necessário</div>
-                                        <div className="tier-revenue-val" style={{ color: '#10b981' }}>R$ {(forecastData.buffer_stock_revenue || ((forecastData.buffer_stock_units || forecastData.recommended_stock_buffer) * activePrice)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                    </div>
 
                 {/* Controles Laterais */}
                 <div className="chart-controls-box">
