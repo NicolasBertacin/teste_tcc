@@ -677,8 +677,6 @@ function IaPreditivaTab({ categories, showToast }) {
                             <p className="empty-msg">Carregando produtos...</p>
                         ) : (
                             topProducts.map((item) => {
-                                const itemPlatform = (item.platform || 'mercadolivre').toLowerCase();
-                                const isItemAmazon = itemPlatform === 'amazon';
                                 const itemThumb = item.thumbnail_url || 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
 
                                 return (
@@ -693,11 +691,6 @@ function IaPreditivaTab({ categories, showToast }) {
                                             <span className="ranking-num">{item.rank}.</span>
                                             <img src={itemThumb} alt="" className="ranking-thumb-img" />
                                             <div style={{ minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                                    <span className={`platform-tag-mini ${isItemAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
-                                                        {isItemAmazon ? 'Amazon' : 'Mercado Livre'}
-                                                    </span>
-                                                </div>
                                                 <span className="ranking-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                                     {item.title}
                                                 </span>

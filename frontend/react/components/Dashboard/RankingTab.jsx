@@ -108,8 +108,6 @@ function RankingTab({ categories }) {
                             <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff', letterSpacing: '0.5px' }}>
                                 RADAR GLOBAL DE MERCADO
                             </span>
-                            <span className="platform-tag-mini platform-tag-mercadolivre" style={{ fontSize: '10px' }}>Mercado Livre</span>
-                            <span className="platform-tag-mini platform-tag-amazon" style={{ fontSize: '10px' }}>Amazon</span>
                             <span style={{ fontSize: '11px', color: '#8da2bd', marginLeft: '6px' }}>
                                 • Sincronização: <strong style={{ color: '#00f0ff' }}>{lastSyncedAt}</strong>
                             </span>
@@ -161,7 +159,6 @@ function RankingTab({ categories }) {
                             <p className="empty-msg">Processando modelo XGBoost...</p>
                         ) : (
                             rankingData.top_overall.slice(0, 7).map((item) => {
-                                const isAmazon = (item.platform || 'mercadolivre').toLowerCase() === 'amazon';
                                 const thumb = item.thumbnail_url || defaultImg;
 
                                 return (
@@ -176,11 +173,6 @@ function RankingTab({ categories }) {
                                             <span className="item-num">{item.rank}.</span>
                                             <img src={thumb} alt="" className="ranking-thumb-img" />
                                             <div className="item-info" style={{ minWidth: 0, flex: 1 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                                    <span className={`platform-tag-mini ${isAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
-                                                        {isAmazon ? 'Amazon' : 'Mercado Livre'}
-                                                    </span>
-                                                </div>
                                                 <span className="item-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                                     {item.title}
                                                 </span>
@@ -215,7 +207,6 @@ function RankingTab({ categories }) {
                             <p className="empty-msg">Carregando categorias...</p>
                         ) : (
                             categoryItems.slice(0, 5).map((item) => {
-                                const isAmazon = (item.platform || 'mercadolivre').toLowerCase() === 'amazon';
                                 const thumb = item.thumbnail_url || defaultImg;
 
                                 return (
@@ -230,11 +221,6 @@ function RankingTab({ categories }) {
                                             <span className="item-num">{item.rank}.</span>
                                             <img src={thumb} alt="" className="ranking-thumb-img" />
                                             <div className="item-info" style={{ minWidth: 0, flex: 1 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                                    <span className={`platform-tag-mini ${isAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
-                                                        {isAmazon ? 'Amazon' : 'Mercado Livre'}
-                                                    </span>
-                                                </div>
                                                 <span className="item-title" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                                     {item.title}
                                                 </span>
@@ -343,9 +329,6 @@ function RankingTab({ categories }) {
                                     <i className="ph ph-trophy" style={{ fontSize: '13px', marginRight: '4px' }}></i> #{selectedItemModal.rank} NO RANKING
                                 </span>
                                 <span className="modal-category-badge">{selectedItemModal.category}</span>
-                                <span className={`platform-badge ${(selectedItemModal.platform || '').toLowerCase() === 'amazon' ? 'platform-badge-amazon' : 'platform-badge-ml'}`}>
-                                    {(selectedItemModal.platform || '').toLowerCase() === 'amazon' ? 'Amazon' : 'Mercado Livre'}
-                                </span>
                                 {selectedItemModal.product_url && (
                                     <a
                                         href={selectedItemModal.product_url}

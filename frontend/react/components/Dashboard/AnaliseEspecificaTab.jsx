@@ -559,7 +559,6 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <div className="search-results-dropdown">
                         {searchResults.map((prod) => {
                             const pPlatform = (prod.platform || 'mercadolivre').toLowerCase();
-                            const pIsAmazon = pPlatform === 'amazon';
                             const pThumb = prod.thumbnail_url || 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
 
                             return (
@@ -572,9 +571,6 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                     <img src={pThumb} alt="" className="ranking-thumb-img" />
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span className={`platform-tag-mini ${pIsAmazon ? 'platform-tag-amazon' : 'platform-tag-mercadolivre'}`}>
-                                                {pIsAmazon ? 'Amazon' : 'Mercado Livre'}
-                                            </span>
                                             <span className="search-item-title" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {prod.title}
                                             </span>
