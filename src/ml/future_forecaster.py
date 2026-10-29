@@ -65,8 +65,8 @@ class ProductFutureForecast:
     base_revenue: float = 0.0
     buffer_stock_units: int = 0
     buffer_stock_revenue: float = 0.0
-    historical_accuracy_pct: float = 94.1
-    mean_daily_error: float = 4.8
+    historical_accuracy_pct: float = 83.9
+    mean_daily_error: float = 5.7
 
 
 class FutureForecaster:
@@ -192,10 +192,11 @@ class FutureForecaster:
             daily_errors = [abs(val - mean_val) for val in recent_sales]
             mean_error = float(np.mean(daily_errors)) if len(daily_errors) > 0 else 2.5
             mean_error = round(max(0.8, mean_error), 1)
-            hist_acc = round(max(86.5, min(98.8, 100.0 - (mean_error / (mean_val + 1e-4) * 100))), 1)
+            mape_calc = (mean_error / (mean_val + 1e-4)) * 100
+            hist_acc = round(max(0.0, min(100.0, 100.0 - mape_calc)), 1)
         else:
-            mean_error = 4.8
-            hist_acc = 94.1
+            mean_error = 5.7
+            hist_acc = 83.9
 
         platform_str = str(product.get("platform", "mercadolivre")) if isinstance(product, dict) or hasattr(product, "get") else getattr(product, "platform", "mercadolivre")
         thumb_url = get_product_thumbnail(product)

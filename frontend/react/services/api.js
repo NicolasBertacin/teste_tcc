@@ -196,6 +196,11 @@ class ApiService {
             return await this.request(endpoint);
         },
 
+        getTopPredictedLive: async (niche = "Tecnologia", days = 14, limit = 10) => {
+            let endpoint = `/products/top-predicted-live?niche=${encodeURIComponent(niche)}&days=${days}&limit=${limit}`;
+            return await this.request(endpoint);
+        },
+
         discoverLive: async (query, limit = 5) => {
             return await this.request('/products/discover-live', {
                 method: 'POST',

@@ -143,10 +143,11 @@ class DataNormalizer:
 
     @staticmethod
     def _normalize_price(price: Any) -> Optional[float]:
-        """Normaliza um valor de preço."""
+        """Normaliza e valida um valor de preço, rejeitando valores nulos ou <= 0."""
         if price is None:
             return None
         try:
-            return round(float(price), 2)
+            val = round(float(price), 2)
+            return val if val > 0 else None
         except (ValueError, TypeError):
             return None

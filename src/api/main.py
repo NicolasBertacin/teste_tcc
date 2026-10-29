@@ -3,13 +3,13 @@
 import os
 from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 
 from src.api.routers import auth_router, products_router, forecast_router, trends_router, opportunity_router
-from src.api.dependencies import get_db_instance, get_password_hash
+from src.api.dependencies import get_db_instance, get_password_hash, get_current_user
 from src.database.models import Base, User
 
 
@@ -33,9 +33,10 @@ async def lifespan(app: FastAPI):
         try:
             admin_user = session.query(User).filter(User.email == "admin@trendecommerce.com").first()
             if not admin_user:
+                initial_pwd = os.getenv("ADMIN_INITIAL_PASSWORD", "admin123")
                 admin_user = User(
                     email="admin@trendecommerce.com",
-                    hashed_password=get_password_hash("admin123"),
+                    hashed_password=get_password_hash(initial_pwd),
                     name="Administrador Master",
                     is_active=True
                 )
@@ -134,8 +135,8 @@ def health_check():
     }
 
 
-@app.api_route("/api/v1/admin/reseed", methods=["GET", "POST"], tags=["Admin"], summary="Recarregar catálogo e histórico inicial")
-def reseed_database():
+@app.api_route("/api/v1/admin/reseed", methods=["GET", "POST"], tags=["Admin"], summary="Recarregar catálogo e histórico inicial (Requer Autenticação)")
+def reseed_database(current_user: User = Depends(get_current_user)):
     """Injeta ou sincroniza o catálogo completo de 89 produtos e 8.731 históricos diários."""
     from src.database.seed_loader import seed_database_if_empty
     db_manager = get_db_instance()
@@ -152,8 +153,8 @@ def reseed_database():
     }
 
 
-@app.get("/api/v1/debug/status", tags=["Admin"], summary="Status detalhado do banco de dados")
-def debug_status():
+@app.get("/api/v1/debug/status", tags=["Admin"], summary="Status detalhado do banco de dados (Requer Autenticação)")
+def debug_status(current_user: User = Depends(get_current_user)):
     from src.database.models import Product, SalesHistory, User
     db_manager = get_db_instance()
     with db_manager.session() as session:

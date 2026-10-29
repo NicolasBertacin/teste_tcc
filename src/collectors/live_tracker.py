@@ -141,6 +141,7 @@ class LiveTracker:
                             price_at_date=price_var,
                             available_quantity=int(item.get("available_quantity", 50)),
                             platform=platform,
+                            is_synthetic=True,
                         )
                         session.add(sale)
             

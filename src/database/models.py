@@ -87,6 +87,7 @@ class SalesHistory(Base):
     price_at_date = Column(Float, nullable=True)
     available_quantity = Column(Integer, nullable=True)
     platform = Column(String(50), nullable=False)
+    is_synthetic = Column(Boolean, default=False, comment="Indica se a série diária foi estimada sinteticamente")
     collected_at = Column(DateTime, default=datetime.utcnow)
 
     # Relacionamentos
