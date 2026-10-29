@@ -20,6 +20,19 @@ async def lifespan(app: FastAPI):
     db_manager = get_db_instance()
     Base.metadata.create_all(db_manager.engine)
 
+    # Auto-migração defensiva para colunas adicionadas (evita erro 500 no sales_history)
+    try:
+        from sqlalchemy import inspect, text
+        inspector = inspect(db_manager.engine)
+        if "sales_history" in inspector.get_table_names():
+            cols = [c["name"] for c in inspector.get_columns("sales_history")]
+            if "is_synthetic" not in cols:
+                with db_manager.engine.connect() as conn:
+                    conn.execute(text("ALTER TABLE sales_history ADD COLUMN is_synthetic BOOLEAN DEFAULT 0"))
+                    conn.commit()
+    except Exception as e:
+        print(f"[TrendCommerce AI] Aviso na auto-migração: {e}")
+
     # Garantir dados iniciais e usuário administrador
     with db_manager.session() as session:
         # 1. Injetar catálogo de produtos e histórico caso o banco esteja vazio
