@@ -54,27 +54,27 @@ class FeatureEngineer:
         
         grouped = df.groupby("product_id")
         
-        # Vendas - médias móveis
+        # Vendas - médias móveis (com shift(1) para prevenir Target Leakage de y_t)
         df["vendas_7_dias"] = grouped["quantity_sold"].transform(
-            lambda x: x.rolling(window=7, min_periods=1).sum()
-        )
+            lambda x: x.shift(1).rolling(window=7, min_periods=1).sum()
+        ).fillna(0)
         df["vendas_30_dias"] = grouped["quantity_sold"].transform(
-            lambda x: x.rolling(window=30, min_periods=1).sum()
-        )
+            lambda x: x.shift(1).rolling(window=30, min_periods=1).sum()
+        ).fillna(0)
         df["media_vendas_7_dias"] = grouped["quantity_sold"].transform(
-            lambda x: x.rolling(window=7, min_periods=1).mean()
-        )
+            lambda x: x.shift(1).rolling(window=7, min_periods=1).mean()
+        ).fillna(0)
         df["media_vendas_30_dias"] = grouped["quantity_sold"].transform(
-            lambda x: x.rolling(window=30, min_periods=1).mean()
-        )
+            lambda x: x.shift(1).rolling(window=30, min_periods=1).mean()
+        ).fillna(0)
         
-        # Crescimento de vendas
+        # Crescimento de vendas (com shift(1) para evitar Target Leakage de y_t)
         df["crescimento_vendas"] = grouped["quantity_sold"].transform(
-            lambda x: x.pct_change()
+            lambda x: x.shift(1).pct_change()
         ).fillna(0)
         
         df["crescimento_vendas_7d"] = grouped["quantity_sold"].transform(
-            lambda x: x.pct_change(periods=7)
+            lambda x: x.shift(1).pct_change(periods=7)
         ).fillna(0)
         
         # Preço - features

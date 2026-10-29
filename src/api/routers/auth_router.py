@@ -137,21 +137,10 @@ def login_with_google(data: GoogleAuthRequest, db: Session = Depends(get_db)):
             email = idinfo.get("email")
             name = idinfo.get("name") or idinfo.get("given_name")
         except Exception:
-            # Fallback seguro para decodificação do payload JWT (testes locais e compatibilidade)
-            try:
-                parts = token_str.split(".")
-                if len(parts) >= 2:
-                    payload_b64 = parts[1]
-                    payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
-                    payload_json = base64.urlsafe_b64decode(payload_b64).decode("utf-8")
-                    payload = json.loads(payload_json)
-                    email = payload.get("email") or email
-                    name = payload.get("name") or payload.get("given_name") or name
-            except Exception:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token do Google inválido ou expirado."
-                )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token do Google inválido ou expirado."
+            )
 
     if not email:
         raise HTTPException(
@@ -215,7 +204,7 @@ def request_google_verification_code(request: GoogleRequestCodeRequest):
     if email_sent:
         message = f"Código de verificação enviado para {email_key}! Verifique sua caixa de entrada e spam."
     else:
-        message = f"Código gerado para {email_key}: [{otp_code}]. (Configure SMTP no .env para envio real). Código de teste: 1234"
+        message = "Não foi possível enviar o código por e-mail. Contate o administrador do sistema."
 
     print(f"\n[🔐 VALIDAÇÃO GOOGLE] Email: {email_key} | Código OTP: {otp_code} | Status: {status_msg}\n")
 
@@ -235,8 +224,8 @@ def verify_google_code_and_login(request: GoogleVerifyCodeRequest, db: Session =
     stored_data = _google_otp_codes.get(email_key)
     expected_code = stored_data.get("code") if stored_data else None
 
-    # Aceita o código gerado em memória ou 1234 em testes/fallback
-    if request.code != expected_code and request.code != "1234":
+    # Valida código gerado estritamente
+    if not expected_code or request.code != expected_code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Código de verificação incorreto ou expirado. Verifique seu e-mail e tente novamente."
@@ -306,7 +295,7 @@ def forgot_password(request: PasswordResetRequest, db: Session = Depends(get_db)
     if email_sent:
         message = f"Código de segurança enviado para {request.email}! Verifique sua caixa de entrada e spam."
     else:
-        message = f"Código gerado para {request.email}: [{otp_code}]. (Configure SMTP no .env para envio real). Código de teste: 1234"
+        message = "Não foi possível enviar o código por e-mail. Contate o suporte."
     
     print(f"\n[🔑 RECUPERAÇÃO DE SENHA] Email: {request.email} | Código OTP: {otp_code} | Status Envio: {status_msg}\n")
 
@@ -323,8 +312,8 @@ def reset_password(request: PasswordResetConfirmRequest, db: Session = Depends(g
     email_key = request.email.lower()
     expected_code = _reset_codes.get(email_key)
 
-    # Permitir 1234 como código master em testes se não houver código gerado
-    if request.code != expected_code and request.code != "1234":
+    # Valida código gerado estritamente
+    if not expected_code or request.code != expected_code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Código de recuperação inválido ou expirado."

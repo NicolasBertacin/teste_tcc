@@ -65,9 +65,9 @@ class DemandTrainer:
         Returns:
             Métricas de treinamento
         """
-        # Separar treino/teste
+        # Separar treino/teste cronológico (sem embaralhamento aleatório para séries temporais)
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=random_state
+            X, y, test_size=test_size, shuffle=False
         )
         
         self.feature_names = list(X.columns)
