@@ -255,9 +255,9 @@ def test_trends_search(client):
 
 
 def test_discover_live_products(client):
-    """Testa descoberta e importação em tempo real de produtos da Amazon/Mercado Livre."""
+    """Testa descoberta de produtos no catálogo oficial da API de Vendas."""
     response = client.post("/api/v1/products/discover-live", json={
-        "query": "Monitor Gamer 144Hz",
+        "query": "Monitor Gamer",
         "limit": 3
     })
     assert response.status_code == 200
@@ -331,13 +331,13 @@ def test_products_autocomplete(client):
     assert "price" in first
     assert "category" in first
 
-    # Busca de camisa corinthians (recomendações de modelos)
-    resp_cor = client.get("/api/v1/products/autocomplete?q=camisa%20corinthians&limit=5")
+    # Busca de tênis esportivo (recomendações do catálogo)
+    resp_cor = client.get("/api/v1/products/autocomplete?q=tenis&limit=5")
     assert resp_cor.status_code == 200
     cor_items = resp_cor.json()
     assert isinstance(cor_items, list)
     assert len(cor_items) > 0
-    assert any("corinthians" in item["title"].lower() for item in cor_items)
+    assert any("tênis" in item["title"].lower() or "tenis" in item["title"].lower() for item in cor_items)
 
     # Termo proibido deve retornar lista vazia
     resp_prohibited = client.get("/api/v1/products/autocomplete?q=cocaina&limit=5")

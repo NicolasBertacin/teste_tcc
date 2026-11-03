@@ -36,16 +36,20 @@ Interface web moderna com tema dark/cyberpunk de alta fidelidade para o sistema 
 
 ## 🚀 Como Executar
 
-### Opção 1: Via Python Server (Recomendado)
-Execute no terminal a partir da raiz do projeto:
+### Opção 1: Via Servidor Integrado FastAPI (Recomendado)
+Inicie a aplicação com o script `iniciar_sistema.bat` ou pelo terminal:
 
 ```bash
-python frontend/server.py
+python -m uvicorn src.api.main:app --port 8001 --reload
 ```
-Abra o navegador em: **`http://localhost:8000`**
+Abra o navegador em: **`http://localhost:8001/app`**
 
-### Opção 2: Abertura Direta
-Abra o arquivo `frontend/index.html` diretamente em qualquer navegador moderno.
+### Opção 2: Servidor Estático de Frontend
+Caso prefira rodar um servidor dedicado na pasta frontend:
+```bash
+python frontend/server.py --port 5500
+```
+Abra o navegador em: **`http://localhost:5500`** (o frontend se conectará automaticamente à API em `http://localhost:8001/api/v1`).
 
 ---
 

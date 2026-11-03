@@ -26,7 +26,7 @@ from src.schemas.forecast_schema import (
     CompareForecastResponse
 )
 from src.services.product_media import get_product_thumbnail, get_product_url
-from src.collectors.category_harvester import harvest_all_top_categories, harvest_category
+from src.database.seed_loader import sync_from_sales_api
 
 
 router = APIRouter(prefix="/forecast", tags=["Previsão de Demanda & IA"])
@@ -143,7 +143,7 @@ def predict_product_demand(
             product_title=forecast_result.product_title,
             category=forecast_result.category,
             unit_price=forecast_result.unit_price,
-            platform=getattr(forecast_result, "platform", product.platform or "mercadolivre"),
+            platform=getattr(forecast_result, "platform", product.platform or "api_vendas"),
             thumbnail_url=getattr(forecast_result, "thumbnail_url", None) or get_product_thumbnail(product),
             product_url=getattr(forecast_result, "product_url", None) or get_product_url(product),
             horizon_days=forecast_result.horizon_days,
@@ -165,6 +165,10 @@ def predict_product_demand(
             buffer_stock_revenue=forecast_result.buffer_stock_revenue,
             historical_accuracy_pct=forecast_result.historical_accuracy_pct,
             mean_daily_error=forecast_result.mean_daily_error,
+            seasonal_profile=getattr(forecast_result, "seasonal_profile", None),
+            seasonal_status=getattr(forecast_result, "seasonal_status", None),
+            seasonal_lift_pct=getattr(forecast_result, "seasonal_lift_pct", 0.0),
+            is_surge_trend=getattr(forecast_result, "is_surge_trend", False),
             days=[
                 DailyForecastItem(
                     date=d.date,
@@ -248,7 +252,7 @@ def get_forecast_summary(
             product_title=f.product_title,
             category=f.category,
             unit_price=f.unit_price,
-            platform=getattr(f, "platform", products_by_id.get(f.product_id).platform if products_by_id.get(f.product_id) else "mercadolivre"),
+            platform=getattr(f, "platform", products_by_id.get(f.product_id).platform if products_by_id.get(f.product_id) else "api_vendas"),
             thumbnail_url=getattr(f, "thumbnail_url", None) or get_product_thumbnail(products_by_id.get(f.product_id) or {"title": f.product_title, "category": f.category}),
             product_url=getattr(f, "product_url", None) or get_product_url(products_by_id.get(f.product_id) or {"title": f.product_title, "category": f.category}),
             horizon_days=f.horizon_days,
@@ -270,6 +274,10 @@ def get_forecast_summary(
             buffer_stock_revenue=getattr(f, "buffer_stock_revenue", 0.0),
             historical_accuracy_pct=getattr(f, "historical_accuracy_pct", 94.1),
             mean_daily_error=getattr(f, "mean_daily_error", 4.8),
+            seasonal_profile=getattr(f, "seasonal_profile", None),
+            seasonal_status=getattr(f, "seasonal_status", None),
+            seasonal_lift_pct=getattr(f, "seasonal_lift_pct", 0.0),
+            is_surge_trend=getattr(f, "is_surge_trend", False),
             days=[
                 DailyForecastItem(
                     date=d.date,
@@ -307,7 +315,7 @@ def get_forecast_ranking(
 ):
     """Retorna Top 7 produtos gerais e Top 5 produtos por categoria para os próximos 30 dias com explicabilidade."""
     if sync_live:
-        harvest_all_top_categories(db, limit_per_term=1)
+        sync_from_sales_api(db)
         _ranking_cache.pop(horizon_days, None)
 
     now_ts = time.time()
@@ -365,13 +373,13 @@ def get_forecast_ranking(
             "creatina", "whey", "pre treino", "havaianas", "smart tv", "aspirador", "air fryer",
             "perfume", "secador", "parafusadeira", "ferramentas", "notebook", "monitor", "tapete",
             "teclado", "mouse", "ssd", "micro-ondas", "cafeteira", "liquidificador", "tenis", "tênis",
-            "rastreador", "café", "cafe"
+            "rastreador", "café", "cafe", "pisca", "arvore de natal", "panettone", "ventilador"
         ]:
             if root in t_lower:
                 return root
         return title[:18].lower()
 
-    # Cálculo do Score Institucional de Attratividade Comercial (Log-Harmonic Demanda x Receita)
+    # Cálculo do Score Institucional de Atratividade Comercial com Bônus Sazonal
     scored_items = []
     for f in forecasts:
         prod_info = products_by_id.get(f.product_id)
@@ -381,8 +389,13 @@ def get_forecast_ranking(
         units = max(1, f.total_predicted_units)
         rev = max(1.0, f.total_projected_revenue)
         raw_score = math.log10(units + 1) * math.log10(rev + 1)
+        
+        # Bônus por Tração Sazonal (produtos em pico sazonal ganham impulso no ranking)
+        lift = getattr(f, "seasonal_lift_pct", 0.0) or 0.0
+        surge_mult = 1.0 + (max(0.0, lift) / 100.0) * 0.40 if getattr(f, "is_surge_trend", False) else 1.0
+        
         # Acessórios de baixo valor sofrem ajuste de 30% para não roubarem o topo geral de produtos principais
-        adj_score = raw_score * 0.70 if is_acc else raw_score
+        adj_score = (raw_score * 0.70 if is_acc else raw_score) * surge_mult
         
         scored_items.append({
             "forecast": f,
@@ -403,7 +416,10 @@ def get_forecast_ranking(
         if cat not in seen_cats_overall:
             seen_cats_overall.add(cat)
             rank_num = len(top_overall) + 1
-            if rank_num == 1:
+            if getattr(f, "is_surge_trend", False):
+                reason = f"{getattr(f, 'seasonal_status', 'Alta Sazonalidade')}: Projeção de {f.total_predicted_units} un (R$ {f.total_projected_revenue:,.2f}) impulsionada por sazonalidade favorável."
+                driver = f"🔥 Alta Sazonalidade (+{getattr(f, 'seasonal_lift_pct', 0.0):.0f}%)"
+            elif rank_num == 1:
                 reason = f"Líder comercial absoluto com {f.total_predicted_units} un e faturamento projetado de R$ {f.total_projected_revenue:,.2f} no horizonte de {horizon_days} dias."
                 driver = f"Líder Geral & Tração Máxima em {cat}"
             elif rank_num in [2, 3]:
@@ -414,7 +430,7 @@ def get_forecast_ranking(
                 driver = f"Referência em {cat}"
 
             prod_info = item["prod_info"]
-            p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+            p_plat = prod_info.platform if prod_info and prod_info.platform else "api_vendas"
             p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
             p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
 
@@ -430,7 +446,11 @@ def get_forecast_ranking(
                 thumbnail_url=p_thumb,
                 product_url=p_url,
                 rank_reason=reason,
-                key_driver=driver
+                key_driver=driver,
+                seasonal_profile=getattr(f, "seasonal_profile", None),
+                seasonal_status=getattr(f, "seasonal_status", None),
+                seasonal_lift_pct=getattr(f, "seasonal_lift_pct", 0.0),
+                is_surge_trend=getattr(f, "is_surge_trend", False)
             ))
             if len(top_overall) >= 7:
                 break
@@ -446,9 +466,16 @@ def get_forecast_ranking(
                 seen_pids.add(f.product_id)
                 seen_roots.add(rf)
                 prod_info = item["prod_info"]
-                p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                p_plat = prod_info.platform if prod_info and prod_info.platform else "api_vendas"
                 p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
                 p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
+                if getattr(f, "is_surge_trend", False):
+                    reason = f"{getattr(f, 'seasonal_status', 'Alta Sazonalidade')}: Projeção de {f.total_predicted_units} un (R$ {f.total_projected_revenue:,.2f}) com forte aceleração."
+                    driver = f"🔥 Alta Sazonalidade (+{getattr(f, 'seasonal_lift_pct', 0.0):.0f}%)"
+                else:
+                    reason = f"Top performer com {f.total_predicted_units} unidades projetadas e faturamento de R$ {f.total_projected_revenue:,.2f}."
+                    driver = "Alta Tração de Demanda"
 
                 top_overall.append(RankingForecastItem(
                     rank=len(top_overall) + 1,
@@ -461,8 +488,12 @@ def get_forecast_ranking(
                     platform=p_plat,
                     thumbnail_url=p_thumb,
                     product_url=p_url,
-                    rank_reason=f"Top performer com {f.total_predicted_units} unidades projetadas e faturamento de R$ {f.total_projected_revenue:,.2f}.",
-                    key_driver="Alta Tração de Demanda"
+                    rank_reason=reason,
+                    key_driver=driver,
+                    seasonal_profile=getattr(f, "seasonal_profile", None),
+                    seasonal_status=getattr(f, "seasonal_status", None),
+                    seasonal_lift_pct=getattr(f, "seasonal_lift_pct", 0.0),
+                    is_surge_trend=getattr(f, "is_surge_trend", False)
                 ))
                 if len(top_overall) >= 7:
                     break
@@ -491,9 +522,16 @@ def get_forecast_ranking(
                 seen_roots_cat.add(rf)
                 rank_pos = len(top_by_category[cat]) + 1
                 prod_info = item["prod_info"]
-                p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                p_plat = prod_info.platform if prod_info and prod_info.platform else "api_vendas"
                 p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
                 p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
+                if getattr(f, "is_surge_trend", False):
+                    reason = f"{getattr(f, 'seasonal_status', 'Alta Sazonalidade')}: Projeção de {f.total_predicted_units} un (R$ {f.total_projected_revenue:,.2f}) na categoria '{cat}'."
+                    driver = f"🔥 Alta Sazonalidade (+{getattr(f, 'seasonal_lift_pct', 0.0):.0f}%)"
+                else:
+                    reason = f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}."
+                    driver = f"Liderança no segmento de {cat}"
 
                 top_by_category[cat].append(
                     RankingForecastItem(
@@ -507,8 +545,12 @@ def get_forecast_ranking(
                         platform=p_plat,
                         thumbnail_url=p_thumb,
                         product_url=p_url,
-                        rank_reason=f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
-                        key_driver=f"Liderança no segmento de {cat}"
+                        rank_reason=reason,
+                        key_driver=driver,
+                        seasonal_profile=getattr(f, "seasonal_profile", None),
+                        seasonal_status=getattr(f, "seasonal_status", None),
+                        seasonal_lift_pct=getattr(f, "seasonal_lift_pct", 0.0),
+                        is_surge_trend=getattr(f, "is_surge_trend", False)
                     )
                 )
                 if len(top_by_category[cat]) >= 5:
@@ -523,9 +565,16 @@ def get_forecast_ranking(
                     seen_pids.add(f.product_id)
                     rank_pos = len(top_by_category[cat]) + 1
                     prod_info = item["prod_info"]
-                    p_plat = prod_info.platform if prod_info and prod_info.platform else "mercadolivre"
+                    p_plat = prod_info.platform if prod_info and prod_info.platform else "api_vendas"
                     p_thumb = getattr(f, "thumbnail_url", None) or get_product_thumbnail(prod_info or {"title": f.product_title, "category": f.category})
                     p_url = getattr(f, "product_url", None) or get_product_url(prod_info or {"title": f.product_title, "category": f.category, "platform": p_plat})
+
+                    if getattr(f, "is_surge_trend", False):
+                        reason = f"{getattr(f, 'seasonal_status', 'Alta Sazonalidade')}: Projeção de {f.total_predicted_units} un (R$ {f.total_projected_revenue:,.2f}) na categoria '{cat}'."
+                        driver = f"🔥 Alta Sazonalidade (+{getattr(f, 'seasonal_lift_pct', 0.0):.0f}%)"
+                    else:
+                        reason = f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}."
+                        driver = f"Destaque em {cat}"
 
                     top_by_category[cat].append(
                         RankingForecastItem(
@@ -539,8 +588,12 @@ def get_forecast_ranking(
                             platform=p_plat,
                             thumbnail_url=p_thumb,
                             product_url=p_url,
-                            rank_reason=f"Top #{rank_pos} da categoria '{cat}' com média de {f.daily_average:.1f} un/dia e receita de R$ {f.total_projected_revenue:,.2f}.",
-                            key_driver=f"Destaque em {cat}"
+                            rank_reason=reason,
+                            key_driver=driver,
+                            seasonal_profile=getattr(f, "seasonal_profile", None),
+                            seasonal_status=getattr(f, "seasonal_status", None),
+                            seasonal_lift_pct=getattr(f, "seasonal_lift_pct", 0.0),
+                            is_surge_trend=getattr(f, "is_surge_trend", False)
                         )
                     )
                     if len(top_by_category[cat]) >= 5:
@@ -556,26 +609,25 @@ def get_forecast_ranking(
 
 
 
-@router.post("/ranking/sync-live", response_model=SyncLiveRankingResponse, summary="Sincronizar ranking com os mais vendidos ao vivo dos marketplaces")
+@router.post("/ranking/sync-live", response_model=SyncLiveRankingResponse, summary="Sincronizar ranking com a API de Vendas")
 def sync_live_ranking(
     category: Optional[str] = Query(None, description="Filtrar categoria específica ou sincronizar todas"),
     db: Session = Depends(get_db)
 ):
-    """Varre as categorias líderes do Mercado Livre e da Amazon, descobre e sincroniza os produtos mais vendidos,
-    e invalida o cache do ranking preditivo para forçar o recálculo em tempo real."""
-    if category and category.upper() != "GERAIS":
-        res = harvest_category(db, category_name=category, limit_per_term=1)
-    else:
-        res = harvest_all_top_categories(db, limit_per_term=1)
+    """Sincroniza o banco de dados oficial diretamente com a API de Histórico de Vendas (500 produtos e vendas diárias)."""
+    sync_from_sales_api(db)
 
     # Invalida o cache do ranking para que a próxima chamada reflita os novos dados imediatamente
     _ranking_cache.clear()
+    _summary_cache.clear()
+
+    total_prods = db.query(Product).filter(Product.platform == "api_vendas").count()
 
     return SyncLiveRankingResponse(
         status="success",
-        message=f"Sincronização concluída com sucesso! {res.get('total_synced_products', 0)} produtos líderes sincronizados com o mercado.",
-        total_synced_products=res.get("total_synced_products", 0),
-        sample_products=res.get("sample_products", []),
+        message=f"Sincronização concluída com sucesso! {total_prods} produtos sincronizados com a API de Vendas.",
+        total_synced_products=total_prods,
+        sample_products=["Smartphone Galaxy Ultra", "Árvore de Natal Nevada", "Protetor Solar FPS 70", "Bicicleta Ergométrica"],
         timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     )
 
@@ -615,7 +667,7 @@ def compare_products_forecast(
         product_title=fa.product_title,
         category=fa.category,
         unit_price=fa.unit_price,
-        platform=getattr(fa, "platform", prod_a.platform or "mercadolivre"),
+        platform=getattr(fa, "platform", prod_a.platform or "api_vendas"),
         thumbnail_url=getattr(fa, "thumbnail_url", None) or get_product_thumbnail(prod_a),
         product_url=getattr(fa, "product_url", None) or get_product_url(prod_a),
         horizon_days=fa.horizon_days,
@@ -637,6 +689,10 @@ def compare_products_forecast(
         buffer_stock_revenue=fa.buffer_stock_revenue,
         historical_accuracy_pct=fa.historical_accuracy_pct,
         mean_daily_error=fa.mean_daily_error,
+        seasonal_profile=getattr(fa, "seasonal_profile", None),
+        seasonal_status=getattr(fa, "seasonal_status", None),
+        seasonal_lift_pct=getattr(fa, "seasonal_lift_pct", 0.0),
+        is_surge_trend=getattr(fa, "is_surge_trend", False),
         days=[DailyForecastItem(date=d.date, day_name=d.day_name, predicted_demand=d.predicted_demand, confidence_min=d.confidence_min, confidence_max=d.confidence_max, projected_revenue=d.projected_revenue) for d in fa.days],
         explanation=fa.explanation
     )
@@ -646,7 +702,7 @@ def compare_products_forecast(
         product_title=fb.product_title,
         category=fb.category,
         unit_price=fb.unit_price,
-        platform=getattr(fb, "platform", prod_b.platform or "mercadolivre"),
+        platform=getattr(fb, "platform", prod_b.platform or "api_vendas"),
         thumbnail_url=getattr(fb, "thumbnail_url", None) or get_product_thumbnail(prod_b),
         product_url=getattr(fb, "product_url", None) or get_product_url(prod_b),
         horizon_days=fb.horizon_days,
@@ -668,6 +724,10 @@ def compare_products_forecast(
         buffer_stock_revenue=fb.buffer_stock_revenue,
         historical_accuracy_pct=fb.historical_accuracy_pct,
         mean_daily_error=fb.mean_daily_error,
+        seasonal_profile=getattr(fb, "seasonal_profile", None),
+        seasonal_status=getattr(fb, "seasonal_status", None),
+        seasonal_lift_pct=getattr(fb, "seasonal_lift_pct", 0.0),
+        is_surge_trend=getattr(fb, "is_surge_trend", False),
         days=[DailyForecastItem(date=d.date, day_name=d.day_name, predicted_demand=d.predicted_demand, confidence_min=d.confidence_min, confidence_max=d.confidence_max, projected_revenue=d.projected_revenue) for d in fb.days],
         explanation=fb.explanation
     )

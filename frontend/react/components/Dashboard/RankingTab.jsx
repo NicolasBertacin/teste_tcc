@@ -46,14 +46,14 @@ function RankingTab({ categories }) {
 
     const handleSyncLiveMarket = async () => {
         setSyncing(true);
-        setSyncStatusMsg('Consultando APIs do Mercado Livre e Amazon para os produtos mais vendidos...');
+        setSyncStatusMsg('Sincronizando com a API de Histórico de Vendas...');
         try {
             const res = await window.apiService.forecast.syncLiveRanking(selectedCategory !== 'GERAIS' ? selectedCategory : null);
             const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             const syncLabel = `Hoje às ${nowTime}`;
             setLastSyncedAt(syncLabel);
             localStorage.setItem('trendcommerce_last_rank_sync', syncLabel);
-            setSyncStatusMsg(`✓ ${res.message || 'Catálogo atualizado com sucesso com os produtos mais vendidos!'}`);
+            setSyncStatusMsg(`✓ ${res.message || 'Catálogo atualizado com sucesso com os dados da API de Vendas!'}`);
             await loadRanking();
         } catch (err) {
             console.error('Erro na sincronização:', err);
@@ -74,7 +74,7 @@ function RankingTab({ categories }) {
 
     return (
         <section className="dash-tab-content active">
-            {/* Barra de Inteligência e Sincronização em Tempo Real com Mercado Livre & Amazon */}
+            {/* Barra de Inteligência e Sincronização da API de Histórico de Vendas */}
             <div className="ranking-sync-bar" style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -106,14 +106,14 @@ function RankingTab({ categories }) {
                     <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff', letterSpacing: '0.5px' }}>
-                                RADAR GLOBAL DE MERCADO
+                                RADAR PREDITIVO DE MERCADO (XGBOOST)
                             </span>
                             <span style={{ fontSize: '11px', color: '#8da2bd', marginLeft: '6px' }}>
                                 • Sincronização: <strong style={{ color: '#00f0ff' }}>{lastSyncedAt}</strong>
                             </span>
                         </div>
                         <div style={{ fontSize: '11px', color: syncStatusMsg.startsWith('✓') ? '#10b981' : '#8da2bd', marginTop: '3px' }}>
-                            {syncStatusMsg || 'O ranking computa projeções XGBoost para os produtos líderes de vendas de cada categoria nos marketplaces.'}
+                            {syncStatusMsg || 'O ranking computa projeções XGBoost para os 500 produtos da API de Vendas considerando sazonalidade e histórico.'}
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ function RankingTab({ categories }) {
                         className="btn-sync-market"
                         onClick={handleSyncLiveMarket}
                         disabled={syncing || loading}
-                        title="Varrer as categorias do Mercado Livre e Amazon e atualizar os líderes de venda ao vivo"
+                        title="Sincronizar dados oficiais com a API de Vendas"
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -142,7 +142,7 @@ function RankingTab({ categories }) {
                         }}
                     >
                         <i className={`ph ${syncing ? 'ph-spinner ph-spin' : 'ph-arrows-clockwise'}`} style={{ fontSize: '15px' }}></i>
-                        <span>{syncing ? 'Varrendo Marketplaces...' : 'Sincronizar Mais Vendidos ao Vivo'}</span>
+                        <span>{syncing ? 'Sincronizando com API...' : 'Sincronizar Base Oficial'}</span>
                     </button>
                 </div>
             </div>
@@ -179,6 +179,23 @@ function RankingTab({ categories }) {
                                                 {item.key_driver && (
                                                     <span className="item-driver-pill" style={{ marginTop: '4px' }}>
                                                         <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                    </span>
+                                                )}
+                                                {item.seasonal_status && (
+                                                    <span style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        fontSize: '10px',
+                                                        fontWeight: '700',
+                                                        color: '#ffaa00',
+                                                        background: 'rgba(255, 170, 0, 0.12)',
+                                                        border: '1px solid rgba(255, 170, 0, 0.35)',
+                                                        borderRadius: '4px',
+                                                        padding: '2px 6px',
+                                                        marginTop: '3px'
+                                                    }}>
+                                                        {item.seasonal_status}
                                                     </span>
                                                 )}
                                             </div>
@@ -227,6 +244,23 @@ function RankingTab({ categories }) {
                                                 {item.key_driver && (
                                                     <span className="item-driver-pill" style={{ marginTop: '4px' }}>
                                                         <i className="ph ph-lightning" style={{ fontSize: '11px', color: '#00f0ff' }}></i> {item.key_driver}
+                                                    </span>
+                                                )}
+                                                {item.seasonal_status && (
+                                                    <span style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px',
+                                                        fontSize: '10px',
+                                                        fontWeight: '700',
+                                                        color: '#ffaa00',
+                                                        background: 'rgba(255, 170, 0, 0.12)',
+                                                        border: '1px solid rgba(255, 170, 0, 0.35)',
+                                                        borderRadius: '4px',
+                                                        padding: '2px 6px',
+                                                        marginTop: '3px'
+                                                    }}>
+                                                        {item.seasonal_status}
                                                     </span>
                                                 )}
                                             </div>
@@ -364,6 +398,13 @@ function RankingTab({ categories }) {
                                 <div style={{ fontSize: '12px', color: '#8da2bd', marginTop: '4px' }}>
                                     Preço de Mercado: <strong style={{ color: '#00f0ff' }}>R$ {selectedItemModal.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
                                 </div>
+                                {selectedItemModal.seasonal_status && (
+                                    <div style={{ marginTop: '8px', padding: '5px 10px', borderRadius: '6px', background: 'rgba(255, 170, 0, 0.12)', border: '1px solid rgba(255, 170, 0, 0.35)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                        <span style={{ fontSize: '11px', color: '#ffaa00', fontWeight: '700' }}>
+                                            <i className="ph ph-calendar-check"></i> Sazonalidade: {selectedItemModal.seasonal_profile} — {selectedItemModal.seasonal_status}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

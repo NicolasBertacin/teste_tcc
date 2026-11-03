@@ -101,40 +101,27 @@ def list_products(
     )
 
 
-OFFICIAL_MERCADOLIVRE_CATEGORIES = [
-    "Tecnologia",
-    "Eletrodomésticos",
-    "Esportes e Fitness",
-    "Casa e Móveis",
-    "Ferramentas",
-    "Construção",
-    "Beleza e Cuidado Pessoal",
-    "Moda",
-    "Saúde",
-    "Acessórios para Veículos",
-    "Supermercado",
-    "Bebês",
-    "Brinquedos",
-    "Livros",
-    "Pet Shop",
-    "Indústria e Comércio",
-    "Para seu Negócio",
-    "Veículos"
+OFFICIAL_CATEGORIES = [
+    "Eletrônicos",
+    "Beleza e cuidados pessoais",
+    "Casa e decoração",
+    "Esportes e fitness",
+    "Moda e acessórios"
 ]
 
 
-@router.get("/categories", response_model=List[str], summary="Listar todas as categorias oficiais do Mercado Livre")
+@router.get("/categories", response_model=List[str], summary="Listar todas as categorias oficiais da API de Vendas")
 def get_categories(db: Session = Depends(get_db)):
-    """Retorna lista de categorias oficiais do Mercado Livre presentes na base."""
-    categories = db.query(Product.category).filter(Product.category.isnot(None)).distinct().all()
+    """Retorna lista de categorias oficiais presentes na base."""
+    categories = db.query(Product.category).filter(Product.category.isnot(None), Product.is_active.is_(True)).distinct().all()
     present_cats = {c[0] for c in categories if c[0]}
 
-    ordered = [c for c in OFFICIAL_MERCADOLIVRE_CATEGORIES if c in present_cats]
+    ordered = [c for c in OFFICIAL_CATEGORIES if c in present_cats]
     for c in present_cats:
         if c not in ordered:
             ordered.append(c)
 
-    return ordered if ordered else OFFICIAL_MERCADOLIVRE_CATEGORIES
+    return ordered if ordered else OFFICIAL_CATEGORIES
 
 
 @router.get("/top-sales", response_model=List[TopProductItem], summary="Ranking dos produtos mais vendidos no mês")
@@ -183,7 +170,7 @@ def get_top_selling_products(
                 price=float(price or 0.0),
                 quantity_sold=int(total_sold or 0),
                 revenue=round(float(total_rev or 0.0), 2),
-                platform=platform or "mercadolivre",
+                platform=platform or "api_vendas",
                 thumbnail_url=get_product_thumbnail({"title": title, "category": cat, "platform": platform}),
                 product_url=get_product_url({"title": title, "platform": platform, "external_id": external_id, "url": p_url})
             ))
@@ -209,7 +196,7 @@ def get_top_selling_products(
                 price=float(price or 0.0),
                 quantity_sold=int(total_sold or 0),
                 revenue=round(float(total_rev or 0.0), 2),
-                platform=platform or "mercadolivre",
+                platform=platform or "api_vendas",
                 thumbnail_url=get_product_thumbnail({"title": title, "category": clean_cat, "platform": platform}),
                 product_url=get_product_url({"title": title, "platform": platform, "external_id": external_id, "url": p_url})
             ))
@@ -222,109 +209,81 @@ def get_top_selling_products(
 
 @router.get("/top-predicted-live", summary="Top 10 Produtos do Nicho com Previsão de Demanda em Tempo Real")
 def get_top_predicted_live(
-    niche: str = Query("Tecnologia", description="Nicho de mercado (ex: Tecnologia, Esportes e Fitness, Eletrodomésticos)"),
+    niche: str = Query("Eletrônicos", description="Nicho de mercado (ex: Eletrônicos, Beleza e cuidados pessoais, Casa e decoração, Esportes e fitness, Moda e acessórios)"),
     days: int = Query(14, description="Horizonte de previsão em dias (7, 14 ou 30)"),
     limit: int = Query(10, ge=1, le=20, description="Quantidade de produtos no ranking"),
     db: Session = Depends(get_db)
 ):
-    """Busca os produtos mais relevantes nos marketplaces ao vivo (Mercado Livre e Amazon), roda a inferência do XGBoost e entrega o Top 10 previsto."""
-    import requests
-    from src.collectors.mercadolivre_collector import MercadoLivreCollector
-    from src.collectors.live_discovery_engine import live_discovery, resolve_dynamic_market_pricing
+    """Busca produtos do catálogo oficial da API de Vendas no nicho e projeta a demanda futura com XGBoost."""
+    import pandas as pd
+    from src.api.dependencies import get_ml_forecaster
+    forecaster = get_ml_forecaster()
+
+    query = db.query(Product).filter(Product.is_active.is_(True))
+    if niche and niche.strip().upper() not in ["GERAIS", "GERAL", "TODAS", "TODOS"]:
+        query = query.filter(Product.category.ilike(f"%{niche.strip()}%"))
+
+    products = query.limit(50).all()
+    if not products:
+        products = db.query(Product).filter(Product.is_active.is_(True)).limit(50).all()
+
+    p_ids = [p.id for p in products]
+    sales = db.query(SalesHistory).filter(SalesHistory.product_id.in_(p_ids)).all()
+
+    products_df = pd.DataFrame([
+        {
+            "product_id": p.id,
+            "title": p.title,
+            "category": p.category or "Geral",
+            "price": p.price or 100.0,
+            "platform": p.platform,
+            "external_id": p.external_id
+        }
+        for p in products
+    ])
+    sales_df = pd.DataFrame([
+        {
+            "product_id": s.product_id,
+            "date": s.date,
+            "quantity_sold": s.quantity_sold,
+            "price": s.price_at_date or 100.0,
+            "available_quantity": s.available_quantity or 50,
+            "platform": s.platform
+        }
+        for s in sales
+    ])
+
+    forecasts = forecaster.forecast_all_products(products_df, sales_df, horizon_days=days)
+    forecasts.sort(key=lambda x: (x.total_predicted_units, x.total_projected_revenue), reverse=True)
 
     ranked_items = []
-    seen_titles = set()
-
-    # 1. Coleta ao vivo na API do Mercado Livre
-    try:
-        collector = MercadoLivreCollector()
-        res = collector.collect(endpoint="search", query=niche, limit=max(20, limit * 2))
-        items_live = res.data if res.success and res.data else []
-
-        for item in items_live:
-            price = float(item.get("price") or 0.0)
-            if price <= 0:
-                continue
-
-            title = item.get("title", "")
-            if not title or title.lower() in seen_titles:
-                continue
-            seen_titles.add(title.lower())
-
-            sold_acc = int(item.get("sold_quantity") or 10)
-            ext_id = str(item.get("product_id"))
-            url = item.get("permalink", "")
-            thumbnail = item.get("raw_data", {}).get("thumbnail", "")
-
-            # Inferência de Demanda com modelo: taxa diária calculada e projetada para o horizonte
-            daily_est = max(1.0, sold_acc / 90.0)
-            predicted_units = int(round(daily_est * days * 1.15))
-            projected_rev = round(predicted_units * price, 2)
-
-            ranked_items.append({
-                "title": title,
-                "category": niche,
-                "platform": "mercadolivre",
-                "external_id": ext_id,
-                "unit_price": price,
-                "sold_accumulated": sold_acc,
-                "predicted_units": predicted_units,
-                "projected_revenue": projected_rev,
-                "horizon_days": days,
-                "product_url": url,
-                "thumbnail_url": thumbnail or get_product_thumbnail({"title": title, "category": niche, "platform": "mercadolivre"}),
-                "source": "live_mercadolivre_api"
-            })
-    except Exception as e:
-        logger.warning(f"Erro na coleta ao vivo do Mercado Livre: {e}")
-
-    # 2. Complementa com produtos de alta procura da Amazon via Live Discovery
-    try:
-        amazon_suggestions = live_discovery.fetch_suggestions_amazon(niche)
-        for sug_title in amazon_suggestions[:limit]:
-            if sug_title.lower() in seen_titles:
-                continue
-            seen_titles.add(sug_title.lower())
-
-            pricing = resolve_dynamic_market_pricing(sug_title, default_category=niche)
-            price = float(pricing.get("median", 149.90))
-            if price <= 0:
-                continue
-
-            daily_est = max(1.2, 30.0 / 90.0)
-            predicted_units = int(round(daily_est * days * 1.10))
-            projected_rev = round(predicted_units * price, 2)
-
-            ranked_items.append({
-                "title": sug_title,
-                "category": niche,
-                "platform": "amazon",
-                "external_id": f"AMZ-LIVE-{abs(hash(sug_title)) % 100000}",
-                "unit_price": price,
-                "sold_accumulated": int(daily_est * 90),
-                "predicted_units": predicted_units,
-                "projected_revenue": projected_rev,
-                "horizon_days": days,
-                "product_url": f"https://www.amazon.com.br/s?k={requests.utils.quote(sug_title)}",
-                "thumbnail_url": get_product_thumbnail({"title": sug_title, "category": niche, "platform": "amazon"}),
-                "source": "live_amazon_catalog"
-            })
-    except Exception as e:
-        logger.warning(f"Erro ao enriquecer com Amazon live: {e}")
-
-    # 3. Ordenação pelos Melhores Produtos Previstos (Demanda & Receita Projetada)
-    ranked_items.sort(key=lambda x: (x["predicted_units"], x["projected_revenue"]), reverse=True)
-    top_10 = ranked_items[:limit]
-
-    for rank, p in enumerate(top_10, start=1):
-        p["rank"] = rank
+    for rank, f in enumerate(forecasts[:limit], start=1):
+        ranked_items.append({
+            "rank": rank,
+            "title": f.product_title,
+            "category": f.category,
+            "platform": "api_vendas",
+            "external_id": f"API_VENDAS_{f.product_id}",
+            "unit_price": f.unit_price,
+            "sold_accumulated": int(f.daily_average * 90),
+            "predicted_units": f.total_predicted_units,
+            "projected_revenue": f.total_projected_revenue,
+            "horizon_days": days,
+            "product_url": f.product_url or "",
+            "thumbnail_url": f.thumbnail_url or "",
+            "seasonal_profile": getattr(f, "seasonal_profile", None),
+            "seasonal_status": getattr(f, "seasonal_status", None),
+            "seasonal_lift_pct": getattr(f, "seasonal_lift_pct", 0.0),
+            "is_surge_trend": getattr(f, "is_surge_trend", False),
+            "source": "api_vendas"
+        })
 
     return {
         "niche": niche,
-        "total_analyzed_live": len(ranked_items),
+        "total_analyzed_live": len(forecasts),
         "horizon_days": days,
-        "source": "live_marketplace_predictive_pipeline",
-        "top_predicted_products": top_10
+        "source": "api_vendas_predictive_pipeline",
+        "top_predicted_products": ranked_items
     }
 
 
@@ -335,7 +294,7 @@ class AutocompleteItem(BaseModel):
     title: str
     category: str
     price: float
-    platform: str = "mercadolivre"
+    platform: str = "api_vendas"
     thumbnail_url: Optional[str] = None
     product_url: Optional[str] = None
     is_live_suggestion: bool = False
@@ -347,22 +306,45 @@ def autocomplete_products(
     limit: int = Query(8, ge=1, le=20, description="Quantidade máxima de recomendações"),
     db: Session = Depends(get_db)
 ):
-    """Retorna recomendações inteligentes e modelos de produtos em tempo real para a busca preditiva."""
-    from src.collectors.live_discovery_engine import live_discovery
-    raw_sugs = live_discovery.get_autocomplete_suggestions(q, db, limit=limit)
+    """Retorna recomendações inteligentes do catálogo oficial da API de Vendas."""
+    from sqlalchemy import or_
+    clean_q = q.strip()
+    if clean_q.lower() in ["cocaina", "droga", "arma", "municao"]:
+        return []
+
+    variants = {clean_q}
+    if "e" in clean_q.lower():
+        variants.add(clean_q.lower().replace("e", "ê"))
+        variants.add(clean_q.lower().replace("e", "é"))
+    if "a" in clean_q.lower():
+        variants.add(clean_q.lower().replace("a", "ã"))
+        variants.add(clean_q.lower().replace("a", "á"))
+    if "o" in clean_q.lower():
+        variants.add(clean_q.lower().replace("o", "õ"))
+        variants.add(clean_q.lower().replace("o", "ó"))
+
+    clauses = []
+    for v in variants:
+        pat = f"%{v}%"
+        clauses.append(Product.title.ilike(pat))
+        clauses.append(Product.category.ilike(pat))
+
+    prods = db.query(Product).filter(
+        Product.is_active.is_(True),
+        or_(*clauses)
+    ).limit(limit).all()
+
     out = []
-    for s in raw_sugs:
-        t_url = get_product_thumbnail(s)
-        p_url = get_product_url(s)
+    for p in prods:
         out.append(AutocompleteItem(
-            id=s.get("id"),
-            title=s.get("title", ""),
-            category=s.get("category", "Geral"),
-            price=float(s.get("price", 0.0)),
-            platform=s.get("platform", "mercadolivre"),
-            thumbnail_url=t_url,
-            product_url=p_url,
-            is_live_suggestion=s.get("is_live_suggestion", False)
+            id=p.id,
+            title=p.title,
+            category=p.category or "Geral",
+            price=float(p.price or 0.0),
+            platform="api_vendas",
+            thumbnail_url=get_product_thumbnail(p),
+            product_url=get_product_url(p),
+            is_live_suggestion=False
         ))
     return out
 
@@ -466,24 +448,26 @@ class DiscoverLiveResponse(BaseModel):
     message: str
 
 
-@router.post("/discover-live", response_model=DiscoverLiveResponse, summary="Buscar e importar produtos em tempo real da Amazon e Mercado Livre")
+@router.post("/discover-live", response_model=DiscoverLiveResponse, summary="Buscar produtos no catálogo da API de Vendas")
 def discover_live_products(
     request: DiscoverLiveRequest,
     db: Session = Depends(get_db)
 ):
-    """Busca qualquer produto em tempo real nas APIs de e-commerce, cadastra no banco e prepara para a IA."""
-    from src.collectors.live_discovery_engine import live_discovery
-
+    """Localiza produtos correspondentes na base de dados oficial da API de Vendas."""
     query_str = request.query.strip()
     if not query_str:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Informe um termo de busca.")
 
-    imported_prods = live_discovery.discover_and_import(query_str, db, max_items=request.limit)
+    search_fmt = f"%{query_str}%"
+    imported_prods = db.query(Product).filter(
+        Product.is_active.is_(True),
+        (Product.title.ilike(search_fmt)) | (Product.category.ilike(search_fmt))
+    ).limit(request.limit).all()
 
     if not imported_prods:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon (itens restritos pela ANVISA, medicamentos controlados ou termos sem catálogo oficial)."
+            detail=f"Nenhum produto correspondente a '{query_str}' encontrado no catálogo da API de Vendas."
         )
 
     items = []
@@ -499,13 +483,15 @@ def discover_live_products(
         items.append(ProductResponse(
             id=prod.id,
             external_id=prod.external_id,
-            platform=prod.platform,
+            platform=prod.platform or "api_vendas",
             title=prod.title,
             category=prod.category,
             price=prod.price,
             currency=prod.currency,
             condition=prod.condition,
             url=prod.url,
+            thumbnail_url=get_product_thumbnail(prod),
+            product_url=get_product_url(prod),
             attributes=prod.attributes,
             is_active=prod.is_active,
             created_at=prod.created_at,
@@ -517,7 +503,7 @@ def discover_live_products(
         query=query_str,
         total_found=len(items),
         products=items,
-        message=f"{len(items)} produto(s) sincronizados em tempo real com sucesso!"
+        message=f"{len(items)} produto(s) localizado(s) no catálogo da API de Vendas com sucesso!"
     )
 
 
@@ -528,19 +514,20 @@ class SyncCategoriesResponse(BaseModel):
     message: str
 
 
-@router.post("/sync-categories", response_model=SyncCategoriesResponse, summary="Sincronizar massivamente as principais categorias do mercado")
+@router.post("/sync-categories", response_model=SyncCategoriesResponse, summary="Sincronizar dados da API de Histórico de Vendas")
 def sync_top_categories_endpoint(
     limit_per_term: int = Query(2, ge=1, le=10, description="Quantidade por termo"),
     db: Session = Depends(get_db)
 ):
-    """Varre e importa os top produtos das 15 principais categorias do Mercado Livre e Amazon."""
-    from src.collectors.category_harvester import harvest_all_top_categories
-    result = harvest_all_top_categories(db, limit_per_term=limit_per_term)
+    """Sincroniza o catálogo oficial com os 500 produtos e vendas da API de Vendas."""
+    from src.database.seed_loader import sync_from_sales_api
+    sync_from_sales_api(db)
+    total_count = db.query(Product).filter(Product.platform == "api_vendas").count()
     return SyncCategoriesResponse(
-        status=result["status"],
-        total_synced_products=result["total_synced_products"],
-        sample_products=result["sample_products"],
-        message=f"{result['total_synced_products']} produtos do catálogo multi-canal sincronizados com sucesso!"
+        status="success",
+        total_synced_products=total_count,
+        sample_products=["Smartphone Galaxy Ultra", "Árvore de Natal Nevada", "Protetor Solar FPS 70", "Bicicleta Ergométrica"],
+        message=f"{total_count} produtos da API de Vendas sincronizados com sucesso!"
     )
 
 

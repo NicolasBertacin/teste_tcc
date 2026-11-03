@@ -207,7 +207,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         if (!q || !q.trim()) return;
 
         setDiscovering(true);
-        showToast(`Buscando "${q.trim()}" em tempo real na Amazon e Mercado Livre...`, 'info', 4000);
+        showToast(`Buscando "${q.trim()}" no catálogo oficial da API de Vendas...`, 'info', 3000);
         try {
             const res = await window.apiService.products.discoverLive(q.trim(), 5);
             if (res && res.products && res.products.length > 0) {
@@ -215,17 +215,17 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                 setSelectedProduct(first);
                 setSearchQuery(first.title);
                 setShowDropdown(false);
-                showToast(`${res.total_found} produto(s) sincronizados com sucesso!`, 'success', 5000);
+                showToast(`${res.total_found} produto(s) localizado(s) com sucesso!`, 'success', 4000);
                 runForecast(first.id, horizonDays);
             } else {
-                showToast('Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon.', 'warning', 6000);
+                showToast('Produto não localizado no catálogo da API de Vendas.', 'warning', 5000);
             }
         } catch (err) {
             const msg = err.message || '';
-            if (msg.includes('não localizado') || msg.includes('restritos') || msg.includes('404')) {
-                showToast('⚠️ Produto não localizado ou sem comercialização ativa no Mercado Livre / Amazon.', 'warning', 7000);
+            if (msg.includes('não localizado') || msg.includes('404')) {
+                showToast('⚠️ Produto não localizado no catálogo da API de Vendas.', 'warning', 5000);
             } else {
-                showToast('Erro na busca em tempo real: ' + msg, 'error');
+                showToast('Erro na busca: ' + msg, 'error');
             }
         } finally {
             setDiscovering(false);
@@ -515,8 +515,8 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
         }
     };
 
-    const platform = (selectedProduct?.platform || forecast?.platform || 'mercadolivre').toLowerCase();
-    const isAmazon = platform === 'amazon';
+    const platform = (selectedProduct?.platform || forecast?.platform || 'api_vendas').toLowerCase();
+    const isAmazon = false;
     const productUrl = selectedProduct?.product_url || forecast?.product_url;
     const thumbUrl = selectedProduct?.thumbnail_url || forecast?.thumbnail_url || 'https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp';
     const activePrice = selectedProduct?.price ?? forecast?.unit_price ?? 0;
@@ -532,7 +532,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                     <input
                         type="text"
                         className="specific-search-input"
-                        placeholder="Digite qualquer produto do mercado (ex: RTX 4070, Air Fryer, Kindle, Tênis Nike)..."
+                        placeholder="Digite qualquer produto do catálogo da API de Vendas (ex: Smartphone, Árvore de Natal, Perfume)..."
                         value={searchQuery}
                         onChange={(e) => handleSearchInput(e.target.value)}
                         onKeyDown={(e) => {
@@ -545,7 +545,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                         type="button"
                         className="btn-live-search"
                         onClick={() => handleLiveDiscovery(searchQuery)}
-                        title="Buscar produto em tempo real na Amazon & Mercado Livre"
+                        title="Buscar produto no catálogo da API de Vendas"
                         style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 8px', display: 'flex', alignItems: 'center' }}
                     >
                         <svg className="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
@@ -600,7 +600,7 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                                 }}
                             >
                                 <span>⚡</span>
-                                <span>{discovering ? 'Buscando nas APIs...' : `Buscar "${searchQuery}" em tempo real na Amazon & Mercado Livre`}</span>
+                                <span>{discovering ? 'Buscando na API...' : `Buscar "${searchQuery}" no catálogo da API de Vendas`}</span>
                             </div>
                         )}
                     </div>
@@ -617,6 +617,24 @@ function AnaliseEspecificaTab({ products = [], showToast }) {
                             <h2 className="specific-prod-title" style={{ fontSize: '15px', fontWeight: '800', wordBreak: 'break-word', lineHeight: '1.3' }}>
                                 {selectedProduct ? selectedProduct.title.toUpperCase() : (forecast ? forecast.product_title.toUpperCase() : 'SELECIONE UM PRODUTO')}
                             </h2>
+                            {forecast?.seasonal_status && (
+                                <div style={{ marginTop: '6px' }}>
+                                    <span style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        color: '#ffaa00',
+                                        background: 'rgba(255, 170, 0, 0.12)',
+                                        border: '1px solid rgba(255, 170, 0, 0.4)',
+                                        borderRadius: '5px',
+                                        padding: '3px 8px'
+                                    }}>
+                                        <i className="ph ph-calendar-check"></i> Sazonalidade: {forecast.seasonal_profile} — {forecast.seasonal_status}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 

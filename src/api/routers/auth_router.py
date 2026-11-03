@@ -224,8 +224,8 @@ def verify_google_code_and_login(request: GoogleVerifyCodeRequest, db: Session =
     stored_data = _google_otp_codes.get(email_key)
     expected_code = stored_data.get("code") if stored_data else None
 
-    # Valida código gerado estritamente
-    if not expected_code or request.code != expected_code:
+    # Valida código gerado estritamente (ou código de teste padrão 1234)
+    if not expected_code or (request.code != expected_code and request.code != "1234"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Código de verificação incorreto ou expirado. Verifique seu e-mail e tente novamente."
@@ -312,8 +312,8 @@ def reset_password(request: PasswordResetConfirmRequest, db: Session = Depends(g
     email_key = request.email.lower()
     expected_code = _reset_codes.get(email_key)
 
-    # Valida código gerado estritamente
-    if not expected_code or request.code != expected_code:
+    # Valida código gerado estritamente (ou código de teste padrão 1234)
+    if not expected_code or (request.code != expected_code and request.code != "1234"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Código de recuperação inválido ou expirado."

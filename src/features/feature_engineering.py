@@ -184,6 +184,37 @@ class FeatureEngineer:
         # Codificação cíclica do mês
         df["mes_sin"] = np.sin(2 * np.pi * df["mes"] / 12)
         df["mes_cos"] = np.cos(2 * np.pi * df["mes"] / 12)
+
+        # Indicadores Sazonais de Mercado
+        df["is_dezembro_natal"] = (df["mes"] == 12).astype(int)
+        df["is_black_friday"] = (df["mes"] == 11).astype(int)
+        df["is_verao_season"] = df["mes"].isin([12, 1, 2]).astype(int)
+        df["is_inverno_season"] = df["mes"].isin([5, 6, 7]).astype(int)
+        df["is_volta_as_aulas"] = df["mes"].isin([1, 2]).astype(int)
+
+        # Indicador de Pico Sazonal específico do produto
+        if "perfil_sazonal" in df.columns:
+            peak_map = {
+                "NATAL_FIM_DE_ANO": [11, 12],
+                "BLACK_FRIDAY_TECH": [11],
+                "VERAO_CALOR": [12, 1, 2],
+                "FITNESS_ANO_NOVO": [1, 2],
+                "VOLTA_AS_AULAS": [1, 2],
+                "INVERNO_FRIO": [5, 6, 7],
+                "DIA_DAS_MAES": [5],
+                "DIA_DOS_NAMORADOS": [6],
+                "DIA_DOS_PAIS": [8],
+                "MULTISSAZONAL_TECH": [2, 7, 11, 12],
+                "REGULAR": []
+            }
+            df["is_peak_season"] = df.apply(
+                lambda r: 1 if r["mes"] in peak_map.get(str(r.get("perfil_sazonal")), []) else 0,
+                axis=1
+            )
+            df["perfil_sazonal_code"] = df["perfil_sazonal"].astype("category").cat.codes
+        else:
+            df["is_peak_season"] = 0
+            df["perfil_sazonal_code"] = 0
         
         return df
 

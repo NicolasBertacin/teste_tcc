@@ -482,6 +482,24 @@ function IaPreditivaTab({ categories, showToast }) {
                             <div style={{ fontSize: '15px', fontWeight: '800', color: '#ffffff', letterSpacing: '0.4px', wordBreak: 'break-word', lineHeight: '1.4' }}>
                                 {activeProd ? activeProd.title.toUpperCase() : 'PROJEÇÃO DE VENDAS'}
                             </div>
+                            {forecastData?.seasonal_status && (
+                                <div style={{ marginTop: '6px' }}>
+                                    <span style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        color: '#ffaa00',
+                                        background: 'rgba(255, 170, 0, 0.12)',
+                                        border: '1px solid rgba(255, 170, 0, 0.4)',
+                                        borderRadius: '5px',
+                                        padding: '2px 8px'
+                                    }}>
+                                        <i className="ph ph-calendar-check"></i> Sazonalidade: {forecastData.seasonal_profile} — {forecastData.seasonal_status}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>

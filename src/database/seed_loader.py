@@ -1,173 +1,143 @@
-"""Módulo de carregamento automático de sementes (Seed) de dados no startup."""
+"""Módulo de carregamento e sincronização oficial dos dados da API de Histórico de Vendas."""
 
-import json
-from datetime import datetime, timedelta
+import os
+import sqlite3
+import logging
+from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
-from sqlalchemy import text, func
-from src.database.models import Product, SalesHistory, SearchTrend, MacroIndicator
+from sqlalchemy import text
+from src.database.models import Product, SalesHistory
+from src.collectors.sales_api_collector import SalesApiCollector
+
+logger = logging.getLogger(__name__)
 
 
-def _parse_dt(val):
-    if not val:
-        return datetime.utcnow()
-    if isinstance(val, datetime):
-        return val
-    try:
-        return datetime.fromisoformat(str(val))
-    except Exception:
-        return datetime.utcnow()
+def sync_from_sales_api(session: Session, source_db_path: str = None, days_limit: int = 730):
+    """Sincroniza o banco de dados local com os 500 produtos e vendas da API de Vendas."""
+    collector = SalesApiCollector(db_path=source_db_path)
+    src_path = collector.db_path
+    bind = session.get_bind()
+    dst_url = str(bind.url)
+
+    if not os.path.exists(src_path):
+        logger.error(f"[SeedLoader] Base de vendas não encontrada: {src_path}")
+        return
+
+    # Extrai o caminho sqlite do destino se aplicável
+    import urllib.parse
+    from src.database.models import Base
+    Base.metadata.create_all(bind)
+
+    if "sqlite:///" in dst_url:
+        dst_path = urllib.parse.unquote(dst_url.replace("sqlite:///", ""))
+        _sync_sqlite_direct(src_path, dst_path, days_limit)
+        session.expire_all()
+    else:
+        # Fallback genérico para PostgreSQL
+        _sync_sql_generic(session, collector, days_limit)
+
+
+def _sync_sqlite_direct(src_path: str, dst_path: str, days_limit: int = 730):
+    src_conn = sqlite3.connect(f"file:{src_path}?mode=ro", uri=True, timeout=60.0)
+    src_c = src_conn.cursor()
+
+    dst_conn = sqlite3.connect(dst_path, timeout=60.0)
+    dst_c = dst_conn.cursor()
+
+    # 1. Sincronizar catálogo dos 500 produtos
+    src_c.execute("""
+        SELECT id, nome, categoria, preco_base, volume_base, perfil_sazonal, sensibilidade_preco, created_at
+        FROM produtos
+        ORDER BY id ASC
+    """)
+    prods = src_c.fetchall()
+
+    dst_c.execute("DELETE FROM products WHERE platform != 'api_vendas'")
+    for p in prods:
+        p_id = p[0]
+        p_nome = p[1]
+        p_cat = p[2]
+        p_preco = float(p[3] or 100.0)
+        p_vol = p[4] or 20
+        p_sazonal = p[5] or "REGULAR"
+        p_sens = float(p[6] or 1.0)
+        p_created = p[7] or "2020-01-01 00:00:00"
+
+        attrs_json = f'{{"volume_base": {p_vol}, "perfil_sazonal": "{p_sazonal}", "sensibilidade_preco": {p_sens}}}'
+        dst_c.execute("""
+            INSERT INTO products (id, external_id, platform, title, category, price, currency, condition, url, attributes, created_at, updated_at, is_active)
+            VALUES (?, ?, 'api_vendas', ?, ?, ?, 'BRL', 'new', '', ?, ?, ?, 1)
+            ON CONFLICT(id) DO UPDATE SET
+                title=excluded.title,
+                category=excluded.category,
+                price=excluded.price,
+                attributes=excluded.attributes,
+                platform='api_vendas',
+                is_active=1
+        """, (p_id, f"API_VENDAS_{p_id}", p_nome, p_cat, p_preco, attrs_json, p_created, p_created))
+
+    dst_conn.commit()
+
+    # 2. Sincronizar vendas se estiver vazio
+    count = dst_c.execute("SELECT count(*) FROM sales_history WHERE platform = 'api_vendas'").fetchone()[0]
+    if count < 100000:
+        src_c.execute(f"""
+            SELECT id, produto_id, data_venda || ' 00:00:00', COALESCE(vendas, 0), COALESCE(preco, 100.0), 50, 'api_vendas', 0, datetime('now')
+            FROM vendas_historicas
+            WHERE data_venda >= date('2026-11-02', '-{days_limit} days')
+            ORDER BY produto_id, data_venda ASC
+        """)
+        rows = src_c.fetchall()
+        dst_c.execute("DELETE FROM sales_history WHERE platform != 'api_vendas'")
+        dst_conn.commit()
+
+        batch_size = 20000
+        for i in range(0, len(rows), batch_size):
+            chunk = rows[i:i + batch_size]
+            dst_c.executemany("""
+                INSERT OR IGNORE INTO sales_history (id, product_id, date, quantity_sold, price_at_date, available_quantity, platform, is_synthetic, collected_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, chunk)
+            dst_conn.commit()
+
+    dst_conn.close()
+    src_conn.close()
+
+
+def _sync_sql_generic(session: Session, collector: SalesApiCollector, days_limit: int = 730):
+    prods = collector.fetch_all_products()
+    session.query(SalesHistory).filter(SalesHistory.platform.in_(["mercadolivre", "amazon"])).delete(synchronize_session=False)
+    session.query(Product).filter(Product.platform.in_(["mercadolivre", "amazon"])).delete(synchronize_session=False)
+    session.commit()
+
+    for p in prods:
+        p_id = int(p["id"])
+        prod = session.query(Product).filter(Product.id == p_id).first()
+        attrs = {
+            "perfil_sazonal": p.get("perfil_sazonal", "REGULAR"),
+            "volume_base": p.get("volume_base", 20),
+            "sensibilidade_preco": p.get("sensibilidade_preco", 1.0)
+        }
+        if not prod:
+            prod = Product(
+                id=p_id,
+                external_id=f"API_VENDAS_{p_id}",
+                platform="api_vendas",
+                title=p["nome"],
+                category=p["categoria"],
+                price=float(p["preco_base"]),
+                currency="BRL",
+                condition="new",
+                attributes=attrs,
+                is_active=True
+            )
+            session.add(prod)
+    session.commit()
 
 
 def seed_database_if_empty(session: Session):
-    """Sincroniza e calibra produtos e histórico do initial_seed.json no startup."""
-    seed_file = Path(__file__).parent.parent.parent / "data" / "initial_seed.json"
-    if not seed_file.exists():
-        print(f"[SeedLoader] Arquivo de seed nao encontrado: {seed_file}")
-        return
-
-    try:
-        with open(seed_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        products_data = data.get("products", [])
-        sales_data = data.get("sales_history", [])
-
-        from src.collectors.live_discovery_engine import normalize_category
-
-        # 1. Inserir ou Atualizar Produtos para garantir preços calibrados e categorias Mercado Livre
-        for p_data in products_data:
-            p_id = p_data.get("id")
-            norm_cat = normalize_category(p_data.get("category"))
-            existing = session.query(Product).filter(Product.id == p_id).first()
-            if existing:
-                existing.price = float(p_data.get("price", existing.price))
-                existing.title = p_data.get("title", existing.title)
-                existing.category = norm_cat
-                existing.platform = p_data.get("platform", existing.platform)
-            else:
-                product = Product(
-                    id=p_id,
-                    external_id=p_data.get("external_id") or f"PROD_{p_id}",
-                    platform=p_data.get("platform") or "mercadolivre",
-                    title=p_data.get("title") or "Produto",
-                    category=norm_cat,
-                    price=float(p_data.get("price") or 100.0),
-                    currency=p_data.get("currency") or "BRL",
-                    condition=p_data.get("condition") or "new",
-                    url=p_data.get("url") or "",
-                    attributes=p_data.get("attributes"),
-                    is_active=bool(p_data.get("is_active", True)),
-                    created_at=_parse_dt(p_data.get("created_at")),
-                    updated_at=_parse_dt(p_data.get("updated_at"))
-                )
-                session.add(product)
-
-        for p in session.query(Product).all():
-            p.category = normalize_category(p.category)
-        session.flush()
-
-        # 2. Sincronizar preços do histórico e ancorar datas para 'hoje' (rolagem 24h em 24h)
-        today_midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        seed_dates = [_parse_dt(s.get("date")) for s in sales_data if s.get("date")]
-        max_seed_date = max(seed_dates) if seed_dates else today_midnight
-        seed_shift = today_midnight - max_seed_date
-
-        sales_count = session.query(SalesHistory).count()
-        if sales_count == 0:
-            for s_data in sales_data:
-                shifted_date = _parse_dt(s_data.get("date")) + seed_shift
-                sales_entry = SalesHistory(
-                    id=s_data.get("id"),
-                    product_id=s_data.get("product_id"),
-                    date=shifted_date,
-                    quantity_sold=int(s_data.get("quantity_sold", 10)),
-                    price_at_date=float(s_data.get("price_at_date", 100.0)),
-                    available_quantity=int(s_data.get("available_quantity", 50)),
-                    platform=s_data.get("platform", "mercadolivre"),
-                    collected_at=_parse_dt(s_data.get("collected_at"))
-                )
-                session.add(sales_entry)
-        else:
-            prods_map = {p.get("id"): p.get("price") for p in products_data}
-            max_db_date = session.query(func.max(SalesHistory.date)).scalar()
-            db_shift = (today_midnight - max_db_date) if max_db_date else None
-
-            for s in session.query(SalesHistory).all():
-                p_price = prods_map.get(s.product_id)
-                if p_price and s.price_at_date:
-                    ratio = s.price_at_date / (p_price if p_price > 0 else 1)
-                    if ratio > 1.4 or ratio < 0.6:
-                        s.price_at_date = float(p_price)
-                if db_shift and db_shift.days > 0:
-                    s.date = s.date + db_shift
-
-            # Inserir vendas para produtos adicionados ao seed que ainda não tenham histórico no banco
-            existing_pids_with_sales = {row[0] for row in session.query(SalesHistory.product_id).distinct().all()}
-            max_sale_id = session.query(func.max(SalesHistory.id)).scalar() or 0
-
-            seed_sales_by_pid = {}
-            for s_data in sales_data:
-                pid = s_data.get("product_id")
-                if pid not in seed_sales_by_pid:
-                    seed_sales_by_pid[pid] = []
-                seed_sales_by_pid[pid].append(s_data)
-
-            for p_data in products_data:
-                pid = p_data.get("id")
-                if pid not in existing_pids_with_sales:
-                    p_sales = seed_sales_by_pid.get(pid, [])
-                    for s_data in p_sales:
-                        max_sale_id += 1
-                        shifted_date = _parse_dt(s_data.get("date")) + seed_shift
-                        sales_entry = SalesHistory(
-                            id=max_sale_id,
-                            product_id=pid,
-                            date=shifted_date,
-                            quantity_sold=int(s_data.get("quantity_sold", 10)),
-                            price_at_date=float(s_data.get("price_at_date", p_data.get("price", 100.0))),
-                            available_quantity=int(s_data.get("available_quantity", 50)),
-                            platform=s_data.get("platform", "mercadolivre"),
-                            collected_at=_parse_dt(s_data.get("collected_at"))
-                        )
-                        session.add(sales_entry)
-                    existing_pids_with_sales.add(pid)
-
-        # 3. Sincronizar Search Trends se tabela vazia
-        if session.query(SearchTrend).count() == 0:
-            trends_records = []
-            for t_data in data.get("search_trends", []):
-                trends_records.append(SearchTrend(
-                    id=t_data.get("id"),
-                    keyword=t_data.get("keyword") or "trend",
-                    date=_parse_dt(t_data.get("date")),
-                    interest_score=int(t_data.get("interest_score") or 50),
-                    source=t_data.get("source") or "google_trends",
-                    is_mock=bool(t_data.get("is_mock", False)),
-                    collected_at=_parse_dt(t_data.get("collected_at"))
-                ))
-            session.bulk_save_objects(trends_records)
-            session.flush()
-
-        # 4. Sincronizar Indicadores Macro se tabela vazia
-        if session.query(MacroIndicator).count() == 0:
-            macro_records = []
-            for m_data in data.get("macro_indicators", []):
-                macro_records.append(MacroIndicator(
-                    id=m_data.get("id"),
-                    date=_parse_dt(m_data.get("date")),
-                    indicator_type=m_data.get("indicator_type") or "SELIC",
-                    value=float(m_data.get("value") or 0.0),
-                    label=m_data.get("label") or "Macro",
-                    source=m_data.get("source") or "BCB",
-                    details=m_data.get("details"),
-                    collected_at=_parse_dt(m_data.get("collected_at"))
-                ))
-            session.bulk_save_objects(macro_records)
-            session.flush()
-
-        session.commit()
-        print(f"[SeedLoader] Sincronização e calibração de {len(products_data)} produtos concluída com sucesso.")
-    except Exception as e:
-        session.rollback()
-        print(f"[SeedLoader] Erro ao sincronizar seed: {e}")
+    """Garante que a base contenha os produtos e histórico da API de Vendas."""
+    prods_count = session.query(Product).filter(Product.platform == "api_vendas").count()
+    if prods_count < 500:
+        sync_from_sales_api(session, days_limit=730)

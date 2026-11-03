@@ -58,6 +58,10 @@ class ProductForecastResponse(BaseModel):
     buffer_stock_revenue: Optional[float] = None
     historical_accuracy_pct: Optional[float] = None
     mean_daily_error: Optional[float] = None
+    seasonal_profile: Optional[str] = None
+    seasonal_status: Optional[str] = None
+    seasonal_lift_pct: Optional[float] = None
+    is_surge_trend: Optional[bool] = None
     days: List[DailyForecastItem]
     explanation: Optional[ForecastExplanation] = None
 
@@ -83,6 +87,10 @@ class RankingForecastItem(BaseModel):
     product_url: Optional[str] = None
     rank_reason: Optional[str] = None
     key_driver: Optional[str] = None
+    seasonal_profile: Optional[str] = None
+    seasonal_status: Optional[str] = None
+    seasonal_lift_pct: Optional[float] = None
+    is_surge_trend: Optional[bool] = None
 
 
 class ForecastRankingResponse(BaseModel):

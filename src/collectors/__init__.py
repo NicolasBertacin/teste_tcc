@@ -5,6 +5,7 @@ de diferentes plataformas de e-commerce.
 """
 
 from .base_collector import BaseCollector, CollectorResult
+from .sales_api_collector import SalesApiCollector
 from .amazon_collector import AmazonCollector
 from .mercadolivre_collector import MercadoLivreCollector
 from .google_trends_collector import GoogleTrendsCollector
@@ -12,6 +13,7 @@ from .google_trends_collector import GoogleTrendsCollector
 __all__ = [
     "BaseCollector",
     "CollectorResult",
+    "SalesApiCollector",
     "AmazonCollector",
     "MercadoLivreCollector",
     "GoogleTrendsCollector",

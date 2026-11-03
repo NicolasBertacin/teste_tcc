@@ -67,6 +67,10 @@ class ProductFutureForecast:
     buffer_stock_revenue: float = 0.0
     historical_accuracy_pct: float = 83.9
     mean_daily_error: float = 5.7
+    seasonal_profile: str = "REGULAR"
+    seasonal_status: str = "⚖️ Demanda em Nível Padrão"
+    seasonal_lift_pct: float = 0.0
+    is_surge_trend: bool = False
 
 
 class FutureForecaster:
@@ -125,18 +129,48 @@ class FutureForecaster:
         dias_semana_pt = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
         seasonality = np.array([0.94, 1.15, 1.06, 0.82, 1.16, 1.20, 1.02])  # Multiplicadores semanais Seg-Dom
         
+        # Mapeamento oficial dos meses de pico de cada perfil sazonal
+        peak_map = {
+            "NATAL_FIM_DE_ANO": [11, 12],
+            "BLACK_FRIDAY_TECH": [11],
+            "VERAO_CALOR": [12, 1, 2],
+            "FITNESS_ANO_NOVO": [1, 2],
+            "VOLTA_AS_AULAS": [1, 2],
+            "INVERNO_FRIO": [5, 6, 7],
+            "DIA_DAS_MAES": [5],
+            "DIA_DOS_NAMORADOS": [6],
+            "DIA_DOS_PAIS": [8],
+            "MULTISSAZONAL_TECH": [2, 7, 11, 12],
+            "REGULAR": []
+        }
+
+        # Extrair atributos e perfil sazonal do produto
+        attrs = product.get("attributes", {}) if isinstance(product, dict) or hasattr(product, "get") else getattr(product, "attributes", {})
+        if isinstance(attrs, str):
+            try:
+                import json
+                attrs = json.loads(attrs)
+            except Exception:
+                attrs = {}
+        perfil_sazonal = (attrs.get("perfil_sazonal") if isinstance(attrs, dict) else None) or product.get("perfil_sazonal", "REGULAR")
+        peak_months = peak_map.get(str(perfil_sazonal), [])
+
         sorted_sales = product_sales_df.sort_values("date").copy()
         sorted_sales["date"] = pd.to_datetime(sorted_sales["date"])
         last_date = sorted_sales["date"].max() if not sorted_sales.empty else pd.to_datetime(datetime.utcnow().date())
         base_price = float(product["base_price"] if "base_price" in product else product["price"])
         
-        # Média recente ponderada
+        # Média recente ponderada (últimos 14 dias) e média histórica global (baseline anual)
         if not sorted_sales.empty:
             recent_mean = float(sorted_sales.tail(14)["quantity_sold"].mean())
+            baseline_mean = float(sorted_sales["quantity_sold"].mean())
             if np.isnan(recent_mean) or recent_mean <= 0:
                 recent_mean = 10.0
+            if np.isnan(baseline_mean) or baseline_mean <= 0:
+                baseline_mean = recent_mean
         else:
             recent_mean = 10.0
+            baseline_mean = 10.0
         
         daily_forecasts: list[FutureDayForecast] = []
         total_units = 0
@@ -147,10 +181,22 @@ class FutureForecaster:
         for step in range(1, horizon_days + 1):
             curr_date = last_date + timedelta(days=step)
             day_of_week = curr_date.weekday()
+            month_val = curr_date.month
             
-            # Sazonalidade cíclica semanal + tendência suave
-            mult = seasonality[day_of_week]
-            pred_val = max(1, int(round(recent_mean * mult)))
+            dow_mult = seasonality[day_of_week]
+
+            # Análise de Sazonalidade: se o dia futuro cai no mês de pico do produto (ex: Dezembro/Natal para pisca-pisca)
+            if month_val in peak_months and not sorted_sales.empty:
+                month_hist = sorted_sales[sorted_sales["date"].dt.month == month_val]["quantity_sold"]
+                if not month_hist.empty and len(month_hist) >= 5:
+                    hist_month_mean = float(month_hist.mean())
+                    step_base = max(recent_mean, (recent_mean * 0.35 + hist_month_mean * 0.65))
+                else:
+                    step_base = recent_mean * 1.60
+            else:
+                step_base = recent_mean
+
+            pred_val = max(1, int(round(step_base * dow_mult)))
             margin = max(1, int(round(pred_val * 0.12)))
             lower_val = max(0, pred_val - margin)
             upper_val = max(pred_val, pred_val + margin)
@@ -177,6 +223,19 @@ class FutureForecaster:
         stock_buffer = int(round(max_units * 1.10))
         daily_avg = round(total_units / horizon_days, 1)
 
+        # Cálculo do Lift Sazonal (Tendência de vender mais que o normal)
+        seasonal_lift_pct = round(((daily_avg - baseline_mean) / (baseline_mean + 1e-4)) * 100, 1)
+
+        if seasonal_lift_pct >= 25.0:
+            seasonal_status = f"🔥 Alta Sazonalidade (+{seasonal_lift_pct:.0f}% acima do normal)"
+            is_surge_trend = True
+        elif seasonal_lift_pct <= -20.0:
+            seasonal_status = f"❄️ Desaquecimento Sazonal ({seasonal_lift_pct:.0f}% do normal)"
+            is_surge_trend = False
+        else:
+            seasonal_status = "⚖️ Demanda em Nível Padrão"
+            is_surge_trend = False
+
         # 3 Níveis de Decisão de Estoque (Gestão de Risco)
         conservative_units = min_units
         conservative_revenue = round(conservative_units * base_price, 2)
@@ -198,7 +257,7 @@ class FutureForecaster:
             mean_error = 5.7
             hist_acc = 83.9
 
-        platform_str = str(product.get("platform", "mercadolivre")) if isinstance(product, dict) or hasattr(product, "get") else getattr(product, "platform", "mercadolivre")
+        platform_str = str(product.get("platform", "api_vendas")) if isinstance(product, dict) or hasattr(product, "get") else getattr(product, "platform", "api_vendas")
         thumb_url = get_product_thumbnail(product)
         prod_url = get_product_url(product)
 
@@ -241,7 +300,11 @@ class FutureForecaster:
             buffer_stock_units=buffer_stock_units,
             buffer_stock_revenue=buffer_stock_revenue,
             historical_accuracy_pct=hist_acc,
-            mean_daily_error=mean_error
+            mean_daily_error=mean_error,
+            seasonal_profile=str(perfil_sazonal),
+            seasonal_status=seasonal_status,
+            seasonal_lift_pct=seasonal_lift_pct,
+            is_surge_trend=is_surge_trend
         )
 
     def _build_forecast_explanation(

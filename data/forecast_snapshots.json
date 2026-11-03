@@ -230,5 +230,545 @@
         }
       ]
     }
+  },
+  "1:7:2026-11-03": {
+    "product_id": 1,
+    "product_title": "Notebook Dell Inspiron 15 Intel Core i7 16GB 512GB SSD",
+    "category": "Tecnologia",
+    "unit_price": 3499.0,
+    "platform": "mercadolivre",
+    "thumbnail_url": "https://http2.mlstatic.com/D_NQ_NP_2X_988358-MLA74070265749_012024-F.webp",
+    "product_url": "https://lista.mercadolivre.com.br/Notebook%20Dell%20Inspiron%2015%20Intel%20Core%20i7%2016GB%20512GB%20SSD",
+    "horizon_days": 7,
+    "start_date": "04/11/2026",
+    "end_date": "10/11/2026",
+    "forecast_cycle": "Ciclo: 04/11/2026 a 10/11/2026",
+    "generated_at": "03/11/2026 14:54",
+    "total_predicted_units": 216,
+    "min_predicted_units": 190,
+    "max_predicted_units": 242,
+    "total_projected_revenue": 755784.0,
+    "daily_average": 30.9,
+    "recommended_stock_buffer": 266,
+    "conservative_units": 190,
+    "conservative_revenue": 664810.0,
+    "base_units": 216,
+    "base_revenue": 755784.0,
+    "buffer_stock_units": 266,
+    "buffer_stock_revenue": 930734.0,
+    "historical_accuracy_pct": 73.8,
+    "mean_daily_error": 7.7,
+    "days": [
+      {
+        "date": "04/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 31,
+        "confidence_min": 27,
+        "confidence_max": 35,
+        "projected_revenue": 108469.0
+      },
+      {
+        "date": "05/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 24,
+        "confidence_min": 21,
+        "confidence_max": 27,
+        "projected_revenue": 83976.0
+      },
+      {
+        "date": "06/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 118966.0
+      },
+      {
+        "date": "07/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 35,
+        "confidence_min": 31,
+        "confidence_max": 39,
+        "projected_revenue": 122465.0
+      },
+      {
+        "date": "08/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 104970.0
+      },
+      {
+        "date": "09/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 28,
+        "confidence_min": 25,
+        "confidence_max": 31,
+        "projected_revenue": 97972.0
+      },
+      {
+        "date": "10/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 118966.0
+      }
+    ],
+    "explanation": {
+      "summary": "Previsão de 30.9 un/dia em ritmo de estabilidade. Principais alavancas: demanda consistente em tecnologia e preço de R$ 3,499.00 em Tecnologia.",
+      "primary_driver": "Demanda Consistente em Tecnologia",
+      "factors": [
+        {
+          "name": "Sazonalidade",
+          "weight_pct": 24,
+          "impact": "Aceleração Moderada",
+          "description": "Aumento de +11.4% no volume durante os fins de semana."
+        },
+        {
+          "name": "Média de Vendas",
+          "weight_pct": 27,
+          "impact": "Volatilidade Ativa",
+          "description": "Volume médio em torno de ~26.0 un/dia com oscilação natural."
+        },
+        {
+          "name": "Competitividade de Preço",
+          "weight_pct": 14,
+          "impact": "Tíquete Premium",
+          "description": "Preço de R$ 3,499.00 atende público qualificado de alto valor agregado."
+        },
+        {
+          "name": "Interesse de Busca",
+          "weight_pct": 35,
+          "impact": "Demanda Recorrente",
+          "description": "Procura consolidada com consumo orgânico contínuo."
+        }
+      ]
+    }
+  },
+  "15:30:2026-11-02": {
+    "product_id": 15,
+    "product_title": "Console de Videogame Next-Gen 15TB",
+    "category": "Eletrônicos",
+    "unit_price": 4154.25,
+    "platform": "api_vendas",
+    "thumbnail_url": "https://http2.mlstatic.com/D_NQ_NP_2X_841787-MLA46114829749_052021-F.webp",
+    "product_url": "https://lista.mercadolivre.com.br/Console%20de%20Videogame%20Next-Gen%2015TB",
+    "horizon_days": 30,
+    "start_date": "03/11/2026",
+    "end_date": "02/12/2026",
+    "forecast_cycle": "Ciclo: 03/11/2026 a 02/12/2026",
+    "generated_at": "03/11/2026 16:01",
+    "total_predicted_units": 894,
+    "min_predicted_units": 786,
+    "max_predicted_units": 1002,
+    "total_projected_revenue": 3713899.5,
+    "daily_average": 29.8,
+    "recommended_stock_buffer": 1102,
+    "conservative_units": 786,
+    "conservative_revenue": 3265240.5,
+    "base_units": 894,
+    "base_revenue": 3713899.5,
+    "buffer_stock_units": 1102,
+    "buffer_stock_revenue": 4577983.5,
+    "historical_accuracy_pct": 85.1,
+    "mean_daily_error": 4.2,
+    "seasonal_profile": "REGULAR",
+    "seasonal_status": "🔥 Alta Sazonalidade (+41% acima do normal)",
+    "seasonal_lift_pct": 40.9,
+    "is_surge_trend": true,
+    "days": [
+      {
+        "date": "03/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 32,
+        "confidence_min": 28,
+        "confidence_max": 36,
+        "projected_revenue": 132936.0
+      },
+      {
+        "date": "04/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 124627.5
+      },
+      {
+        "date": "05/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 23,
+        "confidence_min": 20,
+        "confidence_max": 26,
+        "projected_revenue": 95547.75
+      },
+      {
+        "date": "06/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 33,
+        "confidence_min": 29,
+        "confidence_max": 37,
+        "projected_revenue": 137090.25
+      },
+      {
+        "date": "07/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 141244.5
+      },
+      {
+        "date": "08/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 29,
+        "confidence_min": 26,
+        "confidence_max": 32,
+        "projected_revenue": 120473.25
+      },
+      {
+        "date": "09/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 27,
+        "confidence_min": 24,
+        "confidence_max": 30,
+        "projected_revenue": 112164.75
+      },
+      {
+        "date": "10/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 32,
+        "confidence_min": 28,
+        "confidence_max": 36,
+        "projected_revenue": 132936.0
+      },
+      {
+        "date": "11/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 124627.5
+      },
+      {
+        "date": "12/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 23,
+        "confidence_min": 20,
+        "confidence_max": 26,
+        "projected_revenue": 95547.75
+      },
+      {
+        "date": "13/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 33,
+        "confidence_min": 29,
+        "confidence_max": 37,
+        "projected_revenue": 137090.25
+      },
+      {
+        "date": "14/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 141244.5
+      },
+      {
+        "date": "15/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 29,
+        "confidence_min": 26,
+        "confidence_max": 32,
+        "projected_revenue": 120473.25
+      },
+      {
+        "date": "16/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 27,
+        "confidence_min": 24,
+        "confidence_max": 30,
+        "projected_revenue": 112164.75
+      },
+      {
+        "date": "17/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 32,
+        "confidence_min": 28,
+        "confidence_max": 36,
+        "projected_revenue": 132936.0
+      },
+      {
+        "date": "18/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 124627.5
+      },
+      {
+        "date": "19/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 23,
+        "confidence_min": 20,
+        "confidence_max": 26,
+        "projected_revenue": 95547.75
+      },
+      {
+        "date": "20/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 33,
+        "confidence_min": 29,
+        "confidence_max": 37,
+        "projected_revenue": 137090.25
+      },
+      {
+        "date": "21/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 141244.5
+      },
+      {
+        "date": "22/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 29,
+        "confidence_min": 26,
+        "confidence_max": 32,
+        "projected_revenue": 120473.25
+      },
+      {
+        "date": "23/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 27,
+        "confidence_min": 24,
+        "confidence_max": 30,
+        "projected_revenue": 112164.75
+      },
+      {
+        "date": "24/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 32,
+        "confidence_min": 28,
+        "confidence_max": 36,
+        "projected_revenue": 132936.0
+      },
+      {
+        "date": "25/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 124627.5
+      },
+      {
+        "date": "26/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 23,
+        "confidence_min": 20,
+        "confidence_max": 26,
+        "projected_revenue": 95547.75
+      },
+      {
+        "date": "27/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 33,
+        "confidence_min": 29,
+        "confidence_max": 37,
+        "projected_revenue": 137090.25
+      },
+      {
+        "date": "28/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 34,
+        "confidence_min": 30,
+        "confidence_max": 38,
+        "projected_revenue": 141244.5
+      },
+      {
+        "date": "29/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 29,
+        "confidence_min": 26,
+        "confidence_max": 32,
+        "projected_revenue": 120473.25
+      },
+      {
+        "date": "30/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 27,
+        "confidence_min": 24,
+        "confidence_max": 30,
+        "projected_revenue": 112164.75
+      },
+      {
+        "date": "01/12/2026",
+        "day_name": "Terça",
+        "predicted_demand": 32,
+        "confidence_min": 28,
+        "confidence_max": 36,
+        "projected_revenue": 132936.0
+      },
+      {
+        "date": "02/12/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 30,
+        "confidence_min": 26,
+        "confidence_max": 34,
+        "projected_revenue": 124627.5
+      }
+    ],
+    "explanation": {
+      "summary": "Previsão de 29.8 un/dia em ritmo de crescimento. Principais alavancas: momentum de procura (+32%) e preço de R$ 4,154.25 em Eletrônicos.",
+      "primary_driver": "Momentum de Procura (+32%)",
+      "factors": [
+        {
+          "name": "Sazonalidade",
+          "weight_pct": 14,
+          "impact": "Demanda Homogênea",
+          "description": "Vendas distribuídas uniformemente ao longo de todos os dias da semana."
+        },
+        {
+          "name": "Média de Vendas",
+          "weight_pct": 32,
+          "impact": "Alta Estabilidade",
+          "description": "Volume consistente em ~32.1 un/dia com baixa volatilidade de mercado."
+        },
+        {
+          "name": "Competitividade de Preço",
+          "weight_pct": 12,
+          "impact": "Tíquete Premium",
+          "description": "Preço de R$ 4,154.25 atende público qualificado de alto valor agregado."
+        },
+        {
+          "name": "Interesse de Busca",
+          "weight_pct": 42,
+          "impact": "Forte Tração (+32.4%)",
+          "description": "Índice de buscas e procura em forte aceleração recente (+32.4%)."
+        }
+      ]
+    }
+  },
+  "1:7:2026-11-02": {
+    "product_id": 1,
+    "product_title": "Notebook Dell Inspiron 15 i5 8GB SSD 256GB",
+    "category": "Eletrônicos",
+    "unit_price": 4107.23,
+    "platform": "api_vendas",
+    "thumbnail_url": "https://http2.mlstatic.com/D_NQ_NP_2X_988358-MLA74070265749_012024-F.webp",
+    "product_url": "https://lista.mercadolivre.com.br/Notebook%20Dell%20Inspiron%2015%20i5%208GB%20SSD%20256GB",
+    "horizon_days": 7,
+    "start_date": "03/11/2026",
+    "end_date": "09/11/2026",
+    "forecast_cycle": "Ciclo: 03/11/2026 a 09/11/2026",
+    "generated_at": "03/11/2026 16:03",
+    "total_predicted_units": 361,
+    "min_predicted_units": 317,
+    "max_predicted_units": 405,
+    "total_projected_revenue": 1482710.03,
+    "daily_average": 51.6,
+    "recommended_stock_buffer": 446,
+    "conservative_units": 317,
+    "conservative_revenue": 1301991.91,
+    "base_units": 361,
+    "base_revenue": 1482710.03,
+    "buffer_stock_units": 446,
+    "buffer_stock_revenue": 1831824.58,
+    "historical_accuracy_pct": 84.0,
+    "mean_daily_error": 7.9,
+    "seasonal_profile": "REGULAR",
+    "seasonal_status": "❄️ Desaquecimento Sazonal (-33% do normal)",
+    "seasonal_lift_pct": -33.3,
+    "is_surge_trend": false,
+    "days": [
+      {
+        "date": "03/11/2026",
+        "day_name": "Terça",
+        "predicted_demand": 57,
+        "confidence_min": 50,
+        "confidence_max": 64,
+        "projected_revenue": 234112.11
+      },
+      {
+        "date": "04/11/2026",
+        "day_name": "Quarta",
+        "predicted_demand": 52,
+        "confidence_min": 46,
+        "confidence_max": 58,
+        "projected_revenue": 213575.96
+      },
+      {
+        "date": "05/11/2026",
+        "day_name": "Quinta",
+        "predicted_demand": 40,
+        "confidence_min": 35,
+        "confidence_max": 45,
+        "projected_revenue": 164289.2
+      },
+      {
+        "date": "06/11/2026",
+        "day_name": "Sexta",
+        "predicted_demand": 57,
+        "confidence_min": 50,
+        "confidence_max": 64,
+        "projected_revenue": 234112.11
+      },
+      {
+        "date": "07/11/2026",
+        "day_name": "Sábado",
+        "predicted_demand": 59,
+        "confidence_min": 52,
+        "confidence_max": 66,
+        "projected_revenue": 242326.57
+      },
+      {
+        "date": "08/11/2026",
+        "day_name": "Domingo",
+        "predicted_demand": 50,
+        "confidence_min": 44,
+        "confidence_max": 56,
+        "projected_revenue": 205361.5
+      },
+      {
+        "date": "09/11/2026",
+        "day_name": "Segunda",
+        "predicted_demand": 46,
+        "confidence_min": 40,
+        "confidence_max": 52,
+        "projected_revenue": 188932.58
+      }
+    ],
+    "explanation": {
+      "summary": "Previsão de 51.6 un/dia em ritmo de crescimento. Principais alavancas: alto giro recorrente (~55 un/dia) e preço de R$ 4,107.23 em Eletrônicos.",
+      "primary_driver": "Alto Giro Recorrente (~55 un/dia)",
+      "factors": [
+        {
+          "name": "Sazonalidade",
+          "weight_pct": 12,
+          "impact": "Demanda Homogênea",
+          "description": "Vendas distribuídas uniformemente ao longo de todos os dias da semana."
+        },
+        {
+          "name": "Média de Vendas",
+          "weight_pct": 38,
+          "impact": "Alta Estabilidade",
+          "description": "Volume consistente em ~55.3 un/dia com baixa volatilidade de mercado."
+        },
+        {
+          "name": "Competitividade de Preço",
+          "weight_pct": 13,
+          "impact": "Tíquete Premium",
+          "description": "Preço de R$ 4,107.23 atende público qualificado de alto valor agregado."
+        },
+        {
+          "name": "Interesse de Busca",
+          "weight_pct": 37,
+          "impact": "Forte Tração (+27.3%)",
+          "description": "Índice de buscas e procura em forte aceleração recente (+27.3%)."
+        }
+      ]
+    }
   }
 }
