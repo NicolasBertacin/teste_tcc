@@ -13,7 +13,7 @@ from src.collectors.sales_api_collector import SalesApiCollector
 logger = logging.getLogger(__name__)
 
 
-def sync_from_sales_api(session: Session, source_db_path: str = None, days_limit: int = 730):
+def sync_from_sales_api(session: Session, source_db_path: str = None, days_limit: int = None):
     """Sincroniza o banco de dados local com os 500 produtos e vendas da API de Vendas."""
     collector = SalesApiCollector(db_path=source_db_path)
     src_path = collector.db_path
@@ -38,7 +38,7 @@ def sync_from_sales_api(session: Session, source_db_path: str = None, days_limit
         _sync_sql_generic(session, collector, days_limit)
 
 
-def _sync_sqlite_direct(src_path: str, dst_path: str, days_limit: int = 730):
+def _sync_sqlite_direct(src_path: str, dst_path: str, days_limit: int = None):
     src_conn = sqlite3.connect(f"file:{src_path}?mode=ro", uri=True, timeout=60.0)
     src_c = src_conn.cursor()
 
@@ -79,13 +79,15 @@ def _sync_sqlite_direct(src_path: str, dst_path: str, days_limit: int = 730):
 
     dst_conn.commit()
 
-    # 2. Sincronizar vendas se estiver vazio
+    # 2. Sincronizar vendas completas se não tiver o histórico total
     count = dst_c.execute("SELECT count(*) FROM sales_history WHERE platform = 'api_vendas'").fetchone()[0]
-    if count < 100000:
+    expected_min = 1249000 if days_limit is None else 50000
+    if count < expected_min:
+        where_clause = f"WHERE data_venda >= date('2026-11-02', '-{days_limit} days')" if days_limit else ""
         src_c.execute(f"""
             SELECT id, produto_id, data_venda || ' 00:00:00', COALESCE(vendas, 0), COALESCE(preco, 100.0), 50, 'api_vendas', 0, datetime('now')
             FROM vendas_historicas
-            WHERE data_venda >= date('2026-11-02', '-{days_limit} days')
+            {where_clause}
             ORDER BY produto_id, data_venda ASC
         """)
         rows = src_c.fetchall()
@@ -100,6 +102,9 @@ def _sync_sqlite_direct(src_path: str, dst_path: str, days_limit: int = 730):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, chunk)
             dst_conn.commit()
+
+    dst_conn.close()
+    src_conn.close()
 
     dst_conn.close()
     src_conn.close()
@@ -139,5 +144,6 @@ def _sync_sql_generic(session: Session, collector: SalesApiCollector, days_limit
 def seed_database_if_empty(session: Session):
     """Garante que a base contenha os produtos e histórico da API de Vendas."""
     prods_count = session.query(Product).filter(Product.platform == "api_vendas").count()
-    if prods_count < 500:
-        sync_from_sales_api(session, days_limit=730)
+    sales_count = session.query(SalesHistory).filter(SalesHistory.platform == "api_vendas").count()
+    if prods_count < 500 or sales_count < 1249000:
+        sync_from_sales_api(session, days_limit=None)

@@ -120,11 +120,12 @@ def test_auth_forgot_and_reset_password(client):
     assert reset_resp.status_code == 200
 
     # Restaurar senha admin
-    client.post("/api/v1/auth/reset-password", json={
+    restore_resp = client.post("/api/v1/auth/reset-password", json={
         "email": "admin@trendecommerce.com",
         "code": "1234",
         "new_password": "admin123"
     })
+    assert restore_resp.status_code == 200
 
 
 def test_products_list_and_categories(client):

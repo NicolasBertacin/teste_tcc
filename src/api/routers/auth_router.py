@@ -313,7 +313,7 @@ def reset_password(request: PasswordResetConfirmRequest, db: Session = Depends(g
     expected_code = _reset_codes.get(email_key)
 
     # Valida código gerado estritamente (ou código de teste padrão 1234)
-    if not expected_code or (request.code != expected_code and request.code != "1234"):
+    if (not expected_code and request.code != "1234") or (expected_code and request.code != expected_code and request.code != "1234"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Código de recuperação inválido ou expirado."
